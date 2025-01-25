@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Orange Header Section -->
+    <RelativeLayout
+        android:id="@+id/orange_rel"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/orange_card_top">
+
+        <TextView
+            android:id="@+id/sold_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:text="2 sold out of 1250"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:fontFamily="@font/inter_bold" />
+    </RelativeLayout>
+
+    <!-- White Card with ViewPager and Indicator -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_card_bg_2"
+        android:layout_below="@id/orange_rel"
+        android:layout_marginTop="-25dp">
+
+        <!-- ViewPager2 -->
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vp_images"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="16dp" />
+
+
+        <!-- TabLayout for Circle Indicators -->
+        <me.relex.circleindicator.CircleIndicator3
+            android:id="@+id/circle_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/vp_images"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp" />
+
+
+        <!-- Details Section -->
+        <RelativeLayout
+            android:id="@+id/details_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/circle_indicator"
+            android:padding="16dp">
+
+            <!-- Vertical Text "60 Vouchers" -->
+            <TextView
+                android:id="@+id/tv_vouchers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="60 Vouchers"
+                android:textColor="#000"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:rotation="-90"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true" />
+
+            <!-- Title Text -->
+            <TextView
+                android:id="@+id/tv_win_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="win"
+                android:textColor="#FF5722"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:layout_toRightOf="@id/tv_vouchers"
+                android:layout_marginStart="8dp" />
+
+            <!-- iPhone Name -->
+            <TextView
+                android:id="@+id/tv_iphone_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="iPhone 16 Pro Max"
+                android:textColor="#000"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_below="@id/tv_win_title"
+                android:layout_toRightOf="@id/tv_vouchers" />
+
+            <!-- Draw Date -->
+            <TextView
+                android:id="@+id/tv_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Draw Date: 31 December, 2024 or earlier based on the time passed."
+                android:textColor="#000"
+                android:textSize="14sp"
+                android:layout_below="@id/tv_iphone_name"
+                android:layout_toRightOf="@id/tv_vouchers"
+                android:layout_marginTop="8dp" />
+            <TextView
+                android:id="@+id/tv_draw_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Draw Date: 31 December, 2024"
+                android:textColor="#000"
+                android:textSize="12sp"
+                android:layout_below="@id/tv_desc"
+                android:layout_toRightOf="@id/tv_vouchers"
+                android:layout_marginTop="8dp" />
+
+            <!-- Buy Button -->
+            <Button
+                android:id="@+id/btn_buy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Buy AED10"
+                android:textSize="14sp"
+                android:backgroundTint="#FF5722"
+                android:textColor="#FFF"
+                android:layout_below="@id/tv_draw_date"
+                android:layout_toRightOf="@id/tv_vouchers"
+                android:layout_marginTop="8dp" />
+
+            <!-- Add to Cart Button -->
+            <Button
+                android:id="@+id/btn_add_to_cart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add to Cart"
+                android:textSize="14sp"
+                android:backgroundTint="#4CAF50"
+                android:textColor="#FFF"
+                android:layout_below="@id/tv_draw_date"
+                android:layout_toRightOf="@id/btn_buy"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

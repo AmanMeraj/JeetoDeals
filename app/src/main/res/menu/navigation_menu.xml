@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<group
+    android:checkableBehavior="single">
+    <item
+        android:title="@string/login_register"
+        android:id="@+id/nav_login"
+        android:icon="@drawable/login_jg"/>
+    <item
+        android:title="@string/my_ticket_s"
+        android:id="@+id/nav_ticket"
+        android:icon="@drawable/ticket_jd"/>
+    <item
+        android:title="@string/order"
+        android:id="@+id/nav_order"
+        android:icon="@drawable/order_jd"/>
+    <item
+        android:title="@string/my_wishlist"
+        android:id="@+id/nav_wishlist"
+        android:icon="@drawable/heart_jd"/>
+    <item
+        android:title="@string/address2"
+        android:id="@+id/nav_address"
+        android:icon="@drawable/map_jd"/>
+    <item
+        android:title="@string/account_details"
+        android:id="@+id/nav_details"
+        android:icon="@drawable/user_jd"/>
+    <item
+        android:title="@string/get_in_touch"
+        android:id="@+id/nav_contact"
+        android:icon="@drawable/contact_jd"/>
+    <item
+        android:title="@string/how_it_works"
+        android:id="@+id/nav_works"
+        android:icon="@drawable/book_jd"/>
+    <item
+        android:title="@string/call_us"
+        android:id="@+id/nav_call"
+        android:icon="@drawable/contact_jd"/>
+    <item
+        android:title="@string/email_us"
+        android:id="@+id/nav_email"
+        android:icon="@drawable/contact_jd"/>
+    <item
+        android:title="@string/user_agreement"
+        android:id="@+id/nav_agreement"
+        android:icon="@drawable/contract_jd"/>
+</group>
+    <group
+        android:id="@+id/bottom_group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/logout"
+            android:actionLayout="@layout/menu_logout_button" />
+    </group>
+</menu>

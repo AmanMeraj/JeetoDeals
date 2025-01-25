@@ -1,0 +1,137 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_marginVertical="5dp"
+    android:layout_height="wrap_content">
+
+    <!-- Top Orange Section -->
+    <RelativeLayout
+        android:layout_marginHorizontal="2dp"
+        android:background="@drawable/orange_card_top"
+        android:layout_width="match_parent"
+        android:id="@+id/orange_rel"
+        android:layout_height="60dp">
+
+        <TextView
+            android:id="@+id/time_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="7dp"
+            android:fontFamily="@font/inter_bold"
+            android:text="Voucher 15000"
+            android:textColor="@color/white"
+            android:textSize="15sp" />
+    </RelativeLayout>
+
+    <!-- White Card Section -->
+    <LinearLayout
+        android:layout_marginBottom="10dp"
+        android:id="@+id/linear_text"
+        android:layout_marginHorizontal="1dp"
+        android:layout_below="@id/orange_rel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/white_card_bg"
+        android:padding="8dp"
+        android:elevation="5dp"
+        android:layout_marginTop="-30dp"
+        android:clipToPadding="false"
+        android:gravity="center_vertical">
+
+        <!-- Image Section -->
+        <ImageView
+            android:id="@+id/image_phone"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_marginEnd="8dp"
+            android:layout_gravity="center_vertical"
+            android:scaleType="fitXY"
+            android:src="@drawable/promotion_image" />
+
+        <!-- Text Section -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="10dp">
+
+            <TextView
+                android:layout_marginTop="10dp"
+                android:id="@+id/text_phone_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_bold"
+                android:text="MacBook Pro M2"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/text_ticket_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_bold"
+                android:text="Voucher 7,500"
+                android:textColor="@color/black"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter"
+                android:text="Win MacBook Pro 16-inch (M2)"
+                android:textColor="@color/black"
+                android:textSize="13sp" />
+
+            <!-- Quantity Controls -->
+            <LinearLayout
+                android:id="@+id/linear_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/plus"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:padding="6dp"
+                    android:background="@drawable/plus_btn_bg"
+                    android:src="@drawable/plus_jd" />
+
+                <TextView
+                    android:id="@+id/text_quantity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="5dp"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="5"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:id="@+id/minus"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:background="@drawable/plus_btn_bg"
+                    android:padding="6dp"
+                    android:src="@drawable/minus_jd" />
+            </LinearLayout>
+
+            <!-- Trash Icon -->
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="end"
+                android:layout_marginHorizontal="10dp"
+                android:padding="3dp"
+                android:src="@drawable/trash_bin" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

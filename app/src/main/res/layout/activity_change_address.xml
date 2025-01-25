@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ChangeAddress.ActivityChangeAddress">
+
+    <RelativeLayout
+        android:elevation="5dp"
+        android:id="@+id/toolbar"
+        android:background="@drawable/toolbar_rounded_corners"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:padding="5dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="10dp"
+            android:src="@drawable/arrowleft"
+            android:id="@+id/back_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp">
+
+        </ImageView>
+
+    </RelativeLayout>
+    <TextView
+        android:text="My Address"
+        android:fontFamily="@font/inter_bold"
+        android:layout_marginVertical="20dp"
+        android:layout_marginHorizontal="10dp"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:layout_below="@+id/toolbar"
+        android:id="@+id/tv_my_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <RelativeLayout
+        android:id="@+id/billing_address_rel"
+        android:layout_marginHorizontal="10dp"
+        android:layout_below="@+id/tv_my_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_marginHorizontal="2dp"
+            android:background="@drawable/green_btn"
+            android:layout_width="match_parent"
+            android:id="@+id/green_rel"
+            android:layout_height="60dp">
+            <TextView
+                android:textSize="15sp"
+                android:layout_marginTop="7dp"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/white"
+                android:fontFamily="@font/inter_bold"
+                android:text="Billing Address"
+                android:id="@+id/time_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            </TextView>
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_marginBottom="10dp"
+            android:layout_marginHorizontal="1dp"
+            android:layout_below="@+id/green_rel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/white_card_bg"
+            android:padding="8dp"
+            android:elevation="4dp"
+            android:layout_marginTop="-30dp"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_marginHorizontal="10dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:fontFamily="@font/inter_bold"
+                    android:id="@+id/text_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ronio Mondal"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="4dp"/>
+
+                <TextView
+                    android:layout_marginEnd="40dp"
+                    android:fontFamily="@font/inter"
+                    android:paddingVertical="10dp"
+                    android:id="@+id/text_billing_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/address"
+                    android:textColor="@color/black"
+                    android:textSize="13sp"/>
+                <ImageView
+                    android:id="@+id/edit_billing"
+                    android:layout_gravity="end"
+                    android:src="@drawable/edit_btn"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp">
+
+                </ImageView>
+            </LinearLayout>
+
+        </LinearLayout>
+    </RelativeLayout>
+
+
+
+    <RelativeLayout
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_below="@+id/billing_address_rel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_marginHorizontal="2dp"
+            android:background="@drawable/orange_card_top"
+            android:layout_width="match_parent"
+            android:id="@+id/orange_rel"
+            android:layout_height="60dp">
+            <TextView
+                android:textSize="15sp"
+                android:layout_marginTop="7dp"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/white"
+                android:fontFamily="@font/inter_bold"
+                android:text="Shipping Address"
+                android:id="@+id/shipping_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            </TextView>
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_marginBottom="10dp"
+            android:layout_marginHorizontal="1dp"
+            android:layout_below="@+id/orange_rel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/white_card_bg"
+            android:padding="8dp"
+            android:elevation="4dp"
+            android:layout_marginTop="-30dp"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_marginHorizontal="10dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:fontFamily="@font/inter_bold"
+                    android:id="@+id/text_name2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ronio Mondal"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="4dp"/>
+
+                <TextView
+                    android:layout_marginEnd="40dp"
+                    android:fontFamily="@font/inter"
+                    android:paddingVertical="10dp"
+                    android:id="@+id/text_shipping_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/address"
+                    android:textColor="@color/black"
+                    android:textSize="13sp"/>
+                <ImageView
+                    android:id="@+id/edit_shipping"
+                    android:layout_gravity="end"
+                    android:src="@drawable/edit_btn"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp">
+
+                </ImageView>
+            </LinearLayout>
+
+        </LinearLayout>
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

@@ -1,0 +1,119 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_marginVertical="5dp"
+    android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:background="@android:color/transparent"> <!-- Ensure transparency for shadow visibility -->
+
+    <!-- Top RelativeLayout -->
+    <RelativeLayout
+        android:layout_marginHorizontal="2dp"
+        android:background="@drawable/green_btn"
+        android:layout_width="match_parent"
+        android:id="@+id/orange_rel"
+        android:layout_height="60dp">
+
+        <TextView
+            android:textSize="15sp"
+            android:layout_marginTop="7dp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/inter_bold"
+            android:layout_marginStart="20dp"
+            android:text="#786"
+            android:id="@+id/time_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"
+            android:textSize="15sp"
+            android:layout_marginTop="7dp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/inter_bold"
+            android:text="processing"
+            android:id="@+id/tv_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <!-- Shadow-enabled LinearLayout -->
+    <LinearLayout
+        android:layout_marginHorizontal="2dp"
+        android:layout_below="@+id/orange_rel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/white_card_bg"
+        android:elevation="5dp"
+        android:layout_marginTop="-30dp"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        android:clipChildren="false"
+        android:layout_marginBottom="10dp"
+    android:gravity="center_vertical">
+
+    <!-- Image Section -->
+    <ImageView
+        android:layout_marginVertical="15dp"
+        android:id="@+id/image_phone"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/promotion_image"
+        android:scaleType="fitXY"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Text Section -->
+    <LinearLayout
+        android:layout_marginHorizontal="10dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:fontFamily="@font/inter"
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pack Of_5 Mobile Eraser for Kids for School"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:fontFamily="@font/inter_extrabold"
+            android:paddingVertical="2dp"
+            android:id="@+id/tv_voucher"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Voucher 5 for 1 item"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/inter"
+            android:paddingVertical="2dp"
+            android:id="@+id/tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date: November 22, 2024"
+            android:textColor="@color/black"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- Arrow Button -->
+    <ImageView
+        android:padding="10dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/orange_sphere"
+        android:src="@drawable/arrow"
+        android:layout_width="40dp"
+        android:layout_height="40dp" />
+
+</LinearLayout>
+    </RelativeLayout>

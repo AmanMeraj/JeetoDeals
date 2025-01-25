@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Fragments.ShopFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_alignParentTop="true"
+        android:id="@+id/video_card"
+        android:minHeight="200dp"
+        android:background="@color/white"
+        app:cardCornerRadius="18dp"
+        android:layout_height="280dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:scaleType="fitXY"
+                android:src="@drawable/img_2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </ImageView>
+
+        </RelativeLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="20dp"
+            android:layout_below="@+id/video_card"
+            android:id="@+id/card_jeeto_shop"
+            android:layout_width="match_parent"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="10dp"
+            android:layout_height="140dp">
+            <RelativeLayout
+                android:id="@+id/bg_image_rel"
+                android:background="@drawable/bg_img"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:id="@+id/bg_black_gradient_rel"
+                    android:background="@drawable/bg_black_gradient"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/text1"
+                        android:layout_centerVertical="true"
+                        android:layout_marginHorizontal="20dp"
+                        android:text="New Collection"
+                        android:textColor="@color/green"
+                        android:fontFamily="@font/inter_bold"
+                        android:textSize="15sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:text="Jeeto Shop"
+                        android:textSize="25sp"
+                        android:layout_below="@+id/text1"
+                        android:textColor="@color/white"
+                        android:layout_marginHorizontal="20dp"
+                        android:fontFamily="@font/inter_bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rc_category"
+            android:layout_marginHorizontal="10dp"
+            app:spanCount="2"
+            android:orientation="vertical"
+            android:layout_below="@+id/card_jeeto_shop"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rc_items"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="80dp"
+            android:layout_marginHorizontal="10dp"
+            app:spanCount="2"
+            android:orientation="vertical"
+            android:layout_below="@+id/rc_category"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+
+
+   </RelativeLayout>
+
+
+</androidx.core.widget.NestedScrollView>

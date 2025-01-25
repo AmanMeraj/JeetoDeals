@@ -1,0 +1,62 @@
+<resources>
+    <string name="app_name">Jeeto Deals</string>
+    <string name="user_name">User Name</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="forgot_password">Forgot Password ?</string>
+    <string name="are_you_a_new_user">Are you a new user ?</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="update_password">Update Password</string>
+    <string name="register">Register</string>
+    <string name="first_name">First Name</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="select_otp_verification_method">Select OTP Verification Method</string>
+    <string name="i_agree_to_the_user_agreement_and_privacy_policy">I Agree to the User Agreement and Privacy Policy</string>
+
+
+    <!-- Validation Messages -->
+
+
+    <string name="error_username_required">Username is required</string>
+    <string name="error_password_required">Password is required</string>
+    <string name="error_new_password_required">New password is required</string>
+    <string name="error_confirm_password_required">Confirm password is required</string>
+    <string name="error_password_length">Password must be at least 6 characters</string>
+    <string name="error_password_mismatch">Passwords do not match</string>
+
+    <!-- Toast Messages -->
+    <string name="password_updated_success">Password updated successfully!</string>
+    <string name="custom_toolbar">Custom Toolbar</string>
+    <string name="logo">logo</string>
+    <string name="menu">menu</string>
+    <string name="home">Home</string>
+    <string name="shop">Shop</string>
+    <string name="cart">Cart</string>
+    <string name="wallet">Wallet</string>
+    <string name="my_ticket">My Ticket</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="_54_sold_out_of_1000">54 sold out of 1000</string>
+    <string name="draw_date_31_december_2024_or_earlier_based_on_the_time_passed">Draw Date: 31 December, 2024 or earlier based on the time passed.</string>
+    <string name="simple_dummy_text">Simple Dummy Text</string>
+    <string name="it_is_a_long_established_fact_that_a_reader_will_be_distracted_by_the">It is a long established fact that a reader will be distracted by the</string>
+    <string name="my_ticket_s">My Ticket\'s</string>
+    <string name="active_ticket_s">Active Ticket\'s</string>
+    <string name="past_ticket_s">Past Ticket\'s</string>
+    <string name="this_will_be_how_your_name_will_be_displayed_in_the_account_section_and_in_reviews">This will be how your name will be displayed in the account section and in reviews</string>
+    <string name="address">Net Guru Building, 5th Floor, E2-4 GP Block, Sector V, Salt Lake Kolkata, Kolkata 700091 West Bengal</string>
+    <string name="login_register">Login/Register</string>
+    <string name="order">Order</string>
+    <string name="my_wishlist">My Wishlist</string>
+    <string name="address2">Address</string>
+    <string name="account_details">Account Details</string>
+    <string name="get_in_touch">Get in Touch</string>
+    <string name="how_it_works">How it works</string>
+    <string name="call_us">Call Us</string>
+    <string name="email_us">Email Us</string>
+    <string name="user_agreement">User Agreement</string>
+    <string name="openDrawer">Drawer Open\n</string>
+    <string name="closeDrawer">Drawer Close\n</string>
+</resources>

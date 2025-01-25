@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Fragments.TicketFragment">
+    <TextView
+        android:layout_marginTop="50dp"
+        android:id="@+id/my_ticket_tv"
+        android:text="@string/my_ticket_s"
+        android:textSize="15sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/inter_extrabold"
+        android:layout_marginHorizontal="20dp"
+       android:layout_marginBottom="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:layout_marginVertical="10dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_below="@+id/my_ticket_tv"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:id="@+id/button_linear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/active_btn"
+            android:layout_marginHorizontal="10dp"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/orange_wallet_bg"
+            android:paddingHorizontal="30dp"
+            android:paddingVertical="13dp"
+            android:textColor="@color/white"
+            android:text="@string/active_ticket_s"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+
+        </TextView>
+        <TextView
+            android:id="@+id/past_btn"
+            android:layout_marginHorizontal="10dp"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/grey_btn"
+            android:paddingHorizontal="30dp"
+            android:paddingVertical="13dp"
+            android:textColor="@color/white"
+            android:text="@string/past_ticket_s"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+
+        </TextView>
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:id="@+id/rc_ticket"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="50dp"
+        android:layout_below="@+id/button_linear"
+        android:layout_height="wrap_content"/>
+
+
+</RelativeLayout>

@@ -1,0 +1,80 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_marginVertical="5dp"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_marginHorizontal="2dp"
+        android:background="@drawable/green_btn"
+        android:layout_width="match_parent"
+        android:id="@+id/orange_rel"
+        android:layout_height="60dp">
+        <TextView
+            android:textSize="15sp"
+            android:layout_marginTop="7dp"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white"
+            android:fontFamily="@font/inter_bold"
+            android:text="@string/active_ticket_s"
+            android:id="@+id/time_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </TextView>
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_marginHorizontal="1dp"
+        android:layout_below="@+id/orange_rel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/white_card_bg"
+        android:padding="8dp"
+        android:elevation="4dp"
+        android:layout_marginTop="-30dp"
+        android:gravity="center_vertical">
+
+
+        <!-- Image Section -->
+        <ImageView
+            android:layout_marginVertical="15dp"
+            android:id="@+id/image_phone"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/promotion_image"
+            android:scaleType="fitXY"
+            android:layout_marginEnd="8dp"/>
+
+        <!-- Text Section -->
+        <LinearLayout
+            android:layout_marginHorizontal="10dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:fontFamily="@font/inter"
+                android:id="@+id/text_phone_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="iPhone 16 Pro Max"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:fontFamily="@font/inter"
+                android:paddingVertical="10dp"
+                android:id="@+id/text_ticket_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="JC-614-131"
+                android:textColor="@color/black"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>
+

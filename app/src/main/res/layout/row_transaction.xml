@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_marginVertical="5dp"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:background="@drawable/transaction_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <androidx.cardview.widget.CardView
+
+            android:id="@+id/image_card"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="10dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp">
+            <RelativeLayout
+                android:background="@drawable/image_green_bg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:id="@+id/image_card_logo"
+                    android:layout_width="40dp"
+                    android:src="@drawable/logo_jd"
+                    android:layout_centerInParent="true"
+                    android:layout_height="40dp"/>
+
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+        <TextView
+            android:textSize="15sp"
+            android:layout_toEndOf="@+id/image_card"
+            android:layout_alignTop="@+id/image_card"
+            android:textColor="@color/black"
+            android:fontFamily="@font/inter_bold"
+            android:id="@+id/heading"
+            android:text="@string/simple_dummy_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:textSize="12sp"
+            android:fontFamily="@font/inter"
+            android:layout_toStartOf="@+id/status"
+            android:id="@+id/desc"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_below="@+id/heading"
+            android:layout_toEndOf="@+id/image_card"
+            android:text="@string/it_is_a_long_established_fact_that_a_reader_will_be_distracted_by_the"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/amount"
+           android:layout_marginEnd="10dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/heading"
+            android:textSize="18sp"
+            android:textColor="@color/orange"
+            android:text="₹ 500"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/status"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:layout_alignTop="@+id/desc"
+            android:layout_alignBottom="@+id/desc"
+            android:gravity="center"
+            android:layout_marginStart="10dp"
+            android:text="Accept"
+            android:textColor="@color/green"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </TextView>
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

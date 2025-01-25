@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Fragments.WalletFragment">
+    <RelativeLayout
+        android:layout_marginTop="50dp"
+        android:id="@+id/rel_transaction"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_marginHorizontal="2dp"
+            android:background="@drawable/green_btn"
+            android:layout_width="match_parent"
+            android:id="@+id/orange_rel"
+            android:layout_height="60dp">
+            <TextView
+                android:textSize="15sp"
+                android:layout_marginTop="7dp"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/white"
+                android:fontFamily="@font/inter_bold"
+                android:text="My Wallet"
+                android:id="@+id/time_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            </TextView>
+        </RelativeLayout>
+
+        <com.google.android.material.card.MaterialCardView
+           app:cardCornerRadius="22dp"
+            android:layout_marginTop="-30dp"
+            android:id="@+id/wallet_card"
+           android:layout_below="@+id/orange_rel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:background="@drawable/orange_wallet_bg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/balance_tv"
+                    android:text="Balance"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/inter_bold"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:textSize="18sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                </TextView>
+                <TextView
+                    android:layout_alignParentStart="true"
+                    android:layout_toStartOf="@+id/wallet"
+                    android:layout_marginBottom="20dp"
+                    android:text="Voucher 75000"
+                    android:textSize="25sp"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/inter_extrabold"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_below="@+id/balance_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                </TextView>
+                <ImageView
+                    android:layout_marginEnd="10dp"
+                    android:id="@+id/wallet"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentEnd="true"
+                    android:padding="7dp"
+                    android:src="@drawable/purse"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp">
+
+                </ImageView>
+
+            </RelativeLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </RelativeLayout>
+
+    <TextView
+
+        android:layout_marginVertical="10dp"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:layout_marginHorizontal="20dp"
+        android:fontFamily="@font/inter_extrabold"
+        android:layout_below="@+id/rel_transaction"
+        android:id="@+id/transaction_tv"
+        android:text="Transaction History"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    </TextView>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_below="@+id/transaction_tv"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="vertical"
+        android:id="@+id/rc_transaction"
+        android:layout_marginHorizontal="20dp"
+        android:layout_height="wrap_content">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+
+
+
+</RelativeLayout>

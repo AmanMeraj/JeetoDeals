@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Wishlist.ActivityWishlist">
+    <RelativeLayout
+        android:elevation="5dp"
+        android:id="@+id/toolbar"
+        android:background="@drawable/toolbar_rounded_corners"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:padding="5dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="10dp"
+            android:src="@drawable/arrowleft"
+            android:id="@+id/back_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp">
+
+        </ImageView>
+
+    </RelativeLayout>
+
+    <androidx.cardview.widget.CardView
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="20dp"
+        android:layout_below="@+id/toolbar"
+        android:id="@+id/card_jeeto_shop"
+        android:layout_width="match_parent"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="10dp"
+        android:layout_height="140dp">
+        <RelativeLayout
+            android:id="@+id/bg_image_rel"
+            android:background="@drawable/bg_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:id="@+id/bg_black_gradient_rel"
+                android:background="@drawable/bg_black_gradient"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/text1"
+                    android:layout_centerVertical="true"
+                    android:layout_marginHorizontal="20dp"
+                    android:text="New Collection"
+                    android:textColor="@color/green"
+                    android:fontFamily="@font/inter_bold"
+                    android:textSize="15sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:text="Jeeto Shop"
+                    android:textSize="25sp"
+                    android:layout_below="@+id/text1"
+                    android:textColor="@color/white"
+                    android:layout_marginHorizontal="20dp"
+                    android:fontFamily="@font/inter_bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+    <TextView
+        android:text="My Wishlist"
+        android:fontFamily="@font/inter_bold"
+        android:layout_marginBottom="20dp"
+        android:layout_marginHorizontal="10dp"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:layout_below="@+id/card_jeeto_shop"
+        android:id="@+id/tv_my_wishlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginHorizontal="10dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="2"
+        android:orientation="vertical"
+        android:id="@+id/rc_wishlist"
+        android:layout_marginBottom="20dp"
+        android:layout_below="@+id/tv_my_wishlist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</RelativeLayout>

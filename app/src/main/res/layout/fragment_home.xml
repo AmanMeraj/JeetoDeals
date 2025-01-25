@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="none"
+    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Fragments.HomeFragment">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_alignParentTop="true"
+            android:id="@+id/video_card"
+            android:layout_height="200dp"
+        android:background="@color/white"
+        app:cardCornerRadius="18dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+        >
+
+        <VideoView
+            android:id="@+id/videoView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+        <ImageView
+            android:id="@+id/playPauseButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/play_jd" />
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>
+
+
+
+<TextView
+            android:text="Promotion"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/inter_bold"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="10dp"
+            android:layout_below="@+id/video_card"
+            android:id="@+id/promotions_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </TextView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/promotions_recycler"
+            android:layout_below="@+id/promotions_tv"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <RelativeLayout
+            android:id="@+id/card_viewpager"
+            android:layout_marginVertical="10dp"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/promotions_recycler"
+            android:layout_height="wrap_content">
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/image_viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="180dp" />
+
+        </RelativeLayout>
+        <TextView
+            android:textSize="18sp"
+            android:text="Promotions"
+            android:textColor="@color/black"
+            android:fontFamily="@font/inter_bold"
+            android:layout_marginVertical="10dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_below="@+id/card_viewpager"
+            android:id="@+id/tv_promotion_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </TextView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="80dp"
+            android:layout_width="match_parent"
+            android:id="@+id/rc_promotion2"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="vertical"
+            android:layout_below="@+id/tv_promotion_2"
+            android:layout_height="wrap_content"/>
+
+
+    </RelativeLayout>
+
+
+</androidx.core.widget.NestedScrollView>

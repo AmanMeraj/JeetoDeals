@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Orange shadow for selected state -->
+    <item android:drawable="@drawable/bottom_nav_shadow_selected" android:state_checked="true" />
+    <!-- Transparent for unselected state -->
+    <item android:drawable="@android:color/transparent" android:state_checked="false" />
+</selector>

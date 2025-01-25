@@ -1,0 +1,6 @@
+<resources>
+    <!-- Custom style for navigation view title text color -->
+    <style name="CustomNavigationViewStyle">
+        <item name="android:textColorPrimary">@color/white</item> <!-- Sets the text color to white -->
+    </style>
+</resources>

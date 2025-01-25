@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Profile.ActivityProfile">
+        <RelativeLayout
+            android:elevation="5dp"
+            android:id="@+id/toolbar"
+            android:background="@drawable/toolbar_rounded_corners"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:padding="5dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="10dp"
+                android:src="@drawable/arrowleft"
+                android:id="@+id/back_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp">
+
+            </ImageView>
+
+        </RelativeLayout>
+    <androidx.core.widget.NestedScrollView
+        android:layout_below="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <RelativeLayout
+                android:background="@drawable/light_green_bg"
+                android:layout_marginTop="-30dp"
+                android:id="@+id/light_green_rel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- Profile Image -->
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/profile_image"
+                    android:src="@drawable/profile"
+                    android:layout_marginTop="60dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp" />
+
+                <!-- Name TextView -->
+                <TextView
+                    android:id="@+id/name_tv"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/inter_bold"
+                    android:textSize="13sp"
+                    android:text="Ronio Mondal"
+                    android:layout_marginTop="10dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/profile_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <!-- Contact Info Section -->
+                <LinearLayout
+                    android:layout_below="@id/name_tv"
+                    android:orientation="horizontal"
+                    android:id="@+id/number_liner"
+                    android:weightSum="2"
+                    android:gravity="center"
+                    android:layout_marginVertical="20dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <!-- First Section: Phone -->
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:padding="3dp"
+                            android:id="@+id/phone_img"
+                            android:src="@drawable/phone_svgrepo_com"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp" />
+
+                        <TextView
+                            android:id="@+id/number_tv"
+                            android:layout_marginStart="8dp"
+                            android:text="+91 2365478966"
+                            android:textSize="13sp"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <!-- Second Section: Email -->
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:padding="3dp"
+                            android:id="@+id/email_img"
+                            android:src="@drawable/email_svgrepo_com"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp" />
+
+                        <TextView
+                            android:id="@+id/email_tv"
+                            android:layout_marginStart="4dp"
+                            android:text="example@example.com"
+                            android:textSize="13sp"
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+                </LinearLayout>
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/card_detail"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_below="@+id/light_green_rel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:layout_marginHorizontal="1dp"
+                    android:background="@drawable/green_btn"
+                    android:layout_width="match_parent"
+                    android:id="@+id/orange_rel"
+                    android:layout_height="60dp">
+                    <TextView
+                        android:textSize="15sp"
+                        android:layout_marginTop="7dp"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="Account Details"
+                        android:id="@+id/time_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </RelativeLayout>
+                <LinearLayout
+                    android:id="@+id/linear_card"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginHorizontal="1dp"
+                    android:layout_below="@+id/orange_rel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/white_card_bg"
+                    android:padding="8dp"
+                    android:elevation="4dp"
+                    android:layout_marginTop="-30dp"
+                    android:gravity="center_vertical">
+                    <RelativeLayout
+                        android:id="@+id/rel_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_marginStart="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:src="@drawable/user"
+                            android:id="@+id/user1"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"/>
+                        <TextView
+                            android:layout_marginVertical="5dp"
+                            android:layout_marginHorizontal="10dp"
+                            android:text="First Name"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/inter_bold"
+                            android:textSize="15sp"
+                            android:layout_toEndOf="@+id/user1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                        <EditText
+                            android:id="@+id/edt_first_name"
+                            android:background="@drawable/edit_txt_bg"
+                            android:layout_marginVertical="10dp"
+                            android:layout_below="@+id/user1"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp">
+
+                        </EditText>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/rel_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_marginStart="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:src="@drawable/user"
+                            android:id="@+id/user2"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"/>
+                        <TextView
+                            android:layout_marginVertical="5dp"
+                            android:layout_marginHorizontal="10dp"
+                            android:text="Last Name"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/inter_bold"
+                            android:textSize="15sp"
+                            android:layout_toEndOf="@+id/user2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                        <EditText
+                            android:id="@+id/edt_last_name"
+                            android:background="@drawable/edit_txt_bg"
+                            android:layout_marginVertical="10dp"
+                            android:layout_below="@+id/user2"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp">
+
+                        </EditText>
+                    </RelativeLayout>
+
+
+                    <RelativeLayout
+                        android:id="@+id/rel_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_marginStart="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:src="@drawable/user"
+                            android:id="@+id/user3"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"/>
+                        <TextView
+                            android:layout_marginVertical="5dp"
+                            android:layout_marginHorizontal="10dp"
+                            android:text="Display Name"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/inter_bold"
+                            android:textSize="15sp"
+                            android:layout_toEndOf="@+id/user3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                        <EditText
+                            android:id="@+id/edt_display_name"
+                            android:background="@drawable/edit_txt_bg"
+                            android:layout_marginVertical="10dp"
+                            android:layout_below="@+id/user3"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp">
+
+                        </EditText>
+                        <TextView
+                            android:text="@string/this_will_be_how_your_name_will_be_displayed_in_the_account_section_and_in_reviews"
+                            android:textSize="12sp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/inter"
+                            android:layout_below="@+id/edt_display_name"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_marginTop="10dp"
+                        android:id="@+id/rel_4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_marginStart="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:src="@drawable/email_svgrepo_com"
+                            android:id="@+id/email"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"/>
+                        <TextView
+                            android:layout_marginVertical="5dp"
+                            android:layout_marginHorizontal="10dp"
+                            android:text="E Mail Address"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/inter_bold"
+                            android:textSize="15sp"
+                            android:layout_toEndOf="@+id/email"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                        <EditText
+                            android:id="@+id/edt_eamil_address"
+                            android:background="@drawable/edit_txt_bg"
+                            android:layout_marginVertical="10dp"
+                            android:layout_below="@+id/email"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp">
+
+                        </EditText>
+                    </RelativeLayout>
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="Update"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:id="@+id/update_btn"
+                        android:background="@drawable/orange_curve_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp">
+
+                    </androidx.appcompat.widget.AppCompatButton>
+
+                </LinearLayout>
+            </RelativeLayout>
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_marginBottom="20dp"
+                android:layout_marginHorizontal="10dp"
+                app:cardElevation="5dp"
+                app:cardCornerRadius="15dp"
+                android:id="@+id/card_change_pass"
+                android:layout_below="@+id/card_detail"
+                android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:background="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/reset_pass_lock"
+                        android:padding="5dp"
+                        android:layout_marginVertical="10dp"
+                        android:layout_marginHorizontal="5dp"
+                        android:src="@drawable/reset_lock"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp">
+
+                    </ImageView>
+                    <TextView
+                        android:layout_toEndOf="@+id/reset_pass_lock"
+                        android:layout_centerVertical="true"
+                        android:layout_width="wrap_content"
+                        android:textSize="16sp"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="Change Password"
+                        android:layout_height="wrap_content"/>
+                    <ImageView
+                        android:layout_marginHorizontal="5dp"
+                        android:padding="7dp"
+                        android:layout_width="40dp"
+                        android:src="@drawable/down_arrow_jd"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_height="40dp"/>
+
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
+
+
+
+
+</RelativeLayout>
