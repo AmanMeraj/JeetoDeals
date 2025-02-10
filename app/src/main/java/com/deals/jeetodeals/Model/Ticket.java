@@ -1,25 +1,18 @@
 package com.deals.jeetodeals.Model;
 
-public class Ticket {
-    private final String phoneName;
-    private final String ticketId;
-    private final int imageResource;
+import com.google.gson.annotations.SerializedName;
 
-    public Ticket(String phoneName, String ticketId, int imageResource) {
-        this.phoneName = phoneName;
-        this.ticketId = ticketId;
-        this.imageResource = imageResource;
+import java.io.Serializable;
+
+public class Ticket implements Serializable {
+    @SerializedName("ticket_number")
+    private String ticket_number;
+
+    public String getTicket_number() {
+        return ticket_number;
     }
 
-    public String getPhoneName() {
-        return phoneName;
-    }
-
-    public String getTicketId() {
-        return ticketId;
-    }
-
-    public int getImageResource() {
-        return imageResource;
+    public void setTicket_number(String ticket_number) {
+        this.ticket_number = ticket_number;
     }
 }

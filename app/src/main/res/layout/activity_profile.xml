@@ -56,7 +56,6 @@
                     android:textColor="@color/black"
                     android:fontFamily="@font/inter_bold"
                     android:textSize="13sp"
-                    android:text="Ronio Mondal"
                     android:layout_marginTop="10dp"
                     android:layout_centerHorizontal="true"
                     android:layout_below="@id/profile_image"
@@ -93,7 +92,6 @@
                         <TextView
                             android:id="@+id/number_tv"
                             android:layout_marginStart="8dp"
-                            android:text="+91 2365478966"
                             android:textSize="13sp"
                             android:textColor="@color/black"
                             android:layout_width="wrap_content"
@@ -118,7 +116,6 @@
                         <TextView
                             android:id="@+id/email_tv"
                             android:layout_marginStart="4dp"
-                            android:text="example@example.com"
                             android:textSize="13sp"
                             android:textColor="@color/black"
                             android:layout_width="wrap_content"
@@ -187,6 +184,7 @@
 
                         </TextView>
                         <EditText
+                            android:paddingHorizontal="10dp"
                             android:id="@+id/edt_first_name"
                             android:background="@drawable/edit_txt_bg"
                             android:layout_marginVertical="10dp"
@@ -222,6 +220,7 @@
 
                         </TextView>
                         <EditText
+                            android:paddingHorizontal="10dp"
                             android:id="@+id/edt_last_name"
                             android:background="@drawable/edit_txt_bg"
                             android:layout_marginVertical="10dp"
@@ -235,6 +234,7 @@
 
 
                     <RelativeLayout
+                        android:visibility="gone"
                         android:id="@+id/rel_3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
@@ -305,6 +305,7 @@
 
                         </TextView>
                         <EditText
+                            android:paddingHorizontal="10dp"
                             android:id="@+id/edt_eamil_address"
                             android:background="@drawable/edit_txt_bg"
                             android:layout_marginVertical="10dp"
@@ -382,7 +383,11 @@
     </androidx.core.widget.NestedScrollView>
 
 
-
+    <include
+        android:id="@+id/loader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/view_loader" />
 
 
 

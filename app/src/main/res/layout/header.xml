@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:gravity="bottom"
     android:background="#1A1A1A"
-    android:layout_height="200dp">
+    android:layout_height="160dp">
     <ImageView
         android:id="@+id/logo"
         android:src="@drawable/logo_jd"

@@ -7,16 +7,17 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.deals.jeetodeals.Model.Transaction;
+import com.deals.jeetodeals.Model.WalletResponse;
 import com.deals.jeetodeals.databinding.RowTransactionBinding;
 
 import java.util.List;
 
 public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder> {
     private final Context context;
-    private final List<Transaction> transactions;
+    private final List<WalletResponse> transactions;
 
     // Constructor
-    public TransactionAdapter(Context context, List<Transaction> transactions) {
+    public TransactionAdapter(Context context, List<WalletResponse> transactions) {
         this.context = context;
         this.transactions = transactions;
     }
@@ -31,15 +32,22 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull TransactionViewHolder holder, int position) {
-        Transaction transaction = transactions.get(position);
+        WalletResponse transaction = transactions.get(position);
 
         // Bind data to views
-        holder.binding.heading.setText(transaction.getHeading());
-        holder.binding.desc.setText(transaction.getDescription());
-        holder.binding.amount.setText(String.format("₹ %s", transaction.getAmount()));
-        holder.binding.status.setText(transaction.getStatus());
-        holder.binding.imageCard.setBackgroundResource(transaction.getImageBackground());
-        holder.binding.imageCardLogo.setImageResource(transaction.getImageResource());
+        holder.binding.desc.setText(transaction.getDetails());
+//        holder.binding.desc.setText(transaction.getDescription());
+        try {
+            double amount = Double.parseDouble(transaction.getAmount());
+            holder.binding.amount.setText(String.format("₹ %.2f", amount));
+        } catch (NumberFormatException e) {
+            holder.binding.amount.setText("₹ 0.00"); // Fallback for invalid values
+            e.printStackTrace(); // Logs the error for debugging
+        }
+
+        holder.binding.status.setText(transaction.getType());
+//        holder.binding.imageCard.setBackgroundResource(transaction.getImageBackground());
+//        holder.binding.imageCardLogo.setImageResource(transaction.getImageResource());
     }
 
     @Override

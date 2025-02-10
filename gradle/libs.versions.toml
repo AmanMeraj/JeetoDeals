@@ -14,6 +14,7 @@ constraintlayout = "2.2.0"
 otpview = "1.1.2"
 pinview = "1.4.4"
 retrofit = "2.9.0"
+textviewrotator = "1.0.0"
 
 [libraries]
 circleimageview = { module = "de.hdodenhof:circleimageview", version.ref = "circleimageview" }
@@ -31,6 +32,7 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 otpview = { module = "com.github.aabhasr1:OtpView", version.ref = "otpview" }
 pinview = { module = "io.github.chaosleung:pinview", version.ref = "pinview" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+textviewrotator = { module = "com.github.burakkaygusuz:textviewrotator", version.ref = "textviewrotator" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

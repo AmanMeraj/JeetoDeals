@@ -5,50 +5,82 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.deals.jeetodeals.Model.Ticket;
+import com.bumptech.glide.Glide;
+import com.deals.jeetodeals.Model.TicketGroupedByProduct;
+import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.databinding.RowActiveTicketBinding;
-
 import java.util.List;
 
-public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketViewHolder> {
+public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.ViewHolder> {
     private final Context context;
-    private final List<Ticket> tickets;
+    private List<TicketGroupedByProduct> tickets;
+    private OnTicketClickListener listener;
 
-    public TicketAdapter(Context context, List<Ticket> tickets) {
+    public interface OnTicketClickListener {
+        void onTicketClick(TicketGroupedByProduct ticket);
+    }
+
+    public TicketAdapter(Context context, List<TicketGroupedByProduct> tickets) {
         this.context = context;
         this.tickets = tickets;
     }
 
+    public void setOnTicketClickListener(OnTicketClickListener listener) {
+        this.listener = listener;
+    }
+
     @NonNull
     @Override
-    public TicketViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         RowActiveTicketBinding binding = RowActiveTicketBinding.inflate(
-                LayoutInflater.from(context), parent, false);
-        return new TicketViewHolder(binding);
+                LayoutInflater.from(parent.getContext()), parent, false
+        );
+        return new ViewHolder(binding, context, listener);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TicketViewHolder holder, int position) {
-        Ticket ticket = tickets.get(position);
-
-        // Bind data to views
-        holder.binding.textPhoneName.setText(ticket.getPhoneName());
-        holder.binding.textTicketId.setText(ticket.getTicketId());
-        holder.binding.imagePhone.setImageResource(ticket.getImageResource());
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        TicketGroupedByProduct ticket = tickets.get(position);
+        holder.bind(ticket);
     }
 
     @Override
     public int getItemCount() {
-        return tickets.size();
+        return tickets != null ? tickets.size() : 0;
     }
 
-    public static class TicketViewHolder extends RecyclerView.ViewHolder {
-        private final RowActiveTicketBinding binding;
+    public void updateTickets(List<TicketGroupedByProduct> newTickets) {
+        this.tickets = newTickets;
+        notifyDataSetChanged();
+    }
 
-        public TicketViewHolder(RowActiveTicketBinding binding) {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        private final RowActiveTicketBinding binding;
+        private final Context context;
+        private final OnTicketClickListener listener;
+
+        ViewHolder(RowActiveTicketBinding binding, Context context, OnTicketClickListener listener) {
             super(binding.getRoot());
             this.binding = binding;
+            this.context = context;
+            this.listener = listener;
+        }
+
+        void bind(TicketGroupedByProduct ticket) {
+            binding.textPhoneName.setText(ticket.getProductName()); // Set Product Name
+            binding.textTicketId.setText(ticket.getTicketNumbers()); // Set Comma-separated Ticket Numbers
+
+            Glide.with(context)
+                    .load(ticket.getProductImage())
+                    .placeholder(R.drawable.promotion_image)
+                    .error(R.drawable.promotion_image)
+                    .into(binding.imagePhone);
+
+            itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onTicketClick(ticket);
+                }
+            });
         }
     }
 }

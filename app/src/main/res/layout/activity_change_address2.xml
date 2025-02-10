@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".ChangeAddress.ActivityChangeAddress2">
+    <RelativeLayout
+        android:elevation="5dp"
+        android:id="@+id/toolbar"
+        android:background="@drawable/toolbar_rounded_corners"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:padding="5dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="10dp"
+            android:src="@drawable/arrowleft"
+            android:id="@+id/back_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp">
+
+        </ImageView>
+
+    </RelativeLayout>
+    <ScrollView
+        android:layout_below="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tv_Address"
+                android:text="Change Address"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/inter_bold"
+                android:layout_margin="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+               android:layout_marginBottom="20dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_below="@+id/tv_Address"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="10dp"
+                android:id="@+id/card_billing_address">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/billing_address_Input_text"
+                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginVertical="5dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+
+                        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Billing Address"
+                            android:background="#80818281"
+                            android:completionThreshold="3"
+                            android:focusable="false"
+                            android:inputType="none" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/billing_address_rel"
+                        android:layout_below="@+id/billing_address_Input_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_first_name"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:hint="First Name">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_first_name"
+                                android:layout_width="match_parent"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:maxLength="40"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/last_name_text_field"
+                            android:layout_below="@+id/textField_first_name"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:hint="Last Name">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_last_name"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:maxLength="40"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_address1"
+                            android:layout_below="@+id/last_name_text_field"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:hint="Address Line 1">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_address_1_billing"
+                                android:layout_width="match_parent"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:maxLength="500"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_address2"
+                            android:layout_below="@id/textField_address1"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:hint="Address Line 2">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_address_2_billing"
+                                android:layout_width="match_parent"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:maxLength="500"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_city"
+                            android:layout_below="@id/textField_address2"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:hint="City">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_city"
+                                android:layout_width="match_parent"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:maxLength="100"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_postal_code"
+                            android:layout_below="@id/textField_city"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:hint="Post Code">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_post_code"
+                                android:layout_width="match_parent"
+                                android:inputType="number"
+                                android:maxLines="1"
+                                android:maxLength="20"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_country"
+                            android:layout_below="@id/textField_postal_code"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:hint="Country">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_country"
+                                android:layout_width="match_parent"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:maxLength="100"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_state"
+                            android:layout_below="@id/textField_country"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="20dp"
+                            android:hint="State">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_state"
+                                android:layout_width="match_parent"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:maxLength="100"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_phone"
+                            android:layout_below="@id/textField_state"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="20dp"
+                            android:hint="Phone">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_phone"
+                                android:layout_width="match_parent"
+                                android:inputType="number"
+                                android:maxLines="1"
+                                android:maxLength="10"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_email"
+                            android:layout_below="@id/textField_phone"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="20dp"
+                            android:hint="E-Mail">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_eamil"
+                                android:layout_width="match_parent"
+                                android:inputType="number"
+                                android:maxLines="1"
+                                android:maxLength="150"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+                    </RelativeLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_below="@+id/billing_address_rel"
+                        android:id="@+id/shipping_address_Input_text"
+                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginVertical="5dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+
+                        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                            android:layout_width="match_parent"
+                            android:text="Shipping Address"
+                            android:background="#80818281"
+                            android:layout_height="wrap_content"
+                            android:focusable="false"
+                            android:inputType="none"/>
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/shipping_rel"
+                        android:layout_below="@+id/shipping_address_Input_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_first_name_shipping"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:hint="First Name">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_first_name_shipping"
+                                android:layout_width="match_parent"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:maxLength="40"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/last_name_text_field_shipping"
+                            android:layout_below="@+id/textField_first_name_shipping"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:hint="Last Name">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_last_name_shipping"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:maxLength="40"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_address1_shipping"
+                            android:layout_below="@+id/last_name_text_field_shipping"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:hint="Address Line 1">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_address_1"
+                                android:layout_width="match_parent"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:maxLength="500"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_address2_shipping"
+                            android:layout_below="@id/textField_address1_shipping"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:hint="Address Line 2">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_address_2"
+                                android:layout_width="match_parent"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:maxLength="500"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_city_shipping"
+                            android:layout_below="@id/textField_address2_shipping"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:hint="City">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_city_shipping"
+                                android:layout_width="match_parent"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:maxLength="100"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_apartment_shipping"
+                            android:layout_below="@id/textField_city_shipping"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:hint="Post Code">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_post_code_shipping"
+                                android:layout_width="match_parent"
+                                android:inputType="number"
+                                android:maxLines="1"
+                                android:maxLength="20"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_country_shipping"
+                            android:layout_below="@id/textField_apartment_shipping"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:hint="Country">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_country_shipping"
+                                android:layout_width="match_parent"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:maxLength="100"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_state_shipping"
+                            android:layout_below="@id/textField_country_shipping"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="20dp"
+                            android:hint="State">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_state_shipping"
+                                android:layout_width="match_parent"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:maxLength="100"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
+<!--                        <com.google.android.material.textfield.TextInputLayout-->
+<!--                            android:id="@+id/textField_phone_shipping"-->
+<!--                            android:layout_below="@id/textField_country_shipping"-->
+<!--                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginHorizontal="10dp"-->
+<!--                            android:layout_marginTop="5dp"-->
+<!--                            android:layout_marginBottom="20dp"-->
+<!--                            android:hint="Phone">-->
+
+<!--                            <com.google.android.material.textfield.TextInputEditText-->
+<!--                                android:id="@+id/edt_phone_shipping"-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:inputType="text"-->
+<!--                                android:maxLines="1"-->
+<!--                                android:maxLength="100"-->
+<!--                                android:layout_height="wrap_content" />-->
+<!--                        </com.google.android.material.textfield.TextInputLayout>-->
+
+
+
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_marginBottom="30dp"
+                android:layout_width="match_parent"
+                android:id="@+id/update_btn"
+                android:background="@drawable/orange_btn"
+                android:layout_marginHorizontal="10dp"
+                android:text="Update"
+                android:textColor="@color/white"
+                android:fontFamily="@font/inter_bold"
+                android:textSize="15sp"
+                android:layout_below="@+id/card_billing_address"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
+
+    </ScrollView>
+
+
+</RelativeLayout>

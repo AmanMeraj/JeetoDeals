@@ -10,33 +10,48 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_alignParentTop="true"
-        android:id="@+id/video_card"
-        android:minHeight="200dp"
-        android:background="@color/white"
-        app:cardCornerRadius="18dp"
-        android:layout_height="280dp">
         <RelativeLayout
+            android:id="@+id/video_card_rel"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <ImageView
-                android:scaleType="fitXY"
-                android:src="@drawable/img_2"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="-2dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:paddingHorizontal="0dp"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_alignParentTop="true"
+                android:id="@+id/video_card"
+                android:layout_height="200dp"
+                android:background="@color/white"
+                app:cardCornerRadius="18dp">
 
-            </ImageView>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
+                    <VideoView
+                        android:id="@+id/videoView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginHorizontal="0dp" /> <!-- Removed negative margin here -->
+
+                    <ImageView
+                        android:id="@+id/playPauseButton"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_centerInParent="true"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/play_jd" />
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
         </RelativeLayout>
-
-    </com.google.android.material.card.MaterialCardView>
 
         <androidx.cardview.widget.CardView
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="20dp"
-            android:layout_below="@+id/video_card"
+            android:layout_below="@+id/video_card_rel"
             android:id="@+id/card_jeeto_shop"
             android:layout_width="match_parent"
             app:cardCornerRadius="18dp"
@@ -104,9 +119,14 @@
 
         </androidx.recyclerview.widget.RecyclerView>
 
-
+        <include
+            android:id="@+id/loader"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            layout="@layout/view_loader" />
 
    </RelativeLayout>
+
 
 
 </androidx.core.widget.NestedScrollView>

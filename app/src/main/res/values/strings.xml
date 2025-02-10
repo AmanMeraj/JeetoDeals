@@ -59,4 +59,6 @@
     <string name="user_agreement">User Agreement</string>
     <string name="openDrawer">Drawer Open\n</string>
     <string name="closeDrawer">Drawer Close\n</string>
+    <string name="error_email_required">Error ! E-Mail Required.\n</string>
+    <string name="error_invalid_email">Error!, Invalid E-Mail Address.\n</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.deals.jeetodeals.Adapters;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -7,7 +8,9 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.deals.jeetodeals.Model.Category;
+import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.databinding.RowCategoryBinding;
 
 import java.util.List;
@@ -16,14 +19,16 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     private final List<Category> categories;
     private final OnCategoryClickListener onCategoryClickListener;
+    private Context context;
 
     public interface OnCategoryClickListener {
-        void onCategoryClick(Category category, ImageView imageView);
+        void onCategoryClick(Category category, ImageView imageView,int categoryId);
     }
 
-    public CategoryAdapter(List<Category> categories, OnCategoryClickListener listener) {
+    public CategoryAdapter(List<Category> categories, OnCategoryClickListener listener,Context context) {
         this.categories = categories;
         this.onCategoryClickListener = listener;
+        this.context=context;
     }
 
     @NonNull
@@ -38,11 +43,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         Category category = categories.get(position);
 
         holder.binding.text.setText(category.getName());
-        holder.binding.image.setImageResource(category.getImageResId());
+        Glide.with(context).load(category.getImage()).placeholder(R.drawable.accessories).into(holder.binding.image);
 
         // Handle click to trigger animation
         holder.binding.getRoot().setOnClickListener(v ->
-                onCategoryClickListener.onCategoryClick(category, holder.binding.image)
+                onCategoryClickListener.onCategoryClick(category, holder.binding.image,category.getId())
         );
     }
 

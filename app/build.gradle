@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -48,5 +50,11 @@ dependencies {
     implementation libs.converter.gson
     implementation libs.gson
     implementation libs.circleindicator
+    implementation 'org.jsoup:jsoup:1.15.4'
     implementation("androidx.compose.material3:material3-android:1.2.0-alpha10")
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-crashlytics'
+
 }

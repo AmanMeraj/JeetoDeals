@@ -2,26 +2,28 @@ package com.deals.jeetodeals.Wishlist;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.deals.jeetodeals.Adapters.WishlistAdapter;
 import com.deals.jeetodeals.Model.Wishlist;
 import com.deals.jeetodeals.R;
+import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.databinding.ActivityWishlistBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActivityWishlist extends AppCompatActivity {
+public class ActivityWishlist extends Utility {
     ActivityWishlistBinding binding;
     private WishlistAdapter adapter;
-    private List<Wishlist> wishlistList;
+    WishlistViewModel viewModel;
+    ArrayList<WishlistResponse> responses;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +31,7 @@ public class ActivityWishlist extends AppCompatActivity {
         binding=ActivityWishlistBinding.inflate(getLayoutInflater());
         EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
+        viewModel= new ViewModelProvider(this).get(WishlistViewModel.class);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -41,13 +44,28 @@ public class ActivityWishlist extends AppCompatActivity {
             }
         });
 
-        wishlistList = new ArrayList<>();
 
-        // Populate your wishlistList with data
-        wishlistList.add(new Wishlist("In Stock", "Description here", "60 Vouchers", "Add to Cart", R.drawable.promotion_image, R.drawable.promotion_image));
-        wishlistList.add(new Wishlist("In Stock", "Description here will be in the center", "40 Vouchers", "Add to Cart", R.drawable.promotion_image, R.drawable.promotion_image));
+        if(isInternetConnected(this)){
+            getWishlist();
+        }
+    }
 
-        adapter = new WishlistAdapter(this, wishlistList);
+    private void getWishlist() {
+        String auth= "Bearer "+pref.getPrefString(this,pref.user_token);
+        viewModel.getWishlist(auth).observe(this,response->{
+            if(response!=null && response.isSuccess && response.data!=null){
+                responses=response.data;
+                setupRecyclerView(responses);
+
+            }else {
+                Toast.makeText(this, response != null ? response.message : "Unknown error", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private void setupRecyclerView(ArrayList<WishlistResponse> responses) {
+        adapter = new WishlistAdapter(this, responses);
         binding.rcWishlist.setAdapter(adapter);
     }
 }

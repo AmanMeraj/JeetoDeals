@@ -10,11 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="150dp">
         <TextView
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="70dp"
             android:id="@+id/text"
             android:text="Men's"
             android:textColor="@color/black"
             android:fontFamily="@font/inter_bold"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:layout_centerVertical="true"
             android:layout_marginHorizontal="10dp"
             android:layout_width="wrap_content"

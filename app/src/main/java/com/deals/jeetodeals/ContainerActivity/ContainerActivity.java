@@ -1,5 +1,6 @@
 package com.deals.jeetodeals.ContainerActivity;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -7,31 +8,37 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.deals.jeetodeals.ChangeAddress.ActivityChangeAddress;
 import com.deals.jeetodeals.Fragments.CartFragment;
-import com.deals.jeetodeals.Fragments.HomeFragment;
+import com.deals.jeetodeals.Fragments.HomeFragment.HomeFragment;
 import com.deals.jeetodeals.Fragments.ShopFragment;
 import com.deals.jeetodeals.Fragments.TicketFragment;
 import com.deals.jeetodeals.Fragments.WalletFragment;
 import com.deals.jeetodeals.MyOrders.ActivityMyOrders;
-import com.deals.jeetodeals.OTP.ActivityOTP;
 import com.deals.jeetodeals.Profile.ActivityProfile;
 import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.SignInScreen.SignInActivity;
+import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.Wishlist.ActivityWishlist;
 import com.deals.jeetodeals.databinding.ActivityContainerBinding;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.firebase.FirebaseApp;
 
-public class ContainerActivity extends AppCompatActivity {
+import java.util.Arrays;
+
+public class ContainerActivity extends Utility {
 
     ActivityContainerBinding binding;
     private Fragment currentFragment;
@@ -41,6 +48,7 @@ public class ContainerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityContainerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
 
 
         // Set up Toolbar with drawer toggle
@@ -110,8 +118,25 @@ public class ContainerActivity extends AppCompatActivity {
             ));
 
             logoutView.setOnClickListener(v -> {
-                // Handle logout
-                Toast.makeText(this, "Logging out...", Toast.LENGTH_SHORT).show();
+                // Create the Material 3 AlertDialog
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle("Logout")
+                        .setMessage("Are you sure you want to logout?")
+                        .setPositiveButton("Logout", (dialog, which) -> {
+                            // Perform logout
+                            Toast.makeText(this, "Logging out...", Toast.LENGTH_SHORT).show();
+                            pref.setPrefBoolean(this, pref.login_status, false);
+
+                            // Start SignInActivity and finish the current one
+                            Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
+                            startActivity(intent);
+                            finish();
+                        })
+                        .setNegativeButton("Cancel", (dialog, which) -> {
+                            // Cancel the logout (no action)
+                            dialog.dismiss();
+                        })
+                        .show();
             });
 
             logoutItem.setActionView(logoutView);
@@ -140,9 +165,7 @@ public class ContainerActivity extends AppCompatActivity {
             }
 
             // Handle navigation item clicks
-            if (itemId == R.id.nav_login) {
-                startActivity(new Intent(ContainerActivity.this, SignInActivity.class));
-            } else if (itemId == R.id.nav_ticket) {
+           if (itemId == R.id.nav_ticket) {
                 loadFragment(new TicketFragment());
             } else if (itemId == R.id.nav_order) {
                 Intent intentOrders = new Intent(ContainerActivity.this, ActivityMyOrders.class);
@@ -151,17 +174,19 @@ public class ContainerActivity extends AppCompatActivity {
                 Intent wishlist= new Intent(ContainerActivity.this, ActivityWishlist.class);
                 startActivity(wishlist);
             } else if (itemId == R.id.nav_address) {
-                Toast.makeText(this, "User Address Clicked", Toast.LENGTH_SHORT).show();
+            Intent address= new Intent(ContainerActivity.this, ActivityChangeAddress.class);
+            startActivity(address);
             } else if (itemId == R.id.nav_details) {
-                Toast.makeText(this, "Account Details Clicked", Toast.LENGTH_SHORT).show();
+               Intent profile = new Intent(ContainerActivity.this,ActivityProfile.class);
+               startActivity(profile);
             } else if (itemId == R.id.nav_contact) {
                 Toast.makeText(this, "Contact Us Clicked", Toast.LENGTH_SHORT).show();
             } else if (itemId == R.id.nav_works) {
                 Toast.makeText(this, "How It Works Clicked", Toast.LENGTH_SHORT).show();
             } else if (itemId == R.id.nav_call) {
                 makePhoneCall();
-            } else if (itemId == R.id.email) {
-                sendEmail();
+            } else if (itemId == R.id.nav_email) {
+               sendEmailSingleRecipient("example@gmail.com","Need help regarding","Hello there !");
             } else if (itemId == R.id.nav_agreement) {
                 Toast.makeText(this, "User Agreement Clicked", Toast.LENGTH_SHORT).show();
             }
@@ -197,18 +222,46 @@ public class ContainerActivity extends AppCompatActivity {
         });
     }
 
-    private void sendEmail() {
-        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
-        emailIntent.setData(Uri.parse("mailto:support@example.com"));
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Support Request");
-        emailIntent.putExtra(Intent.EXTRA_TEXT, "Hello, I need help with...");
+    public void sendEmailSingleRecipient(String recipient, String subject, String body) {
+        // Log the input parameters
+        Log.d("EmailDebug", "Recipient: " + recipient);
+        Log.d("EmailDebug", "Subject: " + subject);
+        Log.d("EmailDebug", "Body: " + body);
 
-        if (emailIntent.resolveActivity(getPackageManager()) != null) {
+        // Create the email intent
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+        emailIntent.setData(Uri.parse("mailto:")); // Ensure only email apps handle this
+        emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{recipient});
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        emailIntent.putExtra(Intent.EXTRA_TEXT, body);
+
+        // Log the intent details
+        Log.d("EmailDebug", "Intent Action: " + emailIntent.getAction());
+        Log.d("EmailDebug", "Intent Data: " + emailIntent.getDataString());
+        Log.d("EmailDebug", "Intent EXTRA_EMAIL: " + Arrays.toString(emailIntent.getStringArrayExtra(Intent.EXTRA_EMAIL)));
+        Log.d("EmailDebug", "Intent EXTRA_SUBJECT: " + emailIntent.getStringExtra(Intent.EXTRA_SUBJECT));
+        Log.d("EmailDebug", "Intent EXTRA_TEXT: " + emailIntent.getStringExtra(Intent.EXTRA_TEXT));
+
+        try {
+            // Start the email activity
             startActivity(emailIntent);
-        } else {
+            Log.d("EmailDebug", "Email intent started successfully");
+        } catch (ActivityNotFoundException e) {
+            // Log the error if no email app is found
+            Log.e("EmailDebug", "No email app found to handle the intent", e);
+            // Provide user feedback
             Toast.makeText(this, "No email app found", Toast.LENGTH_SHORT).show();
         }
+
+        // Close the navigation drawer
+        binding.main.closeDrawer(binding.navigationView);
+        Log.d("EmailDebug", "Navigation drawer closed");
     }
+
+
+
+
 
     private void makePhoneCall() {
         Intent intent = new Intent(Intent.ACTION_DIAL);
@@ -237,4 +290,5 @@ public class ContainerActivity extends AppCompatActivity {
         };
         getOnBackPressedDispatcher().addCallback(this, callback);
     }
+
 }

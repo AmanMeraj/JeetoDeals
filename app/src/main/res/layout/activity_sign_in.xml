@@ -89,7 +89,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edt_pass"
             android:maxLines="1"
-            android:maxLength="15"
+            android:maxLength="40"
             android:textColor="@color/black"
             android:textSize="15sp"
             android:fontFamily="@font/inter"
@@ -184,5 +184,10 @@
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>
+    <include
+        android:id="@+id/loader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/view_loader" />
 
 </RelativeLayout>

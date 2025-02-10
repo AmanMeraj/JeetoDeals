@@ -16,7 +16,6 @@
             android:layout_height="wrap_content"
             android:id="@+id/time_tv"
            android:layout_centerHorizontal="true"
-            android:text="Tracking 658"
             android:textSize="12sp"
             android:textColor="@color/white"
             android:fontFamily="@font/inter_bold" />
@@ -55,14 +54,14 @@
                 android:layout_marginBottom="10dp"
                 android:id="@+id/desc"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_below="@id/image"
                 android:layout_marginHorizontal="6dp"
                 android:layout_marginTop="10dp"
                 android:text="@string/draw_date_31_december_2024_or_earlier_based_on_the_time_passed"
                 android:textColor="@color/black"
                 android:fontFamily="@font/inter"
-                android:textSize="10sp" />
+                android:textSize="11sp" />
 
             <!-- Like Button -->
             <ImageView
@@ -90,62 +89,68 @@
 
             <!-- Linear Layout for Vouchers and Add to Cart -->
             <LinearLayout
+                android:gravity="end"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/desc"
                 android:layout_marginTop="4dp"
                 android:orientation="horizontal"
                 android:weightSum="2">
 
-                <!-- Vouchers -->
                 <TextView
                     android:layout_marginStart="4dp"
-                   android:layout_marginTop="4dp"
+                    android:layout_marginTop="4dp"
                     android:id="@+id/vouchers_tv"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight=".4"
                     android:gravity="bottom"
-                    android:text="60 Vouchers"
                     android:textColor="@color/orange"
                     android:textSize="10sp"
                     android:fontFamily="@font/inter_bold" />
 
-                <!-- Add to Cart Button -->
                 <RelativeLayout
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="-30dp"
+                    android:layout_marginHorizontal="10dp"
                     android:layout_marginBottom="20dp"
                     android:id="@+id/add_cart_rel"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_height="20dp"
+                    android:layout_weight="1.6"
                     android:layout_marginStart="4dp"
                     android:background="@drawable/green_btn"
                     android:padding="1dp">
 
                     <TextView
+                        android:paddingVertical="2dp"
                         android:id="@+id/add_cart_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
+                        android:paddingStart="15dp"
                         android:gravity="center"
                         android:paddingHorizontal="4dp"
                         android:text="Add to Cart"
                         android:textColor="@color/white"
-                        android:textSize="8sp"
+                        android:textSize="10sp"
                         android:fontFamily="@font/inter_bold" />
-
-                    <!-- Bag Icon -->
-                    <ImageView
-                        android:id="@+id/bag"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:background="@drawable/orange_oval"
-                        android:padding="2dp"
-                        android:src="@drawable/bag" />
                 </RelativeLayout>
+
+                <!-- Adjusted ImageView (Bag) -->
+                <ImageView
+                    android:id="@+id/bag"
+                    android:layout_width="27dp"
+                    android:layout_height="27dp"
+                    android:layout_alignParentEnd="true"
+                  android:layout_marginEnd="10dp"
+                android:background="@drawable/orange_oval"
+                android:padding="4dp"
+                android:src="@drawable/bag" />
             </LinearLayout>
+
+
+
+
         </RelativeLayout>
     </com.google.android.material.card.MaterialCardView>
 </RelativeLayout>

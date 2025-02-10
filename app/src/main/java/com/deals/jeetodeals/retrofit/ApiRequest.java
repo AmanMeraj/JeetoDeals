@@ -1,28 +1,191 @@
 package com.deals.jeetodeals.retrofit;
 
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 
+import com.deals.jeetodeals.ChangeAddress.ChangeAddressResponse;
+import com.deals.jeetodeals.Fragments.HomeFragment.HomeResponse;
+import com.deals.jeetodeals.Model.AddItems;
+import com.deals.jeetodeals.Model.BannerResponse;
+import com.deals.jeetodeals.Model.CartResponse;
+import com.deals.jeetodeals.Model.Category;
+import com.deals.jeetodeals.Model.Login;
+import com.deals.jeetodeals.Model.ShopResponse;
+import com.deals.jeetodeals.Model.Signup;
+import com.deals.jeetodeals.Model.TicketResponse;
+import com.deals.jeetodeals.Model.UpdateAddress;
+import com.deals.jeetodeals.Model.UpdateAddressResponse;
+import com.deals.jeetodeals.Model.User;
+import com.deals.jeetodeals.Model.WalletResponse;
+import com.deals.jeetodeals.Model.Wishlist;
+import com.deals.jeetodeals.MyOrders.MyOrdersResponse;
+import com.deals.jeetodeals.OTP.Otp;
+import com.deals.jeetodeals.OTP.OtpResponse;
+import com.deals.jeetodeals.Profile.ProfileResponse;
+import com.deals.jeetodeals.SignInScreen.ForgotPassResponse;
+import com.deals.jeetodeals.SignInScreen.SigninResponse;
+import com.deals.jeetodeals.SignupScreen.ExistsResponse;
+import com.deals.jeetodeals.SignupScreen.SignupResponse;
+import com.deals.jeetodeals.Wishlist.WishlistAddResponse;
+import com.deals.jeetodeals.Wishlist.WishlistResponse;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiRequest {
 
 
     @Headers({"Accept: application/json"})
-    @POST("login")
-    Call<LoginResponse> getLogin(
+    @POST("custom/v1/register")
+    Call<ExistsResponse> postSignup(
+            @Body Signup signup
+    );
+
+    @Headers({"Accept: application/json"})
+    @POST("custom/v1/verify-otp")
+    Call<OtpResponse> postOtp(
+            @Body Otp otp
+    );
+
+    @Headers({"Accept: application/json"})
+    @POST("jwt-auth/v1/token")
+    Call<SigninResponse> postLogin(
             @Body Login login
     );
-//
-//    @Headers({"Accept: application/json"})
-//    @POST("fcm-update")
-//    Call<FcmResponse> postFcm(
-//            @Header("Authorization") String authorization,
-//            @Body Fcm fcm
-//            );
-//
+
+    @Headers({"Accept: application/json"})
+    @POST("custom/v1/wishlist/add")
+    Call<WishlistAddResponse> addWishlist(
+            @Header("Authorization") String authorization,
+            @Body Wishlist wishlist
+    );
+
+    @Headers({"Accept: application/json"})
+    @GET("wc/store/v1/products")
+    Call<ArrayList<HomeResponse>> getHome(
+            @Header("Authorization") String authorization,
+            @Query("type") String type
+    );
+
+    @Headers({"Accept: application/json"})
+    @GET("custom/v1/wishlist")
+    Call<ArrayList<WishlistResponse>> getWishlist(
+            @Header("Authorization") String authorization
+    );
+
+    @Headers({"Accept: application/json"})
+    @GET("custom/v1/customer-orders")
+    Call<ArrayList<MyOrdersResponse>> getOrders(
+            @Header("Authorization") String authorization
+    );
+
+    @Headers({"Accept: application/json"})
+    @GET("wc/store/v1/products/categories")
+    Call<ArrayList<Category>> getCategory(
+            @Header("Authorization") String authorization
+    );
+
+    @Headers({"Accept: application/json"})
+    @GET("wc/store/v1/products")
+    Call<List<ShopResponse>> getShop(
+            @Header("Authorization") String authorization,
+            @Query("type") String type,
+            @Query("category") int id,
+            @Query("page") int page,
+            @Query("per_page") int perPage
+    );
+
+
+
+    @Headers({"Accept: application/json"})
+    @GET("wc/store/v1/cart")
+    Call<CartResponse> getCart(
+            @Header("Authorization") String authorization
+    );
+
+    @Headers({"Accept: application/json"})
+    @GET("wp/v2/wallet")
+    Call<ArrayList<WalletResponse>> GetWallet(
+            @Header("Authorization") String authorization
+    );
+    @Headers({"Accept: application/json"})
+    @GET("lottery/v1/customer-tickets")
+    Call<TicketResponse> GetCustomerTickets(
+            @Header("Authorization") String authorization,
+            @Query("customer_id") String customerId
+    );
+
+    @Headers({"Accept: application/json"})
+    @GET("custom/v1/banners")
+    Call<BannerResponse> getBanner(
+            @Header("Authorization") String authorization
+    );
+
+    @Headers({"Accept: application/json"})
+    @GET("custom/v1/address")
+    Call<ChangeAddressResponse> GetAddress(
+            @Header("Authorization") String authorization
+    );
+    @Headers({"Accept: application/json"})
+    @GET("custom/v1/customer")
+    Call<ProfileResponse> getProfile(
+            @Header("Authorization") String authorization
+    );
+
+    @Headers({"Accept: application/json"})
+    @GET("wp/v2/current_balance")
+    Call<Integer> GetBalance(
+            @Header("Authorization") String authorization
+    );
+    @Headers({"Accept: application/json"})
+    @POST("wc/store/v1/cart/add-item")
+    Call<CartResponse> AddToCart(
+            @Header("Authorization") String authorization,
+            @Header("nonce") String nonce,
+            @Body AddItems addItems
+            );
+
+    @Headers({"Accept: application/json"})
+    @PUT("custom/v1/address")
+    Call<UpdateAddressResponse> UpdateAddress(
+            @Header("Authorization") String authorization,
+            @Body UpdateAddress updateAddress
+            );
+
+    @Headers({"Accept: application/json"})
+    @POST("wc/store/v1/cart/remove-item")
+    Call<CartResponse> RemoveItem(
+            @Header("Authorization") String authorization,
+            @Header("nonce") String nonce,
+            @Body AddItems addItems
+            );
+
+    @Headers({"Accept: application/json"})
+    @POST("wc/store/v1/cart/update-item")
+    Call<CartResponse> UpdateItem(
+            @Header("Authorization") String authorization,
+            @Header("nonce") String nonce,
+            @Body AddItems addItems
+            );
+
+    @Headers({"Accept: application/json"})
+    @POST("custom/v1/forgot-password")
+    Call<ForgotPassResponse> ForgotPassword(
+            @Body User user
+            );
+
 //    @Headers({"Accept: application/json"})
 //    @POST("customer")
 //    Call<AddCustomerResponse> postCustomer(
@@ -41,11 +204,7 @@ public interface ApiRequest {
 //    Call<InventoryResponse> getInventory(
 //            @Header("Authorization") String authorization
 //    );
-//    @Headers({"Accept: application/json"})
-//    @GET("home")
-//    Call<ServicesResponse> getServices(
-//            @Header("Authorization") String authorization
-//    );
+
 //
 //
 //

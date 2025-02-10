@@ -4,6 +4,7 @@ import static android.os.Build.VERSION_CODES.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -167,16 +168,16 @@ public class Utility extends AppCompatActivity {
         return sb.toString();
     }
 
-//    public boolean isDeveloperOptionsEnabled() {
-//        ContentResolver resolver = getContentResolver();
-//        try {
-//            int devOptionsEnabled = Settings.Global.getInt(resolver, Settings.Global.DEVELOPMENT_SETTINGS_ENABLED);
-//            return devOptionsEnabled == 1; // Developer Options is enabled
-//        } catch (Settings.SettingNotFoundException e) {
-//            e.printStackTrace();
-//            return false; // Default to false if setting not found
-//        }
-//    }
+    public boolean isDeveloperOptionsEnabled() {
+        ContentResolver resolver = getContentResolver();
+        try {
+            int devOptionsEnabled = Settings.Global.getInt(resolver, Settings.Global.DEVELOPMENT_SETTINGS_ENABLED);
+            return devOptionsEnabled == 1; // Developer Options is enabled
+        } catch (Settings.SettingNotFoundException e) {
+            e.printStackTrace();
+            return false; // Default to false if setting not found
+        }
+    }
 
     public void showDeveloperOptionsAlert() {
         Handler handler= new Handler();

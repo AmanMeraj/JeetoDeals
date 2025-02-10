@@ -11,6 +11,8 @@ public class SharedPref {
     final public String user_status = "user_status";
     final public String user_id = "user_id";
     final public String user_name = "user_name";
+    final public String user_nice_name = "user_nice_name";
+    final public String nonce = "nonce";
     final public String user_password = "password";
     final public String user_email = "user_email";
     final public String user_mobile = "user_mobile";

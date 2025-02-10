@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ChangeAddress.ActivityChangeAddress">
 
     <RelativeLayout
@@ -87,7 +88,6 @@
                     android:id="@+id/text_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ronio Mondal"
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:layout_marginBottom="4dp"/>
@@ -99,7 +99,6 @@
                     android:id="@+id/text_billing_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/address"
                     android:textColor="@color/black"
                     android:textSize="13sp"/>
                 <ImageView
@@ -167,7 +166,6 @@
                     android:id="@+id/text_name2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ronio Mondal"
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:layout_marginBottom="4dp"/>
@@ -179,7 +177,6 @@
                     android:id="@+id/text_shipping_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/address"
                     android:textColor="@color/black"
                     android:textSize="13sp"/>
                 <ImageView

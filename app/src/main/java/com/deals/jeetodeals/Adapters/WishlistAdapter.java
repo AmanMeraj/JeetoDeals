@@ -6,18 +6,22 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.deals.jeetodeals.Model.Wishlist;
+import com.deals.jeetodeals.R;
+import com.deals.jeetodeals.Wishlist.WishlistResponse;
 import com.deals.jeetodeals.databinding.RowWishlistBinding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.WishlistViewHolder> {
 
-    private List<Wishlist> wishlistList;
+    private List<WishlistResponse> wishlistList;
     private Context context;
 
     // Constructor to initialize the context and the list of Wishlist
-    public WishlistAdapter(Context context, List<Wishlist> wishlistList) {
+    public WishlistAdapter(Context context, ArrayList<WishlistResponse> wishlistList) {
         this.context = context;
         this.wishlistList = wishlistList;
     }
@@ -32,9 +36,10 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.Wishli
     @Override
     public void onBindViewHolder(WishlistViewHolder holder, int position) {
         // Get the current wishlist item and set the binding
-        Wishlist currentItem = wishlistList.get(position);
-        holder.binding.vouchersTv.setText(currentItem.getVouchers());
-        holder.binding.desc.setText(currentItem.getDescription()); // Binding the Wishlist model
+        WishlistResponse currentItem = wishlistList.get(position);
+        holder.binding.vouchersTv.setText(currentItem.getPrice()+" "+"Vouchers");
+        holder.binding.desc.setText(currentItem.getProduct_name()); // Binding the Wishlist model
+        Glide.with(context).load(currentItem.image_url).placeholder(R.drawable.no_image).error(R.drawable.error_image).into(holder.binding.image);
     }
 
     @Override

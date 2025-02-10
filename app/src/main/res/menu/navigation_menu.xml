@@ -3,10 +3,6 @@
 <group
     android:checkableBehavior="single">
     <item
-        android:title="@string/login_register"
-        android:id="@+id/nav_login"
-        android:icon="@drawable/login_jg"/>
-    <item
         android:title="@string/my_ticket_s"
         android:id="@+id/nav_ticket"
         android:icon="@drawable/ticket_jd"/>

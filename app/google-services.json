@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "395557890947",
+    "project_id": "jeetodeals-65434",
+    "storage_bucket": "jeetodeals-65434.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:395557890947:android:4447db0b6396f9da3724b6",
+        "android_client_info": {
+          "package_name": "com.deals.jeetodeals"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJekewUEHD_sNip6d8OhpwCZ5a73kgXNc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
