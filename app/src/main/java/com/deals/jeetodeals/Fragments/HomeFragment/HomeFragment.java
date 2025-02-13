@@ -28,9 +28,11 @@ import com.deals.jeetodeals.Fragments.FragmentsViewModel;
 import com.deals.jeetodeals.Model.AddItems;
 import com.deals.jeetodeals.Model.BannerResponse;
 import com.deals.jeetodeals.Model.CartResponse;
+import com.deals.jeetodeals.Model.FcmResponse;
 import com.deals.jeetodeals.Model.Items;
 import com.deals.jeetodeals.Model.MyItem;
 import com.deals.jeetodeals.Model.Promotion;
+import com.deals.jeetodeals.Model.User;
 import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.SignInScreen.SignInActivity;
 import com.deals.jeetodeals.Utils.SharedPref;
@@ -56,6 +58,7 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private Handler handler = new Handler();
     String token;
+    FragmentsRepository.ApiResponse<FcmResponse> fcmResponse;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -89,17 +92,20 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
 
                     // Get the FCM token
                     token = task.getResult();
+                    postToken(token);
                     Log.d(TAG, "FCM Token: " + token);
 
                     // You can also save the token in shared preferences or send it to your server here
                 });
-getBalance();
+
 
         // Check for internet connection before fetching data
         if (utility.isInternetConnected(requireActivity())) {
             fetchHomeData();
             getBanner();
+            getBalance();
             getCart();
+
         } else {
             Toast.makeText(requireActivity(), "No internet connection!", Toast.LENGTH_SHORT).show();
         }
@@ -112,6 +118,28 @@ getBalance();
         hidePlayPauseButton();
         return binding.getRoot();
 
+    }
+
+    private void postToken(String token) {
+        String auth= "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
+        User user= new User();
+        user.setFcm_token(token);
+        Log.d("GET TOKEN", "postToken: "+user.getFcm_token());
+
+        fragmentsViewModel.postFcm(auth,user).observe(getViewLifecycleOwner(),apiResponse->{
+            if (apiResponse != null) {
+                if (apiResponse.isSuccess) {
+                    fcmResponse = apiResponse;
+                    Log.d("TOKEN", "postToken: Success"+ this.token);
+                } else {
+                    // Display the error message from the API response
+                    Toast.makeText(requireActivity(), apiResponse.message, Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                // Null response or network failure
+                Toast.makeText(requireActivity(), " ", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

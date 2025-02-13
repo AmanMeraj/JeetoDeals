@@ -1,33 +1,42 @@
 package com.deals.jeetodeals.SplashScreen;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
+import androidx.lifecycle.ViewModelProvider;
 import com.deals.jeetodeals.ContainerActivity.ContainerActivity;
+import com.deals.jeetodeals.Fragments.FragmentsRepository;
+import com.deals.jeetodeals.Fragments.FragmentsViewModel;
 import com.deals.jeetodeals.IntroductionScreen.ActivityIntroduction;
+import com.deals.jeetodeals.Model.AppVersion;
 import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.SignInScreen.SignInActivity;
 import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.databinding.ActivitySplashBinding;
-import com.google.firebase.FirebaseApp;
 
 public class SplashActivity extends Utility {
     ActivitySplashBinding binding;
+    FragmentsViewModel viewModel;
     private static final String INTRO_SHOWN_KEY = "intro_shown";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
+
+        viewModel = new ViewModelProvider(this).get(FragmentsViewModel.class);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -42,27 +51,91 @@ public class SplashActivity extends Utility {
     }
 
     private void proceed() {
+        viewModel.getAppVersion().observe(this, response -> {
+            if (response != null) {
+                handleAppUpdate(response);
+                pref.setPrefString(this,pref.admin_whatsapp,response.data.getWhatsapp());
+                pref.setPrefString(this,pref.admin_email,response.data.getEmail());
+                pref.setPrefString(this,pref.admin_number,response.data.getCalling());
+
+            } else {
+                continueNavigation();
+            }
+        });
+    }
+
+    private void handleAppUpdate(FragmentsRepository.ApiResponse<AppVersion> response) {
+        if (response == null) {
+            continueNavigation();
+            return;
+        }
+
+        try {
+            String currentVersion = getCurrentAppVersion();
+            String latestVersion = response.data.getApp_version(); // API version
+            boolean forceUpdate = response.data.isForce_update(); // API flag
+
+            if (isVersionOlder(currentVersion, latestVersion)) {
+                if (forceUpdate) {
+                    showForceUpdateDialog(); // Mandatory update
+                } else {
+                    continueNavigation(); // Allow user to proceed
+                }
+            } else {
+                continueNavigation(); // No update needed
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            continueNavigation();
+        }
+    }
+
+    private String getCurrentAppVersion() {
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            return packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return "1.0"; // Default version in case of error
+        }
+    }
+
+    private boolean isVersionOlder(String currentVersion, String latestVersion) {
+        return currentVersion.compareTo(latestVersion) < 0;
+    }
+
+    private void showForceUpdateDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Update Required")
+                .setMessage("A new version of the app is available. Please update to continue.")
+                .setCancelable(false)
+                .setPositiveButton("Update Now", (dialog, which) -> openPlayStore())
+                .show();
+    }
+
+    private void openPlayStore() {
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("market://details?id=" + getPackageName())));
+        } catch (ActivityNotFoundException e) {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
+        }
+    }
+
+    private void continueNavigation() {
         Handler handler = new Handler();
         handler.postDelayed(() -> {
-            // First check if user is logged in
             if (pref.getPrefBoolean(SplashActivity.this, pref.login_status)) {
-                Intent i = new Intent(SplashActivity.this, ContainerActivity.class);
-                startActivity(i);
-                finish();
+                startActivity(new Intent(SplashActivity.this, ContainerActivity.class));
             } else {
-                // If not logged in, check if intro has been shown
                 if (pref.getPrefBoolean(SplashActivity.this, INTRO_SHOWN_KEY)) {
-                    // Intro already shown, go to sign in
-                    Intent i = new Intent(SplashActivity.this, SignInActivity.class);
-                    startActivity(i);
-                    finish();
+                    startActivity(new Intent(SplashActivity.this, SignInActivity.class));
                 } else {
-                    // Intro not shown, show intro first
-                    Intent i = new Intent(SplashActivity.this, ActivityIntroduction.class);
-                    startActivity(i);
-                    finish();
+                    startActivity(new Intent(SplashActivity.this, ActivityIntroduction.class));
                 }
             }
+            finish();
         }, 3000);
     }
 }

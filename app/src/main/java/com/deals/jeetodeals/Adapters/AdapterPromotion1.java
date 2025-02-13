@@ -64,11 +64,11 @@ public class AdapterPromotion1 extends RecyclerView.Adapter<AdapterPromotion1.My
             String thumbnailUrl = item.getImages().get(0).getThumbnail(); // Use the first thumbnail of the current item
             Glide.with(context)
                     .load(thumbnailUrl)
-                    .placeholder(R.drawable.promotion_image)
-                    .error(R.drawable.promotion_image)
+                    .placeholder(R.drawable.no_image)
+                    .error(R.drawable.error_image)
                     .into(holder.imagePromotion);
         } else {
-            holder.imagePromotion.setImageResource(R.drawable.promotion_image);
+            holder.imagePromotion.setImageResource(R.drawable.no_image);
         }
 
         holder.Voucher.setText(item.getPrices().getPrice() + " " + item.getPrices().getCurrency_prefix());

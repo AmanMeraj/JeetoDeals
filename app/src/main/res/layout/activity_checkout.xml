@@ -118,7 +118,7 @@
                 android:layout_below="@+id/card_enter_cupon"
                 app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="10dp"
-                app:cardElevation="10dp"
+                app:cardElevation="2dp"
                 android:id="@+id/card_billing_address">
 
                 <RelativeLayout
@@ -353,7 +353,7 @@
                                 android:layout_width="match_parent"
                                 android:inputType="phone"
                                 android:maxLines="1"
-                                android:maxLength="15"
+                                android:maxLength="100"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -559,10 +559,28 @@
                                 android:maxLength="6"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textField_phone_shipping"
+                            android:layout_below="@id/textField_pin_shipping"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="5dp"
+                            android:hint="Phone">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/edt_phone_shipping"
+                                android:layout_width="match_parent"
+                                android:inputType="number"
+                                android:maxLines="1"
+                                android:maxLength="6"
+                                android:layout_height="wrap_content" />
+                        </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textField_other_notes_shipping"
-                            android:layout_below="@id/textField_pin_shipping"
+                            android:layout_below="@id/textField_phone_shipping"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -571,7 +589,7 @@
                             android:hint="Other Notes (Optional)">
 
                             <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/edt_phone_shipping"
+                                android:id="@+id/edt_other_notes_shipping"
                                 android:layout_width="match_parent"
                                 android:inputType="textMultiLine"
                                 android:minHeight="100dp"
@@ -593,7 +611,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
                 app:cardCornerRadius="10dp"
-                android:layout_marginBottom="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
                 app:cardBackgroundColor="@color/white"
                 app:cardElevation="5dp"
                 android:id="@+id/card_total">
@@ -753,6 +772,21 @@
 
                 </RelativeLayout>
             </com.google.android.material.card.MaterialCardView>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/checkout_btn"
+                android:text="Checkout"
+                android:background="@drawable/orange_btn"
+               android:layout_marginTop="20dp"
+                android:layout_marginBottom="30dp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/inter_bold"
+                android:layout_marginHorizontal="10dp"
+                android:layout_below="@+id/card_total"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </androidx.appcompat.widget.AppCompatButton>
 
 
         </RelativeLayout>

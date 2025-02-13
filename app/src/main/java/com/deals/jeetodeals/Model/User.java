@@ -94,4 +94,14 @@ public class User implements Serializable {
     public String phone_number;
     public String address;
     public String gender;
+
+    public String getFcm_token() {
+        return fcm_token;
+    }
+
+    public void setFcm_token(String fcm_token) {
+        this.fcm_token = fcm_token;
+    }
+
+    public String fcm_token;
 }

@@ -186,7 +186,7 @@ public class ContainerActivity extends Utility {
             } else if (itemId == R.id.nav_call) {
                 makePhoneCall();
             } else if (itemId == R.id.nav_email) {
-               sendEmailSingleRecipient("example@gmail.com","Need help regarding","Hello there !");
+               sendEmailSingleRecipient(pref.getPrefString(this,pref.admin_email),"Need help regarding","Hello there !");
             } else if (itemId == R.id.nav_agreement) {
                 Toast.makeText(this, "User Agreement Clicked", Toast.LENGTH_SHORT).show();
             }
@@ -265,7 +265,7 @@ public class ContainerActivity extends Utility {
 
     private void makePhoneCall() {
         Intent intent = new Intent(Intent.ACTION_DIAL);
-        intent.setData(Uri.parse("tel:+1234567890"));
+        intent.setData(Uri.parse(pref.getPrefString(this,pref.admin_number)));
         startActivity(intent);
     }
 

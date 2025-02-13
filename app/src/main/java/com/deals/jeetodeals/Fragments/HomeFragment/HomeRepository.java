@@ -11,7 +11,9 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -65,10 +67,11 @@ public class HomeRepository {
     }
 
 
-    public LiveData<ApiResponse<List<ShopResponse>>> shop(String auth, String type, int id, int page, int perPage) {
+    public LiveData<ApiResponse<List<ShopResponse>>> shop(String auth, Map<String, String> filters, int id, int page, int perPage) {
         final MutableLiveData<ApiResponse<List<ShopResponse>>> liveData = new MutableLiveData<>();
 
-        Call<List<ShopResponse>> call = apiRequest.getShop(auth, type, id, page, perPage);
+        // Make API call with the filters map and the other parameters
+        Call<List<ShopResponse>> call = apiRequest.getShop(auth, filters, id, page, perPage);
         call.enqueue(new Callback<List<ShopResponse>>() {
             @Override
             public void onResponse(@NonNull Call<List<ShopResponse>> call, @NonNull Response<List<ShopResponse>> response) {

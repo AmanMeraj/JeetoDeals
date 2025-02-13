@@ -13,7 +13,9 @@ import com.deals.jeetodeals.SignupScreen.SignupRepository;
 import com.deals.jeetodeals.Utils.Utility;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HomeViewModel extends AndroidViewModel {
     HomeRepository repository;
@@ -35,8 +37,14 @@ public class HomeViewModel extends AndroidViewModel {
         return responseLiveData;
     }
     public LiveData<HomeRepository.ApiResponse<List<ShopResponse>>> getShop(String auth, String type, int id, int page, int perPage) {
-        responseLiveDataShop = repository.shop(auth, type, id, page, perPage);
-        return responseLiveDataShop;
+        // Create a map for the filters, passing the type parameter with key "filter[type]"
+        Map<String, String> filters = new HashMap<>();
+        filters.put("filter[type]", type);
+
+        // Call the repository with the filters map and the other parameters
+        return repository.shop(auth, filters, id, page, perPage);
     }
+
+
 
 }
