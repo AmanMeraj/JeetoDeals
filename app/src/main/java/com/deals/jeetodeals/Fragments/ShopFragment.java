@@ -39,6 +39,7 @@ import com.deals.jeetodeals.Model.Category;
 import com.deals.jeetodeals.Model.Items;
 import com.deals.jeetodeals.Model.ShopResponse;
 import com.deals.jeetodeals.Model.Wishlist;
+import com.deals.jeetodeals.Model.WishlistCreationResponse;
 import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.Utils.SharedPref;
 import com.deals.jeetodeals.Utils.Utility;
@@ -70,10 +71,12 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     private WishlistViewModel wishlistViewModel;
     private WishlistAddResponse addResponse;
     private int currentPage = 1;
+    private int productIdd ;
     private final int perPage = 6;
     private boolean isLoading = false;
     private boolean isLastPage = false;
     private AdapterCard2 adapter;
+    private WishlistCreationResponse responsee;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -110,33 +113,48 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         }
     }
 
-    private void getCategory(){
-        String auth= "Bearer "+pref.getPrefString(requireActivity(),pref.user_token);
-        viewModel2.getCategory(auth).observe(getViewLifecycleOwner(),response->{
+    private void getCategory() {
+        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
+        viewModel2.getCategory(auth).observe(getViewLifecycleOwner(), response -> {
             if (response != null && response.isSuccess && response.data != null && !response.data.isEmpty()) {
-                categories = response.data;
-                setupCategories(response.data);
-
-                // Automatically select and fetch products for the first category
-                Category firstCategory = categories.get(0);
-                fetchProductsByCategory(firstCategory.getId());
-
-                // Set UI as selected
-                binding.rcCategory.post(() -> {
-                    View firstItemView = binding.rcCategory.getLayoutManager().findViewByPosition(0);
-                    if (firstItemView != null) {
-                        ImageView firstImageView = firstItemView.findViewById(R.id.image);
-                        RelativeLayout firstRelativeLayout = firstItemView.findViewById(R.id.rel_bg);
-                        updateCategorySelection(firstRelativeLayout);
-                        animateCategorySelection(firstImageView);
+                // Filter out unwanted categories
+                List<Category> filteredCategories = new ArrayList<>();
+                for (Category category : response.data) {
+                    String categoryName = category.getName();
+                    if (!categoryName.equalsIgnoreCase("Ongoing Promotion") &&
+                            !categoryName.equalsIgnoreCase("Promotion") &&
+                            !categoryName.equalsIgnoreCase("Uncategorized")) {
+                        filteredCategories.add(category);
                     }
-                });
+                }
 
+                if (!filteredCategories.isEmpty()) {
+                    categories = (ArrayList<Category>) filteredCategories;
+                    setupCategories((ArrayList<Category>) filteredCategories);
+
+                    // Automatically select and fetch products for the first valid category
+                    Category firstCategory = categories.get(0);
+                    fetchProductsByCategory(firstCategory.getId());
+
+                    // Set UI as selected
+                    binding.rcCategory.post(() -> {
+                        View firstItemView = binding.rcCategory.getLayoutManager().findViewByPosition(0);
+                        if (firstItemView != null) {
+                            ImageView firstImageView = firstItemView.findViewById(R.id.image);
+                            RelativeLayout firstRelativeLayout = firstItemView.findViewById(R.id.rel_bg);
+                            updateCategorySelection(firstRelativeLayout);
+                            animateCategorySelection(firstImageView);
+                        }
+                    });
+                } else {
+                    handleError("No valid categories found.");
+                }
             } else {
                 handleError(response != null ? response.message : "Unknown error");
             }
         });
     }
+
 
 
     private void setupCategories(ArrayList<Category> data) {
@@ -271,7 +289,7 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
 
         String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
 
-        viewModel.getShop(auth, "simple", id, currentPage, perPage).observe(getViewLifecycleOwner(), response -> {
+        viewModel.getShop(auth, "simple|variable", id, currentPage, perPage).observe(getViewLifecycleOwner(), response -> {
             isLoading = false;
             binding.loader.rlLoader.setVisibility(View.GONE); // Hide loading indicator
 
@@ -356,12 +374,15 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     public void onLikeClick(String productId) {
         binding.loader.rlLoader.setVisibility(View.VISIBLE);
         addToWishlist(productId);
+        productIdd=Integer.parseInt(productId);
     }
 
     private void addToWishlist(String productId) {
         String auth = getAuthToken();
         Wishlist wishlist = new Wishlist();
-        wishlist.setProduct_id(Integer.valueOf(productId));
+        wishlist.setProduct_id(Integer.parseInt(productId));
+        Log.d(TAG, "addToWishlist: "+wishlist.getProduct_id() +" "+auth);
+
 
         Log.d("WISHLIST", "addToWishlist: "+auth);
         Log.d("WISHLIST", "addToWishlist: "+wishlist.getProduct_id());
@@ -466,7 +487,36 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
 
     private void handleError(String message) {
         Log.e(TAG, "Error: " + message);
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+
+        // Convert message to lowercase to make the check case-insensitive
+        String lowerCaseMessage = message.toLowerCase();
+
+        // Check if the message contains keywords related to wishlist not found
+        if (lowerCaseMessage.contains("wishlist not found") ||
+                lowerCaseMessage.contains("does not belong to user")) {
+
+            // Perform a specific action (e.g., show a different message, hide wishlist UI, etc.)
+            Toast.makeText(requireContext(), "No items in your wishlist.", Toast.LENGTH_SHORT).show();
+             createWishlist();
+            // You can add additional logic here, such as hiding a wishlist section
+            // binding.wishlistLayout.setVisibility(View.GONE);
+        } else {
+            // Show the original error message for other cases
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private void createWishlist(){
+        String auth="Bearer "+pref.getPrefString(requireActivity(), pref.user_token);
+        viewModel2.createWishList(auth).observe(getViewLifecycleOwner(),response->{
+            if (response != null && response.isSuccess && response.data != null) {
+                responsee = response.data;
+                addToWishlist(String.valueOf(productIdd));
+            } else {
+                handleError(response != null ? response.message : "Failed to add item");
+            }
+        });
     }
 
     @Override

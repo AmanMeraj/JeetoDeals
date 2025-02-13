@@ -43,8 +43,8 @@
         <!-- Image Section -->
         <ImageView
             android:id="@+id/image_phone"
-            android:layout_width="130dp"
-            android:layout_height="130dp"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
             android:layout_marginEnd="8dp"
             android:layout_gravity="center_vertical"
             android:scaleType="fitXY"
@@ -66,7 +66,7 @@
                 android:fontFamily="@font/inter_bold"
                 android:text="MacBook Pro M2"
                 android:textColor="@color/black"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 android:layout_marginBottom="4dp" />
 
             <TextView
@@ -76,7 +76,7 @@
                 android:fontFamily="@font/inter_bold"
                 android:text="Voucher 7,500"
                 android:textColor="@color/black"
-                android:textSize="17sp" />
+                android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/desc"
@@ -85,7 +85,7 @@
                 android:fontFamily="@font/inter"
                 android:text="Win MacBook Pro 16-inch (M2)"
                 android:textColor="@color/black"
-                android:textSize="13sp" />
+                android:textSize="11sp" />
 
             <!-- Quantity Controls -->
             <LinearLayout
@@ -99,7 +99,7 @@
                     android:id="@+id/plus"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:padding="6dp"
+                    android:padding="7dp"
                     android:background="@drawable/plus_btn_bg"
                     android:src="@drawable/plus_jd" />
 
@@ -111,16 +111,15 @@
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="5dp"
                     android:fontFamily="@font/inter_bold"
-                    android:text="5"
                     android:textColor="@color/black"
-                    android:textSize="15sp" />
+                    android:textSize="12sp" />
 
                 <ImageView
                     android:id="@+id/minus"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:background="@drawable/plus_btn_bg"
-                    android:padding="6dp"
+                    android:padding="7dp"
                     android:src="@drawable/minus_jd" />
             </LinearLayout>
 
@@ -131,7 +130,6 @@
                 android:layout_height="25dp"
                 android:layout_gravity="end"
                 android:layout_marginHorizontal="10dp"
-                android:padding="3dp"
                 android:src="@drawable/trash_bin" />
         </LinearLayout>
     </LinearLayout>

@@ -98,7 +98,44 @@ public class WishlistRepository {
 
         return liveData;
     }
-    private void handleErrorResponse2(Response<?> response, MutableLiveData<WishlistRepository.ApiResponse<ArrayList<WishlistResponse>>> liveData) {
+    private final MutableLiveData<ApiResponse<WishlistDeleteResponse>> responseLiveDataDelete = new MutableLiveData<>();
+
+    // Constructor to initialize the repository with the API service
+
+    // Method to delete a wishlist item
+    public LiveData<ApiResponse<WishlistDeleteResponse>> deleteWishlist(String auth, Wishlist wishlist) {
+        final MutableLiveData<ApiResponse<WishlistDeleteResponse>> liveData = new MutableLiveData<>();
+
+        // Make the API call
+        apiRequest.deleteWishlist(auth, wishlist).enqueue(new Callback<WishlistDeleteResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<WishlistDeleteResponse> call, @NonNull Response<WishlistDeleteResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    WishlistDeleteResponse responseBody = response.body();
+                    liveData.setValue(new ApiResponse<>(
+                            responseBody,
+                            true,
+                            responseBody.getMessage() != null ? responseBody.getMessage() : "Item deleted successfully"
+                    ));
+                } else {
+                    handleErrorResponse3(response, liveData);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<WishlistDeleteResponse> call, @NonNull Throwable t) {
+                Log.e("TAG", "API call failed: " + t.getMessage());
+                liveData.setValue(new ApiResponse<>(
+                        null,
+                        false,
+                        "Failed to connect. Please check your network."
+                ));
+            }
+        });
+
+        return liveData;
+    }
+       private void handleErrorResponse2(Response<?> response, MutableLiveData<WishlistRepository.ApiResponse<ArrayList<WishlistResponse>>> liveData) {
         try {
             if (response.errorBody() != null) {
                 String errorBody = response.errorBody().string();
@@ -113,6 +150,20 @@ public class WishlistRepository {
         }
     }
   private void handleErrorResponse(Response<?> response, MutableLiveData<WishlistRepository.ApiResponse<WishlistAddResponse>> liveData) {
+        try {
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                String errorMessage = extractDynamicErrorMessage(errorBody);
+                liveData.setValue(new WishlistRepository.ApiResponse<>(null, false, errorMessage));
+            } else {
+                liveData.setValue(new WishlistRepository.ApiResponse<>(null, false, "An unknown error occurred."));
+            }
+        } catch (Exception e) {
+            Log.e("TAG", "Error parsing error response: " + e.getMessage());
+            liveData.setValue(new WishlistRepository.ApiResponse<>(null, false, "An unknown error occurred."));
+        }
+    }
+    private void handleErrorResponse3(Response<?> response, MutableLiveData<WishlistRepository.ApiResponse<WishlistDeleteResponse>> liveData) {
         try {
             if (response.errorBody() != null) {
                 String errorBody = response.errorBody().string();

@@ -5,15 +5,22 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.deals.jeetodeals.Checkout.CheckoutResponse;
 import com.deals.jeetodeals.Fragments.HomeFragment.HomeRepository;
 import com.deals.jeetodeals.Fragments.HomeFragment.HomeResponse;
 import com.deals.jeetodeals.Model.AddItems;
+import com.deals.jeetodeals.Model.AppVersion;
 import com.deals.jeetodeals.Model.BannerResponse;
 import com.deals.jeetodeals.Model.CartResponse;
 import com.deals.jeetodeals.Model.Category;
+import com.deals.jeetodeals.Model.Checkout;
+import com.deals.jeetodeals.Model.FcmResponse;
+import com.deals.jeetodeals.Model.GetCheckout;
 import com.deals.jeetodeals.Model.ShopResponse;
 import com.deals.jeetodeals.Model.TicketResponse;
+import com.deals.jeetodeals.Model.User;
 import com.deals.jeetodeals.Model.WalletResponse;
+import com.deals.jeetodeals.Model.WishlistCreationResponse;
 import com.deals.jeetodeals.retrofit.ApiRequest;
 import com.deals.jeetodeals.retrofit.RetrofitRequest;
 import org.json.JSONObject;
@@ -72,6 +79,112 @@ public class FragmentsRepository {
         return liveData;
     }
 
+    public LiveData<ApiResponse<AppVersion>> version() {
+        final MutableLiveData<ApiResponse<AppVersion>> liveData = new MutableLiveData<>();
+
+        apiRequest.getAppVersion().enqueue(new Callback<AppVersion>() {
+            @Override
+            public void onResponse(@NonNull Call<AppVersion> call, @NonNull Response<AppVersion> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Extract nonce from headers and store it globally
+                    String nonceHeader = response.headers().get("nonce");
+                    if (nonceHeader != null) {
+                        nonce = nonceHeader;
+                        Log.d(TAG, "Nonce updated: " + nonce);
+                    }
+
+                    // Success: Return response body
+                    liveData.setValue(new ApiResponse<>(response.body(), true, null));
+                } else {
+                    handleErrorResponse7(response, liveData);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<AppVersion> call, @NonNull Throwable t) {
+                Log.e(TAG, "API call failed: " + t.getMessage());
+                liveData.setValue(new ApiResponse<>(null, false, "Failed to connect. Please check your network."));
+            }
+        });
+
+        return liveData;
+    }
+    public LiveData<ApiResponse<GetCheckout>> checkout(String auth,String nonce) {
+        final MutableLiveData<ApiResponse<GetCheckout>> liveData = new MutableLiveData<>();
+
+        apiRequest.getCheckout(auth,nonce).enqueue(new Callback<GetCheckout>() {
+            @Override
+            public void onResponse(@NonNull Call<GetCheckout> call, @NonNull Response<GetCheckout> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Extract nonce from headers and store it globally
+
+                    // Success: Return response body
+                    liveData.setValue(new ApiResponse<>(response.body(), true, null));
+                } else {
+                    handleErrorResponse8(response, liveData);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<GetCheckout> call, @NonNull Throwable t) {
+                Log.e(TAG, "API call failed: " + t.getMessage());
+                liveData.setValue(new ApiResponse<>(null, false, "Failed to connect. Please check your network."));
+            }
+        });
+
+        return liveData;
+    }
+    public LiveData<ApiResponse<WishlistCreationResponse>> createWishlist(String auth) {
+        final MutableLiveData<ApiResponse<WishlistCreationResponse>> liveData = new MutableLiveData<>();
+
+        apiRequest.createWishlist(auth).enqueue(new Callback<WishlistCreationResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<WishlistCreationResponse> call, @NonNull Response<WishlistCreationResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Extract nonce from headers and store it globally
+
+                    // Success: Return response body
+                    liveData.setValue(new ApiResponse<>(response.body(), true, null));
+                } else {
+                    handleErrorResponse10(response, liveData);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<WishlistCreationResponse> call, @NonNull Throwable t) {
+                Log.e(TAG, "API call failed: " + t.getMessage());
+                liveData.setValue(new ApiResponse<>(null, false, "Failed to connect. Please check your network."));
+            }
+        });
+
+        return liveData;
+    }
+    public LiveData<ApiResponse<CheckoutResponse>> checkoutPost(String auth,String nonce, Checkout checkout) {
+        final MutableLiveData<ApiResponse<CheckoutResponse>> liveData = new MutableLiveData<>();
+
+        apiRequest.checkout(auth,nonce,checkout).enqueue(new Callback<CheckoutResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CheckoutResponse> call, @NonNull Response<CheckoutResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Extract nonce from headers and store it globally
+
+                    // Success: Return response body
+                    liveData.setValue(new ApiResponse<>(response.body(), true, null));
+                } else {
+                    handleErrorResponse11(response, liveData);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CheckoutResponse> call, @NonNull Throwable t) {
+                Log.e(TAG, "API call failed: " + t.getMessage());
+                liveData.setValue(new ApiResponse<>(null, false, "Failed to connect. Please check your network."));
+            }
+        });
+
+        return liveData;
+    }
+
 
 
     /**
@@ -120,6 +233,29 @@ public class FragmentsRepository {
 
             @Override
             public void onFailure(@NonNull Call<BannerResponse> call, @NonNull Throwable t) {
+                Log.e(TAG, "API call failed: " + t.getMessage());
+                liveData.setValue(new ApiResponse<>(null, false, "Failed to connect. Please check your network."));
+            }
+        });
+
+        return liveData;
+    }
+    public LiveData<ApiResponse<FcmResponse>> fcm(String auth, User user) {
+        final MutableLiveData<ApiResponse<FcmResponse>> liveData = new MutableLiveData<>();
+
+        apiRequest.fcm(auth,user).enqueue(new Callback<FcmResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<FcmResponse> call, @NonNull Response<FcmResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Success: Return response body
+                    liveData.setValue(new ApiResponse<>(response.body(), true, null));
+                } else {
+                    handleErrorResponse9(response, liveData);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<FcmResponse> call, @NonNull Throwable t) {
                 Log.e(TAG, "API call failed: " + t.getMessage());
                 liveData.setValue(new ApiResponse<>(null, false, "Failed to connect. Please check your network."));
             }
@@ -299,6 +435,62 @@ public class FragmentsRepository {
             liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
         }
     }
+    private void handleErrorResponse7(Response<?> response, MutableLiveData<ApiResponse<AppVersion>> liveData) {
+        try {
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                String errorMessage = extractDynamicErrorMessage(errorBody);
+                liveData.setValue(new ApiResponse<>(null, false, errorMessage));
+            } else {
+                liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing error response: " + e.getMessage());
+            liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+        }
+    }
+    private void handleErrorResponse8(Response<?> response, MutableLiveData<ApiResponse<GetCheckout>> liveData) {
+        try {
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                String errorMessage = extractDynamicErrorMessage(errorBody);
+                liveData.setValue(new ApiResponse<>(null, false, errorMessage));
+            } else {
+                liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing error response: " + e.getMessage());
+            liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+        }
+    }
+    private void handleErrorResponse10(Response<?> response, MutableLiveData<ApiResponse<WishlistCreationResponse>> liveData) {
+        try {
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                String errorMessage = extractDynamicErrorMessage(errorBody);
+                liveData.setValue(new ApiResponse<>(null, false, errorMessage));
+            } else {
+                liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing error response: " + e.getMessage());
+            liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+        }
+    }
+    private void handleErrorResponse11(Response<?> response, MutableLiveData<ApiResponse<CheckoutResponse>> liveData) {
+        try {
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                String errorMessage = extractDynamicErrorMessage(errorBody);
+                liveData.setValue(new ApiResponse<>(null, false, errorMessage));
+            } else {
+                liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing error response: " + e.getMessage());
+            liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+        }
+    }
     private void handleErrorResponse4(Response<?> response, MutableLiveData<ApiResponse<TicketResponse>> liveData) {
         try {
             if (response.errorBody() != null) {
@@ -314,6 +506,20 @@ public class FragmentsRepository {
         }
     }
     private void handleErrorResponse5(Response<?> response, MutableLiveData<ApiResponse<BannerResponse>> liveData) {
+        try {
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                String errorMessage = extractDynamicErrorMessage(errorBody);
+                liveData.setValue(new ApiResponse<>(null, false, errorMessage));
+            } else {
+                liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing error response: " + e.getMessage());
+            liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+        }
+    }
+    private void handleErrorResponse9(Response<?> response, MutableLiveData<ApiResponse<FcmResponse>> liveData) {
         try {
             if (response.errorBody() != null) {
                 String errorBody = response.errorBody().string();

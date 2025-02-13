@@ -309,8 +309,9 @@
                 android:textSize="15sp"
                 android:text="Wallet Balance :"
                 android:textColor="@color/black"
-                android:fontFamily="@font/inter_extrabold"
                 android:layout_marginHorizontal="10dp"
+                android:fontFamily="@font/inter_extrabold"
+               android:layout_marginBottom="50dp"
                 android:layout_below="@+id/card_total"
                 android:layout_height="wrap_content"/>
 

@@ -57,14 +57,4 @@ public class WishlistResponse implements Serializable {
     public String price;
     public String image_url;
     public int wishlist_id;
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String message;
 }

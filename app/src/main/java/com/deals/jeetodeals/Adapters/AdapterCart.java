@@ -12,10 +12,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.deals.jeetodeals.Model.Cart;
 import com.deals.jeetodeals.Model.Items;
 import com.deals.jeetodeals.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdapterCart extends RecyclerView.Adapter<AdapterCart.QuantityViewHolder> {
@@ -32,7 +34,7 @@ public class AdapterCart extends RecyclerView.Adapter<AdapterCart.QuantityViewHo
 
     public AdapterCart(Context context, List<Items> itemList, OnCartItemActionListener cartItemActionListener) {
         this.context = context;
-        this.itemList = itemList;
+        this.itemList = (itemList != null) ? itemList : new ArrayList<>(); // Prevents null pointer exception
         this.cartItemActionListener = cartItemActionListener;
     }
 
@@ -45,12 +47,32 @@ public class AdapterCart extends RecyclerView.Adapter<AdapterCart.QuantityViewHo
 
     @Override
     public void onBindViewHolder(@NonNull QuantityViewHolder holder, int position) {
+        if (itemList == null || itemList.isEmpty()) {
+            Log.e("AdapterCart", "Item list is empty");
+            return; // Prevents accessing an empty list
+        }
+
+        if (position >= itemList.size()) {
+            Log.e("AdapterCart", "Invalid position: " + position + ", size: " + itemList.size());
+            return; // Prevents IndexOutOfBoundsException
+        }
+
         Items item = itemList.get(position);
-        Log.d("ITEM LIST", "onBindViewHolder: "+itemList.size());
+        Log.d("ITEM LIST", "onBindViewHolder: " + itemList.size());
+
         holder.textPhoneName.setText(item.getName());
-        holder.textTicketId.setText(item.getPrices().getCurrency_symbol()+" "+item.getPrices().getPrice());
+        holder.textTicketId.setText(item.getPrices().getCurrency_symbol() + " " + item.getPrices().getPrice());
         holder.desc.setText(item.getName());
         holder.textQuantity.setText(String.valueOf(item.getQuantity()));
+
+        if (item.getImages() != null && !item.getImages().isEmpty()) {
+            Glide.with(context)
+                    .load(item.getImages().get(0).getThumbnail())
+                    .placeholder(R.drawable.no_image)
+                    .into(holder.image);
+        } else {
+            holder.image.setImageResource(R.drawable.no_image); // Default image
+        }
 
         holder.plus.setOnClickListener(v -> {
             if (cartItemActionListener != null) {
@@ -58,12 +80,12 @@ public class AdapterCart extends RecyclerView.Adapter<AdapterCart.QuantityViewHo
             }
         });
 
-        // Minus button (Decrease quantity)
         holder.minus.setOnClickListener(v -> {
             if (cartItemActionListener != null) {
                 cartItemActionListener.onQuantityDecreased(position);
             }
         });
+
         holder.delete.setOnClickListener(v -> {
             if (cartItemActionListener != null) {
                 cartItemActionListener.onItemDeleted(position);
@@ -71,14 +93,16 @@ public class AdapterCart extends RecyclerView.Adapter<AdapterCart.QuantityViewHo
         });
     }
 
+
     @Override
     public int getItemCount() {
-        return itemList.size();
+        return (itemList != null) ? itemList.size() : 0;
     }
+
 
     static class QuantityViewHolder extends RecyclerView.ViewHolder {
         TextView textPhoneName, textTicketId, desc, textQuantity;
-        ImageView plus, minus,delete;
+        ImageView plus, minus,delete,image;
 
         public QuantityViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -89,6 +113,7 @@ public class AdapterCart extends RecyclerView.Adapter<AdapterCart.QuantityViewHo
             plus = itemView.findViewById(R.id.plus);
             minus = itemView.findViewById(R.id.minus);
             delete= itemView.findViewById(R.id.delete);
+            image=itemView.findViewById(R.id.image_phone);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.deals.jeetodeals.Adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
@@ -35,7 +36,8 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         WalletResponse transaction = transactions.get(position);
 
         // Bind data to views
-        holder.binding.desc.setText(transaction.getDetails());
+        holder.binding.heading.setText(transaction.getDetails());
+        Log.d("TAG", "onBindViewHolder: "+transaction.getDetails());
 //        holder.binding.desc.setText(transaction.getDescription());
         try {
             double amount = Double.parseDouble(transaction.getAmount());

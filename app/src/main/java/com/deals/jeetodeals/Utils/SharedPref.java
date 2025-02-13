@@ -18,6 +18,8 @@ public class SharedPref {
     final public String user_mobile = "user_mobile";
     final public String admin_mobile = "admin_mobile";
     final public String admin_whatsapp = "admin_whatsapp";
+    final public String admin_email = "admin_email";
+    final public String admin_number = "admin_number";
     final public String user_dob = "user_dob";
     final public String user_address = "user_address";
     final public String user_image = "user_image";

@@ -14,12 +14,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.deals.jeetodeals.Adapters.AdapterCart;
-import com.deals.jeetodeals.ChangeAddress.ActivityChangeAddress;
 import com.deals.jeetodeals.Checkout.ActivityCheckout;
 import com.deals.jeetodeals.Model.AddItems;
-import com.deals.jeetodeals.Model.Cart;
 import com.deals.jeetodeals.Model.CartResponse;
 import com.deals.jeetodeals.Model.Items;
+import com.deals.jeetodeals.Model.Total;
 import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.Utils.SharedPref;
 import com.deals.jeetodeals.Utils.Utility;
@@ -51,10 +50,32 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
         binding.proceedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String paymentMethod;
+                boolean allLottery = true;
+                boolean allSimple = true;
+
+                for (Items item : itemList) {
+                    if (!"lottery".equalsIgnoreCase(item.getType())) {
+                        allLottery = false;
+                    }
+                    if (!"simple".equalsIgnoreCase(item.getType())) {
+                        allSimple = false;
+                    }
+                }
+
+                if (allLottery) {
+                    paymentMethod = "razorpay";
+                } else {
+                    paymentMethod = "wallet";
+                }
+
                 Intent intent = new Intent(requireActivity(), ActivityCheckout.class);
+                intent.putExtra("cart_response", responsee);
+                intent.putExtra("payment_method", paymentMethod);
                 startActivity(intent);
             }
         });
+
 
         return binding.getRoot();
     }
@@ -69,18 +90,15 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
                 pref.setPrefString(requireActivity(), pref.nonce, nonce);
 
                 itemList = responsee.items; // Store items in the list
-                binding.total.setText(responsee.totals.getTotal_price());
-                binding.subTotal.setText(responsee.totals.getTotal_items());
-                binding.shipping.setText(responsee.totals.total_shipping);
-                binding.discount.setText(responsee.totals.total_discount);
-                populateRC();
+
+                populateRC(responsee.totals);
             } else {
                 Toast.makeText(requireContext(), response != null ? response.message : "Unknown error", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void populateRC() {
+    private void populateRC(Total totals) {
         if (itemList.isEmpty()) {
             binding.cardTotal.setVisibility(View.GONE);
             binding.tvTotal.setVisibility(View.GONE);
@@ -117,9 +135,23 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
         binding.rcCart.setAdapter(adapter);
         if(allLottery){
             binding.walletBalance.setVisibility(View.GONE);
+            binding.total.setText(responsee.totals.currency_code+" "+responsee.totals.getTotal_price());
+            binding.subTotal.setText(responsee.totals.currency_code+" "+responsee.totals.getTotal_items());
+            binding.shipping.setText(responsee.totals.total_shipping);
+            binding.discount.setText(responsee.totals.total_discount);
         }else{
             binding.walletBalance.setVisibility(View.VISIBLE);
             binding.walletBalance.setText("Wallet Balance :"+" "+"Vouchers "+pref.getPrefString(requireActivity(),pref.main_balance));
+            binding.total.setText(responsee.totals.currency_symbol+" "+responsee.totals.getTotal_price());
+            binding.subTotal.setText(responsee.totals.currency_symbol+" "+responsee.totals.getTotal_items());
+            binding.shipping.setText(responsee.totals.total_shipping);
+            binding.discount.setText(responsee.totals.total_discount);
+
+            if(Integer.valueOf(pref.getPrefString(requireActivity(),pref.main_balance))<Integer.valueOf(totals.getTotal_price())){
+                binding.proceedBtn.setVisibility(View.GONE);
+            }else{
+                binding.proceedBtn.setVisibility(View.VISIBLE);
+            }
         }
     }
 
