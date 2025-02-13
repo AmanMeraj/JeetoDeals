@@ -46,6 +46,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.HTTP;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -83,7 +84,7 @@ public interface ApiRequest {
     );
 
     @Headers({"Accept: application/json"})
-    @DELETE("custom/v1/wishlist/delete")
+    @HTTP(method = "DELETE", path = "custom/v1/wishlist/delete", hasBody = true)
     Call<WishlistDeleteResponse> deleteWishlist(
             @Header("Authorization") String authorization,
             @Body Wishlist wishlist
