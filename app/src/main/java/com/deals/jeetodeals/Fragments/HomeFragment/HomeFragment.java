@@ -136,6 +136,7 @@ getBalance();
 
             // Start the video automatically when it's prepared
             binding.videoView.start();
+            binding.playPauseButton.setVisibility(View.GONE);
             binding.playPauseButton.setImageResource(R.drawable.pause_jd); // Set to pause icon
             isPlaying = true; // Set the state to playing
         });
@@ -156,8 +157,9 @@ getBalance();
         // Handle video completion
         binding.videoView.setOnCompletionListener(mp -> {
             isPlaying = false;
-            binding.playPauseButton.setImageResource(R.drawable.play_jd); // Reset to play icon
-            binding.playPauseButton.setVisibility(View.VISIBLE); // Make the button visible again
+            binding.videoView.start();
+//            binding.playPauseButton.setImageResource(R.drawable.play_jd); // Reset to play icon
+//            binding.playPauseButton.setVisibility(View.VISIBLE); // Make the button visible again
         });
 
         // Handle click on video view to show the button for 2 seconds

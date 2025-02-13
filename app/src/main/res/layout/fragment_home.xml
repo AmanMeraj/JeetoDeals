@@ -38,6 +38,7 @@
                     android:layout_marginHorizontal="0dp" /> <!-- Removed negative margin here -->
 
                 <ImageView
+                    android:visibility="gone"
                     android:id="@+id/playPauseButton"
                     android:layout_width="50dp"
                     android:layout_height="50dp"

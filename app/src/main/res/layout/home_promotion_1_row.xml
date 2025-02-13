@@ -37,9 +37,11 @@
                 android:layout_centerHorizontal="true"
                 android:layout_below="@id/total_cards_tv"
                 android:progress="50"
+                app:trackStopIndicatorSize="0dp"
+                app:indicatorTrackGapSize="0dp"
                 app:indicatorColor="@color/orange"
                 app:trackCornerRadius="30dp"
-                app:trackThickness="4dp" />
+                app:trackThickness="6dp" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/image_card"
@@ -68,6 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/image_card"
                 android:text="My Ticket"
+                android:fontFamily="@font/inter"
                 android:textSize="12sp"
                 android:textColor="@color/black"
                 android:rotation="180" />

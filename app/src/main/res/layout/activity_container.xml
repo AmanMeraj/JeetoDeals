@@ -98,7 +98,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:background="@color/white"
-                app:itemIconTint="@color/bottom_nav_icon_color"
+
                 app:itemBackground="@drawable/bottom_nav_icon_background"
                 app:itemTextColor="@color/bottom_nav_text_color"
                 app:menu="@menu/menu" />

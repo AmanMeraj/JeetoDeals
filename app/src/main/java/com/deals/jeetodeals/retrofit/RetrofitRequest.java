@@ -64,7 +64,7 @@ public class RetrofitRequest {
                     .create();
             retrofit = new Retrofit.Builder()
        .baseUrl("https://www.jeetodeals.com/wp-json/")
-                    .client(getUnsafeOkHttpClient())
+                    .client(okHttpClient)
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .build();
         }

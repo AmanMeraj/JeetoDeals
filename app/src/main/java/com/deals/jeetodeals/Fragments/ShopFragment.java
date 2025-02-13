@@ -363,6 +363,9 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         Wishlist wishlist = new Wishlist();
         wishlist.setProduct_id(Integer.valueOf(productId));
 
+        Log.d("WISHLIST", "addToWishlist: "+auth);
+        Log.d("WISHLIST", "addToWishlist: "+wishlist.getProduct_id());
+
         wishlistViewModel.addWishlist(auth, wishlist).observe(getViewLifecycleOwner(), response -> {
             binding.loader.rlLoader.setVisibility(View.GONE);
             if (response != null && response.isSuccess && response.data != null) {

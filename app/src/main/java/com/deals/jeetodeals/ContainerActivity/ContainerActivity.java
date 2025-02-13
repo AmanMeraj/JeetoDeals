@@ -198,6 +198,9 @@ public class ContainerActivity extends Utility {
 
 
     private void bottomMenuClick() {
+
+        binding.bottomNavigation.setItemIconTintList(null);
+
         binding.bottomNavigation.setOnItemSelectedListener(item -> {
             Fragment fragment = null;
 
