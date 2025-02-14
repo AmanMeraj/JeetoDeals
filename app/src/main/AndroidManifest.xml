@@ -34,7 +34,9 @@
             android:exported="false" />
         <activity
             android:name=".Checkout.ActivityCheckout"
-            android:exported="false" />
+            android:exported="true">
+
+        </activity>
         <activity
             android:name=".Wishlist.ActivityWishlist"
             android:exported="false" />
@@ -76,6 +78,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity
             android:name=".MainActivity"
