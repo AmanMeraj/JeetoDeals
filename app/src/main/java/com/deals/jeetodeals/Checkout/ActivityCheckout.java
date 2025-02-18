@@ -3,6 +3,7 @@ package com.deals.jeetodeals.Checkout;
 import static android.widget.Toast.makeText;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,12 +34,16 @@ import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.databinding.ActivityCheckoutBinding;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.gson.Gson;
+import com.razorpay.PaymentData;
+import com.razorpay.PaymentResultWithDataListener;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ActivityCheckout extends Utility {
+public class ActivityCheckout extends Utility implements PaymentResultWithDataListener {
     ActivityCheckoutBinding binding;
     String[] countryNames = {"India"};
     String[] stateNames = {"Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"};
@@ -46,9 +51,12 @@ public class ActivityCheckout extends Utility {
     FragmentsViewModel viewModel;
     private Map<String, String> stateCodeMap;
     private Map<String, String> stateNameMap;
-    String selectedBillingStateCode;
-    String selectedShippingStateCode;
+    String selectedBillingStateCode,selectedShippingStateCode;
+    int orderId;
     CheckoutResponse responsee;
+    private Checkout checkoutData;
+    private static final String PAYMENT_METHOD_WALLET = "wallet";
+    private static final String PAYMENT_METHOD_RAZORPAY = "razorpay";
     FragmentsRepository.ApiResponse<GetCheckout> getCheckoutResponse;
 
     @Override
@@ -249,6 +257,7 @@ public class ActivityCheckout extends Utility {
     }
 
     private void fillFeilds(FragmentsRepository.ApiResponse<GetCheckout> getCheckoutResponse) {
+        orderId=getCheckoutResponse.data.getOrder_id();
         // Billing address
         binding.edtFirstName.setText(getCheckoutResponse.data.billing_address.getFirst_name());
         binding.edtLastName.setText(getCheckoutResponse.data.billing_address.getLast_name());
@@ -337,7 +346,7 @@ public class ActivityCheckout extends Utility {
         // Payment Data
         checkout.payment_data = new ArrayList<>();
         Checkout.PaymentData paymentData = new Checkout.PaymentData();
-        paymentData.razorpay_order_id = "order_ABC123";
+        paymentData.razorpay_order_id = String.valueOf(orderId);
         paymentData.razorpay_payment_id = "pay_ABC456";
         paymentData.razorpay_signature = "signature_xyz";
         checkout.payment_data.add(paymentData);
@@ -425,6 +434,96 @@ public class ActivityCheckout extends Utility {
     }
 
     private void proceedToPayment(Checkout checkout) {
+        this.checkoutData = checkout;
+        String paymentMethod = getIntent().getStringExtra("payment_method");
+
+        if ("razorpay".equals(paymentMethod)) {
+            startRazorpayPayment();
+        } else if ("wallet".equals(paymentMethod)) {
+            processWalletPayment(checkout);
+        } else {
+            Toast.makeText(this, "Invalid payment method", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void startRazorpayPayment() {
+        com.razorpay.Checkout razorpayCheckout = new com.razorpay.Checkout();
+        razorpayCheckout.setKeyID("rzp_test_eB9tKqgSGeVVtQ"); // Note: it's setKeyID, not setKey
+
+        try {
+            JSONObject options = new JSONObject();
+            options.put("name", "Jeeto Deals");
+            options.put("description", "Order Payment");
+            options.put("currency", "INR");
+            // Remove non-numeric characters and convert to paise
+            String amountStr = binding.total.getText().toString().replaceAll("[^0-9.]", "");
+            double amount = Double.parseDouble(amountStr) * 100;
+            options.put("amount", (int)amount);
+
+            // Add theme color (optional)
+            options.put("theme.color", R.color.orange);
+
+            // Add customer information
+            JSONObject preFill = new JSONObject();
+            preFill.put("email", checkoutData.billing_address.email);
+            preFill.put("contact", checkoutData.billing_address.phone);
+            options.put("prefill", preFill);
+
+            razorpayCheckout.open(ActivityCheckout.this, options);
+        } catch (Exception e) {
+            Log.e("RAZORPAY", "Error in starting payment: " + e.getMessage());
+            Toast.makeText(this, "Error in payment process: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("billing_visibility", binding.billingAddressRel.getVisibility());
+        outState.putInt("shipping_visibility", binding.shippingRel.getVisibility());
+        outState.putBoolean("shipping_checked", binding.shippingCheckBox.isChecked());
+        outState.putString("selected_billing_state_code", selectedBillingStateCode);
+        outState.putString("selected_shipping_state_code", selectedShippingStateCode);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            binding.billingAddressRel.setVisibility(savedInstanceState.getInt("billing_visibility"));
+            binding.shippingRel.setVisibility(savedInstanceState.getInt("shipping_visibility"));
+            binding.shippingCheckBox.setChecked(savedInstanceState.getBoolean("shipping_checked"));
+            selectedBillingStateCode = savedInstanceState.getString("selected_billing_state_code");
+            selectedShippingStateCode = savedInstanceState.getString("selected_shipping_state_code");
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        binding = null;
+    }
+
+    @Override
+    public void onPaymentSuccess(String razorpayPaymentId, PaymentData paymentData) {
+        Toast.makeText(this, "Payment Successful", Toast.LENGTH_SHORT).show();
+
+        // Update payment data
+        checkoutData.payment_data = new ArrayList<>();
+        Checkout.PaymentData payment = new Checkout.PaymentData();
+        payment.razorpay_payment_id = razorpayPaymentId;
+        checkoutData.payment_data.add(payment);
+
+        // Process the final checkout
+        processWalletPayment(checkoutData);
+    }
+
+    @Override
+    public void onPaymentError(int code, String description, PaymentData paymentData) {
+        Log.e("Razorpay Error", "Payment failed: " + description);
+        Toast.makeText(this, "Payment failed: " + description, Toast.LENGTH_SHORT).show();
+    }
+
+    private void processWalletPayment(Checkout checkout) {
         String auth = "Bearer " + pref.getPrefString(this, pref.user_token);
         String nonce = pref.getPrefString(this, pref.nonce);
 
@@ -463,33 +562,5 @@ public class ActivityCheckout extends Utility {
                 }
             }
         }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("billing_visibility", binding.billingAddressRel.getVisibility());
-        outState.putInt("shipping_visibility", binding.shippingRel.getVisibility());
-        outState.putBoolean("shipping_checked", binding.shippingCheckBox.isChecked());
-        outState.putString("selected_billing_state_code", selectedBillingStateCode);
-        outState.putString("selected_shipping_state_code", selectedShippingStateCode);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState != null) {
-            binding.billingAddressRel.setVisibility(savedInstanceState.getInt("billing_visibility"));
-            binding.shippingRel.setVisibility(savedInstanceState.getInt("shipping_visibility"));
-            binding.shippingCheckBox.setChecked(savedInstanceState.getBoolean("shipping_checked"));
-            selectedBillingStateCode = savedInstanceState.getString("selected_billing_state_code");
-            selectedShippingStateCode = savedInstanceState.getString("selected_shipping_state_code");
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        binding = null;
     }
 }

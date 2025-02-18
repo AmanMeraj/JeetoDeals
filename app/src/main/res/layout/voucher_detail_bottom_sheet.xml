@@ -1,150 +1,204 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Orange Header Section -->
-    <RelativeLayout
-        android:id="@+id/orange_rel"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="@drawable/orange_card_top">
+        android:layout_height="match_parent"
+        android:fillViewport="true"> <!-- Allow scrollable content to fill viewport -->
 
-        <TextView
-            android:id="@+id/sold_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:text="2 sold out of 1250"
-            android:textColor="@color/white"
-            android:textSize="15sp"
-            android:fontFamily="@font/inter_bold" />
-    </RelativeLayout>
-
-    <!-- White Card with ViewPager and Indicator -->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/white_card_bg_2"
-        android:layout_below="@id/orange_rel"
-        android:layout_marginTop="-25dp">
-
-        <!-- ViewPager2 -->
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/vp_images"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginBottom="16dp" />
-
-
-        <!-- TabLayout for Circle Indicators -->
-        <me.relex.circleindicator.CircleIndicator3
-            android:id="@+id/circle_indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/vp_images"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="5dp" />
-
-
-        <!-- Details Section -->
         <RelativeLayout
-            android:id="@+id/details_section"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/circle_indicator"
-            android:padding="16dp">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-            <!-- Vertical Text "60 Vouchers" -->
-            <TextView
-                android:id="@+id/tv_vouchers"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="60 Vouchers"
-                android:textColor="#000"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:rotation="-90"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true" />
+            <RelativeLayout
+                android:id="@+id/orange_rel"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@drawable/orange_card_top">
 
-            <!-- Title Text -->
-            <TextView
-                android:id="@+id/tv_win_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="win"
-                android:textColor="#FF5722"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:layout_toRightOf="@id/tv_vouchers"
-                android:layout_marginStart="8dp" />
+                <TextView
+                    android:id="@+id/sold_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:text="2 sold out of 1250"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/inter_bold" />
+            </RelativeLayout>
 
-            <!-- iPhone Name -->
-            <TextView
-                android:id="@+id/tv_iphone_name"
-                android:layout_width="wrap_content"
+            <!-- White Card with ViewPager and Indicator -->
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="iPhone 16 Pro Max"
-                android:textColor="#000"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_below="@id/tv_win_title"
-                android:layout_toRightOf="@id/tv_vouchers" />
+                android:background="@drawable/white_card_bg_2"
+                android:layout_below="@id/orange_rel"
+                android:layout_marginTop="-25dp">
 
-            <!-- Draw Date -->
-            <TextView
-                android:id="@+id/tv_desc"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Draw Date: 31 December, 2024 or earlier based on the time passed."
-                android:textColor="#000"
-                android:textSize="14sp"
-                android:layout_below="@id/tv_iphone_name"
-                android:layout_toRightOf="@id/tv_vouchers"
-                android:layout_marginTop="8dp" />
-            <TextView
-                android:id="@+id/tv_draw_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Draw Date: 31 December, 2024"
-                android:textColor="#000"
-                android:textSize="12sp"
-                android:layout_below="@id/tv_desc"
-                android:layout_toRightOf="@id/tv_vouchers"
-                android:layout_marginTop="8dp" />
+                <!-- ViewPager2 -->
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/vp_images"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginBottom="16dp" />
 
-            <!-- Buy Button -->
-            <Button
-                android:id="@+id/btn_buy"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Buy AED10"
-                android:textSize="14sp"
-                android:backgroundTint="#FF5722"
-                android:textColor="#FFF"
-                android:layout_below="@id/tv_draw_date"
-                android:layout_toRightOf="@id/tv_vouchers"
-                android:layout_marginTop="8dp" />
+                <!-- TabLayout for Circle Indicators -->
+                <me.relex.circleindicator.CircleIndicator3
+                    android:id="@+id/circle_indicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/vp_images"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="5dp"
+                    app:ci_drawable="@drawable/indicator_selector"
+                    app:ci_width="8dp"
+                    app:ci_height="8dp"
+                    app:ci_margin="5dp"/>
 
-            <!-- Add to Cart Button -->
-            <Button
-                android:id="@+id/btn_add_to_cart"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Add to Cart"
-                android:textSize="14sp"
-                android:backgroundTint="#4CAF50"
-                android:textColor="#FFF"
-                android:layout_below="@id/tv_draw_date"
-                android:layout_toRightOf="@id/btn_buy"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp" />
+                <!-- Details Section -->
+                <RelativeLayout
+                    android:id="@+id/details_section"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/circle_indicator"
+                    android:padding="16dp">
+
+                    <!-- Vertical Text "60 Vouchers" -->
+                    <com.deals.jeetodeals.VerticalTextView
+                        android:layout_marginEnd="10dp"
+                        android:id="@+id/tv_vouchers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="60 Vouchers"
+                        android:textColor="#000"
+                        android:textSize="18sp"
+                        android:paddingHorizontal="5dp"
+                        android:textStyle="bold"
+                        android:rotation="180"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true" />
+
+                    <!-- Title Text -->
+                    <TextView
+                        android:layout_marginHorizontal="10dp"
+                        android:id="@+id/tv_win_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Win"
+                        android:textColor="#FF5722"
+                        android:textSize="25sp"
+                        android:textStyle="bold"
+                        android:layout_toRightOf="@id/tv_vouchers"
+                        android:layout_marginStart="8dp" />
+
+                    <!-- iPhone Name -->
+                    <TextView
+                        android:layout_marginHorizontal="10dp"
+                        android:id="@+id/tv_iphone_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="iPhone 16 Pro Max"
+                        android:textColor="#000"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_below="@id/tv_win_title"
+                        android:layout_toRightOf="@id/tv_vouchers" />
+
+                    <!-- Draw Date -->
+                    <TextView
+                        android:layout_marginHorizontal="10dp"
+                        android:id="@+id/tv_desc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Draw Date: 31 December, 2024 or earlier based on the time passed."
+                        android:textColor="#000"
+                        android:textSize="15sp"
+                        android:layout_below="@id/tv_iphone_name"
+                        android:layout_toRightOf="@id/tv_vouchers"
+                        android:layout_marginTop="8dp" />
+                    <TextView
+                        android:maxHeight="200dp"
+                        android:layout_marginHorizontal="10dp"
+                        android:id="@+id/tv_draw_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Draw Date: 31 December, 2024"
+                        android:textColor="#000"
+                        android:textSize="13sp"
+                        android:layout_below="@id/tv_desc"
+                        android:layout_toRightOf="@id/tv_vouchers"
+                        android:layout_marginTop="8dp" />
+
+                    <LinearLayout
+                        android:weightSum="2"
+                        android:background="@drawable/orange_curve_btn"
+                        android:layout_marginVertical="10dp"
+                        android:layout_marginHorizontal="10dp"
+                        android:layout_toEndOf="@+id/tv_vouchers"
+                        android:layout_below="@+id/tv_draw_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <RelativeLayout
+                            android:layout_weight="0.9"
+                            android:layout_width="0dp"
+                            android:id="@+id/btn_buy"
+                            android:textColor="@color/white"
+                            android:layout_height="wrap_content"
+                            android:background="@color/transparent">
+                            <TextView
+                                android:layout_marginHorizontal="10dp"
+                                android:id="@+id/buy_amount"
+                                android:text="Buy AED10"
+                                android:textColor="@color/white"
+                                android:textSize="15sp"
+                                android:paddingTop="3dp"
+                                android:paddingHorizontal="10dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                            </TextView>
+                            <TextView
+                                android:paddingBottom="5dp"
+                                android:layout_below="@+id/buy_amount"
+                                android:id="@+id/tv_jeeto_shopping"
+                                android:text="Jeeto Shopping..."
+                                android:textColor="@color/white"
+                                android:textSize="11sp"
+                                android:layout_marginHorizontal="10dp"
+                                android:paddingHorizontal="10dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                            </TextView>
+
+                        </RelativeLayout>
+                        <RelativeLayout
+                            android:id="@+id/add_cart_btn"
+                            android:background="@drawable/green_btn2"
+                            android:layout_weight="1.1"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent">
+                            <TextView
+                                android:layout_centerInParent="true"
+                                android:text="Add to Cart"
+                                android:textSize="15sp"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/inter_bold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                            </TextView>
+                        </RelativeLayout>
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
         </RelativeLayout>
-    </RelativeLayout>
-
-
-
-</RelativeLayout>
+    </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

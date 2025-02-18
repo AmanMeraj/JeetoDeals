@@ -39,6 +39,25 @@ public class CustomLotteryData implements Serializable {
     public String max_tickets;
     public String max_tickets_per_user;
     public String min_tickets;
+
+    public String getLottery_dates_from() {
+        return lottery_dates_from;
+    }
+
+    public void setLottery_dates_from(String lottery_dates_from) {
+        this.lottery_dates_from = lottery_dates_from;
+    }
+
+    public String getLottery_dates_to() {
+        return lottery_dates_to;
+    }
+
+    public void setLottery_dates_to(String lottery_dates_to) {
+        this.lottery_dates_to = lottery_dates_to;
+    }
+
+    public String lottery_dates_from;
+    public String lottery_dates_to;
     public int total_sales;
 
     public int getProgress() {

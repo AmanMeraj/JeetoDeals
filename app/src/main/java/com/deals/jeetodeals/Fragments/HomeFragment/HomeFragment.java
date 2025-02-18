@@ -3,6 +3,7 @@ package com.deals.jeetodeals.Fragments.HomeFragment;
 import static android.content.ContentValues.TAG;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -44,8 +45,9 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemClickListener {
+public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemClickListener,AdapterPromotion2.OnItemClickListener2{
     private FragmentHomeBinding binding;
     private HomeViewModel viewModel;
     private FragmentsViewModel fragmentsViewModel;
@@ -67,8 +69,11 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         fragmentsViewModel = new ViewModelProvider(this).get(FragmentsViewModel.class);
-        if (FirebaseApp.getApps(requireContext()).isEmpty()) {
-            FirebaseApp.initializeApp(requireContext());
+
+        // Safe Firebase initialization
+        Context context = getContext();
+        if (context != null && FirebaseApp.getApps(context).isEmpty()) {
+            FirebaseApp.initializeApp(context);
         }
 
         requestPermissionLauncher = registerForActivityResult(
@@ -82,61 +87,71 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
                     }
                 }
         );
+
         checkAndRequestNotificationPermission();
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(task -> {
-                    if (!task.isSuccessful()) {
-                        Log.w(TAG, "Fetching FCM registration token failed", task.getException());
-                        return;
-                    }
 
-                    // Get the FCM token
-                    token = task.getResult();
-                    postToken(token);
-                    Log.d(TAG, "FCM Token: " + token);
+        // Safe FCM token retrieval
+        if (isAdded()) {
+            FirebaseMessaging.getInstance().getToken()
+                    .addOnCompleteListener(task -> {
+                        if (!isAdded()) {
+                            return; // Exit if Fragment is not attached
+                        }
 
-                    // You can also save the token in shared preferences or send it to your server here
-                });
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
 
+                        // Get the FCM token
+                        token = task.getResult();
+                        if (isAdded()) {  // Double check before posting token
+                            postToken(token);
+                        }
+                        Log.d(TAG, "FCM Token: " + token);
+                    });
 
-        // Check for internet connection before fetching data
-        if (utility.isInternetConnected(requireActivity())) {
-            fetchHomeData();
-            getBanner();
-            getBalance();
-            getCart();
-
-        } else {
-            Toast.makeText(requireActivity(), "No internet connection!", Toast.LENGTH_SHORT).show();
+            // Check for internet connection before fetching data
+            if (getActivity() != null && utility.isInternetConnected(getActivity())) {
+                fetchHomeData();
+                fetchHomeData2();
+                getBanner();
+                getBalance();
+                getCart();
+            } else if (getContext() != null) {
+                Toast.makeText(getContext(), "No internet connection!", Toast.LENGTH_SHORT).show();
+            }
         }
 
         // Video view setup
         setupVideoView();
-
-        // Add items and promotions
-        setupItemsAndPromotions();
         hidePlayPauseButton();
         return binding.getRoot();
-
     }
 
     private void postToken(String token) {
-        String auth= "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
-        User user= new User();
-        user.setFcm_token(token);
-        Log.d("GET TOKEN", "postToken: "+user.getFcm_token());
+        if (!isAdded()) {
+            return; // Exit if Fragment is not attached
+        }
 
-        fragmentsViewModel.postFcm(auth,user).observe(getViewLifecycleOwner(),apiResponse->{
+        String auth = "Bearer " + pref.getPrefString(requireContext(), pref.user_token);
+        User user = new User();
+        user.setFcm_token(token);
+        Log.d("GET TOKEN", "postToken: " + user.getFcm_token());
+
+        fragmentsViewModel.postFcm(auth, user).observe(getViewLifecycleOwner(), apiResponse -> {
+            if (!isAdded()) {
+                return; // Exit if Fragment is not attached
+            }
+
             if (apiResponse != null) {
                 if (apiResponse.isSuccess) {
                     fcmResponse = apiResponse;
-                    Log.d("TOKEN", "postToken: Success"+ this.token);
+                    Log.d("TOKEN", "postToken: Success" + this.token);
                 } else {
-                    // Display the error message from the API response
                     Toast.makeText(requireActivity(), apiResponse.message, Toast.LENGTH_SHORT).show();
                 }
             } else {
-                // Null response or network failure
                 Toast.makeText(requireActivity(), " ", Toast.LENGTH_SHORT).show();
             }
         });
@@ -146,6 +161,39 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
     public void onDestroyView() {
         super.onDestroyView();
         binding = null; // Prevent memory leaks
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Get FCM token when Fragment is attached and visible
+        if (isAdded()) {
+            FirebaseMessaging.getInstance().getToken()
+                    .addOnCompleteListener(task -> {
+                        if (!isAdded()) {
+                            return; // Exit if Fragment is not attached
+                        }
+
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+
+                        token = task.getResult();
+                        postToken(token);
+                        Log.d(TAG, "FCM Token: " + token);
+                    });
+
+            // Check internet and fetch data
+            if (utility.isInternetConnected(requireActivity())) {
+                fetchHomeData();
+                fetchHomeData2();
+                getBanner();
+                getBalance();
+                getCart();
+            } else {
+                Toast.makeText(requireActivity(), "No internet connection!", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void setupVideoView() {
@@ -224,29 +272,32 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         });
     }
 
-    private void setupItemsAndPromotions() {
-        // Add items and promotions
-        List<MyItem> itemList = new ArrayList<>();
-        itemList.add(new MyItem("54 Sold out of 1000", 50, R.drawable.promotion_image, "Get a Chance to", "WIN", "Add to Cart"));
-        itemList.add(new MyItem("200 Sold out of 1000", 20, R.drawable.promotion_image, "Get a Chance to", "WIN", "Add to Cart"));
-
-        List<Promotion> promotions = new ArrayList<>();
-        promotions.add(new Promotion("Closing at 02:30:45", R.drawable.promotion_image, "1250", "WIN", "I Phone 16 Pro Max", "Draw date 31 December 2024", "Get a chance to", "WIN I Phone 16 Pro Max", "60 Vouchers"));
-        promotions.add(new Promotion("Closing at 05:30:45", R.drawable.promotion_image, "1050", "WIN", "Play Station 5", "Draw date 22 December 2024", "Get a chance to", "WIN Play Station 5", "160 Vouchers"));
-
-        AdapterPromotion2 adapter3 = new AdapterPromotion2(requireActivity(), promotions);
-        binding.rcPromotion2.setAdapter(adapter3);
-    }
-
     private void fetchHomeData() {
         String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token); // Replace with actual token
         String type = "lottery"; // Replace with required type
 
-        viewModel.getHome(auth, type).observe(getViewLifecycleOwner(), response -> {
+        viewModel.getHome(auth, type,20).observe(getViewLifecycleOwner(), response -> {
             if (response != null) {
                 if (response.isSuccess && response.data != null) {
                     responsee = response.data; // Store response
                     setupRecyclerViews(responsee); // Populate RecyclerView
+                } else if ("Unauthorized".equals(response.message)) { // Check for 401 status
+                    showSessionExpiredDialog();
+                } else {
+                    Toast.makeText(requireContext(), response.message != null ? response.message : "Unknown error", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+    private void fetchHomeData2(){
+        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token); // Replace with actual token
+        String type = "lottery";
+
+        viewModel.getHome(auth, type,21).observe(getViewLifecycleOwner(), response -> {
+            if (response != null) {
+                if (response.isSuccess && response.data != null) {
+                    responsee = response.data; // Store response
+                    setupRecyclerViews2(responsee); // Populate RecyclerView
                 } else if ("Unauthorized".equals(response.message)) { // Check for 401 status
                     showSessionExpiredDialog();
                 } else {
@@ -338,8 +389,12 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
     }
 
     private void setupRecyclerViews(ArrayList<HomeResponse> responsee) {
-        AdapterPromotion1 adapter2 = new AdapterPromotion1(requireActivity(), responsee, this);
-        binding.promotionsRecycler.setAdapter(adapter2);
+        AdapterPromotion1 adapter = new AdapterPromotion1(requireActivity(), responsee, this);
+        binding.promotionsRecycler.setAdapter(adapter);
+    }
+    private void setupRecyclerViews2(ArrayList<HomeResponse> responsee) {
+        AdapterPromotion2 adapter2 = new AdapterPromotion2(requireActivity(), responsee, this);
+        binding.rcPromotion2.setAdapter(adapter2);
     }
 
     @Override
@@ -408,4 +463,19 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         });
     }
 
+    @Override
+    public void onAddToCartClicked2(HomeResponse item) {
+        String authToken = "Bearer " + pref.getPrefString(requireContext(), pref.user_token);
+        String nonce = pref.getPrefString(requireActivity(), pref.nonce);
+
+        if (cartResponse != null && cartResponse.getItems() != null && !cartResponse.getItems().isEmpty()) {
+            if (!isCartAllLottery(cartResponse)) {  // ✅ Pass a single object, not a list
+                showCartClearDialog(item, authToken, nonce);
+                return;
+            }
+        }
+
+        // If all items are "lottery" or cart is empty, add the item directly
+        addItemToCart(item, authToken, nonce);
+    }
 }

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_marginTop="5dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginTop="8dp"
     android:layout_height="wrap_content">
     <RelativeLayout
         android:background="@drawable/orange_card_top"
@@ -33,16 +34,24 @@
             android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <ImageView
-                android:scaleType="fitXY"
-                android:src="@drawable/promotion_image"
-                android:layout_marginTop="40dp"
-                android:layout_marginBottom="20dp"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/image_card"
+                app:cardCornerRadius="30dp"
+                android:layout_marginTop="30dp"
                 android:layout_centerHorizontal="true"
-                android:id="@+id/image"
-                android:layout_width="300dp"
-                android:layout_height="295dp"/>
+                android:layout_marginBottom="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:scaleType="fitXY"
+                    android:src="@drawable/promotion_image"
+                    android:id="@+id/image"
+                    android:layout_width="260dp"
+                    android:layout_height="245dp"/>
+            </androidx.cardview.widget.CardView>
+
             <RelativeLayout
+                android:elevation="10dp"
                 android:layout_marginTop="-2dp"
                 android:id="@+id/rel_total_ticket"
                 android:layout_marginEnd="-2dp"
@@ -76,18 +85,18 @@
             <TextView
                 android:id="@+id/win_tv"
                 android:layout_marginHorizontal="20dp"
-                android:layout_below="@+id/image"
+                android:layout_below="@+id/image_card"
                 android:layout_width="wrap_content"
                 android:text="WIN"
                 android:textColor="@color/orange"
-                android:textSize="25sp"
+                android:textSize="20sp"
                 android:fontFamily="@font/inter_extrabold"
                 android:layout_height="wrap_content"/>
             <TextView
                 android:fontFamily="@font/inter_bold"
                 android:layout_marginHorizontal="20dp"
                 android:id="@+id/heading"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 android:layout_below="@+id/win_tv"
                 android:textColor="@color/black"
                 android:text="I Phone 16 Pro Max"
@@ -100,20 +109,20 @@
                 android:layout_marginEnd="10dp"
                 android:layout_below="@+id/heading"
                 android:textColor="@color/black"
-                android:textSize="15sp"
+                android:textSize="12sp"
                 android:fontFamily="@font/inter"
-                android:text="Get a chance to "
+                android:text="Get a chance to Win"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <TextView
                 android:textColor="@color/green"
                 android:fontFamily="@font/inter_bold"
-                android:textSize="15sp"
+                android:textSize="12sp"
                 android:paddingVertical="5dp"
                 android:layout_below="@+id/heading"
                 android:layout_toEndOf="@+id/chance_tv"
                 android:id="@+id/heading2"
-                android:text="WIN I Phone 16 Pro Max"
+                android:text="I Phone 16 Pro Max"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
@@ -122,9 +131,10 @@
                 android:paddingVertical="5dp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/inter"
-                android:layout_below="@+id/chance_tv"
+                android:layout_below="@+id/heading2"
                 android:layout_marginHorizontal="20dp"
                 android:id="@+id/desc"
+                android:textSize="12sp"
                 android:text="@string/draw_date_31_december_2024_or_earlier_based_on_the_time_passed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>

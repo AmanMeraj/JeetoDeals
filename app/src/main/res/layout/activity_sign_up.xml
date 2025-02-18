@@ -82,14 +82,14 @@
                     android:id="@+id/textField_last_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/first_name"
+                    android:hint="@string/last_name"
                     app:startIconDrawable="@drawable/user_svgrepo_com"
                     android:textColorHint="@color/black"
                     app:startIconScaleType="centerInside"
                     app:hintTextColor="@color/black"
                     app:boxStrokeColor="@color/black"
                     app:startIconTint="@color/black"
-                    app:startIconContentDescription="User Name">
+                    app:startIconContentDescription="Last Name">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_last_name"

@@ -7,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.graphics.Insets;
@@ -52,13 +54,32 @@ public class SplashActivity extends Utility {
 
     private void proceed() {
         viewModel.getAppVersion().observe(this, response -> {
-            if (response != null) {
-                handleAppUpdate(response);
-                pref.setPrefString(this,pref.admin_whatsapp,response.data.getWhatsapp());
-                pref.setPrefString(this,pref.admin_email,response.data.getEmail());
-                pref.setPrefString(this,pref.admin_number,response.data.getCalling());
+            if (response != null && response.data != null) {
+                // Log all data
+                Log.d("AppVersion", "Response: " + response);
+                Log.d("AppVersion", "WhatsApp: " + (response.data.getWhatsapp() != null ? response.data.getWhatsapp() : "null"));
+                Log.d("AppVersion", "Email: " + (response.data.getEmail() != null ? response.data.getEmail() : "null"));
+                Log.d("AppVersion", "Calling: " + (response.data.getCalling() != null ? response.data.getCalling() : "null"));
 
+                // Handle app update
+                handleAppUpdate(response);
+
+                // Store data in preferences with null checks
+                String whatsapp = response.data.getWhatsapp();
+                String email = response.data.getEmail();
+                String calling = response.data.getCalling();
+
+                if (whatsapp != null) {
+                    pref.setPrefString(this, pref.admin_whatsapp, whatsapp);
+                }
+                if (email != null) {
+                    pref.setPrefString(this, pref.admin_email, email);
+                }
+                if (calling != null) {
+                    pref.setPrefString(this, pref.admin_number, calling);
+                }
             } else {
+                Log.d("AppVersion", "Response or response.data is null");
                 continueNavigation();
             }
         });

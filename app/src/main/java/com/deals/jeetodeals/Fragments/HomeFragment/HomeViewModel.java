@@ -32,8 +32,8 @@ public class HomeViewModel extends AndroidViewModel {
      * @param type type string containing type of response i want to get.
      * @return LiveData containing ApiResponse with ExistsResponse data and status message.
      */
-    public LiveData<HomeRepository.ApiResponse<ArrayList<HomeResponse>>> getHome(String auth, String type) {
-        responseLiveData = repository.homeGet(auth,type);  // Fixed method call with correct case
+    public LiveData<HomeRepository.ApiResponse<ArrayList<HomeResponse>>> getHome(String auth, String type,int category) {
+        responseLiveData = repository.homeGet(auth,type,category);  // Fixed method call with correct case
         return responseLiveData;
     }
     public LiveData<HomeRepository.ApiResponse<List<ShopResponse>>> getShop(String auth, String type, int id, int page, int perPage) {

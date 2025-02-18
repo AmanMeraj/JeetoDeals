@@ -27,10 +27,10 @@ public class HomeRepository {
         apiRequest = RetrofitRequest.getRetrofitInstance().create(ApiRequest.class);
     }
 
-    public LiveData<ApiResponse<ArrayList<HomeResponse>>> homeGet(String auth, String type) {
+    public LiveData<ApiResponse<ArrayList<HomeResponse>>> homeGet(String auth, String type,int category) {
         final MutableLiveData<ApiResponse<ArrayList<HomeResponse>>> liveData = new MutableLiveData<>();
 
-        Call<ArrayList<HomeResponse>> call = apiRequest.getHome(auth, type);
+        Call<ArrayList<HomeResponse>> call = apiRequest.getHome(auth, type,category);
         call.enqueue(new Callback<ArrayList<HomeResponse>>() {
             @Override
             public void onResponse(@NonNull Call<ArrayList<HomeResponse>> call, @NonNull Response<ArrayList<HomeResponse>> response) {

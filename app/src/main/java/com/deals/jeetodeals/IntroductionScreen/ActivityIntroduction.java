@@ -22,9 +22,9 @@ public class ActivityIntroduction extends AppCompatActivity {
     private static final String INTRO_SHOWN_KEY = "intro_shown";
 
     private int[] images = {
-            R.drawable.intro_slide1,
-            R.drawable.intro_slide2,
-            R.drawable.intro_slide3
+            R.drawable.intro1,
+            R.drawable.intro2,
+            R.drawable.intro3
     };
 
     @Override

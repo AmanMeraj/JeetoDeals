@@ -7,7 +7,9 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/buttonLayout" />
+        android:layout_above="@+id/buttonLayout" >
+
+    </androidx.viewpager.widget.ViewPager>
 
     <LinearLayout
         android:weightSum="3"

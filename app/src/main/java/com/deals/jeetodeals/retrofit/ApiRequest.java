@@ -94,7 +94,8 @@ public interface ApiRequest {
     @GET("wc/store/v1/products")
     Call<ArrayList<HomeResponse>> getHome(
             @Header("Authorization") String authorization,
-            @Query("type") String type
+            @Query("type") String type,
+            @Query("category") int category
     );
 
     @Headers({"Accept: application/json"})
