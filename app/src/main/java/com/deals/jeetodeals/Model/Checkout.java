@@ -34,4 +34,14 @@ public class Checkout implements Serializable {
     public String payment_method = "";
     public List<PaymentData> payment_data;
     public Map<String, Map<String, String>> extensions;
+
+    public RazorpayOrder getRazorpay_order() {
+        return razorpay_order;
+    }
+
+    public void setRazorpay_order(RazorpayOrder razorpay_order) {
+        this.razorpay_order = razorpay_order;
+    }
+
+    public RazorpayOrder razorpay_order;
 }

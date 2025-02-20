@@ -78,10 +78,9 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pack Of_5 Mobile Eraser for Kids for School"
             android:textColor="@color/black"
             android:textStyle="bold"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:layout_marginBottom="4dp" />
 
         <TextView
@@ -90,7 +89,6 @@
             android:id="@+id/tv_voucher"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Voucher 5 for 1 item"
             android:textColor="@color/black"
             android:textSize="14sp" />
 
@@ -101,7 +99,6 @@
             android:id="@+id/tv_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Date: November 22, 2024"
             android:textColor="@color/black"
             android:textSize="12sp" />
     </LinearLayout>

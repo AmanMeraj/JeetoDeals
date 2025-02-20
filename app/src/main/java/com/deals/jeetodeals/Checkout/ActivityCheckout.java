@@ -51,8 +51,7 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
     FragmentsViewModel viewModel;
     private Map<String, String> stateCodeMap;
     private Map<String, String> stateNameMap;
-    String selectedBillingStateCode,selectedShippingStateCode;
-    int orderId;
+    String selectedBillingStateCode,selectedShippingStateCode,orderId;
     CheckoutResponse responsee;
     private Checkout checkoutData;
     private static final String PAYMENT_METHOD_WALLET = "wallet";
@@ -257,7 +256,9 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
     }
 
     private void fillFeilds(FragmentsRepository.ApiResponse<GetCheckout> getCheckoutResponse) {
-        orderId=getCheckoutResponse.data.getOrder_id();
+
+        //Order ID
+        orderId= getCheckoutResponse.data.getRazorpay_order().getId();
         // Billing address
         binding.edtFirstName.setText(getCheckoutResponse.data.billing_address.getFirst_name());
         binding.edtLastName.setText(getCheckoutResponse.data.billing_address.getLast_name());
@@ -347,8 +348,6 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
         checkout.payment_data = new ArrayList<>();
         Checkout.PaymentData paymentData = new Checkout.PaymentData();
         paymentData.razorpay_order_id = String.valueOf(orderId);
-        paymentData.razorpay_payment_id = "pay_ABC456";
-        paymentData.razorpay_signature = "signature_xyz";
         checkout.payment_data.add(paymentData);
 
         // Extensions

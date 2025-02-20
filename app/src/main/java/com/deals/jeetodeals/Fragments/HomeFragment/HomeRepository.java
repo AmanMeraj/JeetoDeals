@@ -21,91 +21,111 @@ import retrofit2.Response;
 
 public class HomeRepository {
     private static final String TAG = HomeRepository.class.getSimpleName();
+    private static volatile boolean isHandlingSessionExpiry = false;
+    private static final Object SESSION_LOCK = new Object();
     private final ApiRequest apiRequest;
+
+    public static final int ERROR_SESSION_EXPIRED = 403;
 
     public HomeRepository() {
         apiRequest = RetrofitRequest.getRetrofitInstance().create(ApiRequest.class);
     }
 
-    public LiveData<ApiResponse<ArrayList<HomeResponse>>> homeGet(String auth, String type,int category) {
+    public LiveData<ApiResponse<ArrayList<HomeResponse>>> homeGet(String auth, String type, int category) {
         final MutableLiveData<ApiResponse<ArrayList<HomeResponse>>> liveData = new MutableLiveData<>();
 
-        Call<ArrayList<HomeResponse>> call = apiRequest.getHome(auth, type,category);
+        Call<ArrayList<HomeResponse>> call = apiRequest.getHome(auth, type, category);
         call.enqueue(new Callback<ArrayList<HomeResponse>>() {
             @Override
             public void onResponse(@NonNull Call<ArrayList<HomeResponse>> call, @NonNull Response<ArrayList<HomeResponse>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    liveData.setValue(new ApiResponse<>(response.body(), true, null));
-                } else if (response.code() == 401) { // Handle Unauthorized
-                    liveData.setValue(new ApiResponse<>(null, false, "Unauthorized"));
+                    liveData.setValue(new ApiResponse<>(response.body(), true, null, 0));
+                } else if (response.code() == ERROR_SESSION_EXPIRED) {
+                    handleSessionExpiry(liveData);
                 } else {
-                    try {
-                        String errorMessage = "An error occurred";
-                        if (response.errorBody() != null) {
-                            errorMessage = extractDynamicErrorMessage(response.errorBody().string());
-                        }
-                        liveData.setValue(new ApiResponse<>(null, false, errorMessage));
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error parsing error response: " + e.getMessage());
-                        liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred"));
-                    }
+                    handleErrorResponse(response, liveData);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<ArrayList<HomeResponse>> call, @NonNull Throwable t) {
-                Log.e(TAG, "API call failed: " + t.getMessage());
-                String errorMessage = "Network error occurred";
-                if (!call.isCanceled()) {
-                    errorMessage = "Failed to connect. Please check your network.";
-                }
-                liveData.setValue(new ApiResponse<>(null, false, errorMessage));
+                handleNetworkFailure(call, t, liveData);
             }
         });
 
         return liveData;
     }
 
-
     public LiveData<ApiResponse<List<ShopResponse>>> shop(String auth, Map<String, String> filters, int id, int page, int perPage) {
         final MutableLiveData<ApiResponse<List<ShopResponse>>> liveData = new MutableLiveData<>();
 
-        // Make API call with the filters map and the other parameters
         Call<List<ShopResponse>> call = apiRequest.getShop(auth, filters, id, page, perPage);
         call.enqueue(new Callback<List<ShopResponse>>() {
             @Override
             public void onResponse(@NonNull Call<List<ShopResponse>> call, @NonNull Response<List<ShopResponse>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    liveData.setValue(new ApiResponse<>(response.body(), true, null));
+                    liveData.setValue(new ApiResponse<>(response.body(), true, null, 0));
+                } else if (response.code() == ERROR_SESSION_EXPIRED) {
+                    handleSessionExpiry(liveData);
                 } else {
-                    try {
-                        String errorMessage = "An error occurred";
-                        if (response.errorBody() != null) {
-                            errorMessage = extractDynamicErrorMessage(response.errorBody().string());
-                        }
-                        Log.e(TAG, "API call failed with response code: " + response.code() + " and message: " + errorMessage);
-                        liveData.setValue(new ApiResponse<>(null, false, errorMessage));
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error parsing error response: " + e.getMessage());
-                        liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred"));
-                    }
+                    handleErrorResponse(response, liveData);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<ShopResponse>> call, @NonNull Throwable t) {
-                Log.e(TAG, "API call failed: " + t.getMessage(), t);
-                String errorMessage = "Network error occurred";
-                if (!call.isCanceled()) {
-                    errorMessage = "Failed to connect. Please check your network.";
-                }
-                liveData.setValue(new ApiResponse<>(null, false, errorMessage));
+                handleNetworkFailure(call, t, liveData);
             }
         });
 
         return liveData;
     }
 
+    // Centralized session expiry handling
+    private <T> void handleSessionExpiry(MutableLiveData<ApiResponse<T>> liveData) {
+        synchronized (SESSION_LOCK) {
+            if (!isHandlingSessionExpiry) {
+                isHandlingSessionExpiry = true;
+                Log.w(TAG, "Session expired, notifying UI");
+                liveData.setValue(new ApiResponse<>(null, false, "Session expired", ERROR_SESSION_EXPIRED));
+            } else {
+                // Don't notify again if already handling
+                Log.d(TAG, "Already handling session expiry, suppressing duplicate notification");
+            }
+        }
+    }
+
+    // Reset session handling flag once logout/re-login process is complete
+    public static void resetSessionExpiryFlag() {
+        synchronized (SESSION_LOCK) {
+            isHandlingSessionExpiry = false;
+            Log.d(TAG, "Session expiry flag reset");
+        }
+    }
+
+    // Centralized error handling
+    private <T> void handleErrorResponse(Response<?> response, MutableLiveData<ApiResponse<T>> liveData) {
+        try {
+            String errorMessage = "An error occurred";
+            if (response.errorBody() != null) {
+                errorMessage = extractDynamicErrorMessage(response.errorBody().string());
+            }
+            Log.e(TAG, "API error: " + response.code() + " - " + errorMessage);
+            liveData.setValue(new ApiResponse<>(null, false, errorMessage, response.code()));
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing error response: " + e.getMessage());
+            liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred", -1));
+        }
+    }
+
+    // Centralized network failure handling
+    private <T> void handleNetworkFailure(Call<?> call, Throwable t, MutableLiveData<ApiResponse<T>> liveData) {
+        Log.e(TAG, "API call failed: " + t.getMessage(), t);
+        String errorMessage = call.isCanceled() ?
+                "Request was canceled" :
+                "Failed to connect. Please check your network.";
+        liveData.setValue(new ApiResponse<>(null, false, errorMessage, -1));
+    }
 
     private String extractDynamicErrorMessage(String errorBody) {
         try {
@@ -128,11 +148,13 @@ public class HomeRepository {
         public final T data;
         public final boolean isSuccess;
         public final String message;
+        public final int errorCode;
 
-        public ApiResponse(T data, boolean isSuccess, String message) {
+        public ApiResponse(T data, boolean isSuccess, String message, int errorCode) {
             this.data = data;
             this.isSuccess = isSuccess;
             this.message = message;
+            this.errorCode = errorCode;
         }
     }
 }

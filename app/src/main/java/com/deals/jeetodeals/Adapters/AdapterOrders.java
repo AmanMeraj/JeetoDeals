@@ -61,6 +61,7 @@ public class AdapterOrders extends RecyclerView.Adapter<AdapterOrders.ViewHolder
 
         // Set order status
         holder.binding.tvStatus.setText(order.getStatus());
+        holder.binding.timeTv.setText("# "+order.getOrder_id());
         setStatusColor(holder.binding.tvStatus, order.getStatus());
 
         // Get first item's name as title
