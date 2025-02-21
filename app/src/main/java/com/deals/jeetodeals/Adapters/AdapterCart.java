@@ -64,6 +64,7 @@ public class AdapterCart extends RecyclerView.Adapter<AdapterCart.QuantityViewHo
         holder.textTicketId.setText(item.getPrices().getCurrency_symbol() + " " + item.getPrices().getPrice());
         holder.desc.setText(item.getName());
         holder.textQuantity.setText(String.valueOf(item.getQuantity()));
+        Glide.with(context).load(item.getImages().get(0).getThumbnail()).into(holder.image);
 
         if (item.getImages() != null && !item.getImages().isEmpty()) {
             Glide.with(context)

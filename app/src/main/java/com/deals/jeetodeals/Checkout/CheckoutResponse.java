@@ -3,6 +3,7 @@ package com.deals.jeetodeals.Checkout;
 import com.deals.jeetodeals.Model.BillingAddress;
 import com.deals.jeetodeals.Model.Extensions;
 import com.deals.jeetodeals.Model.PaymentResult;
+import com.deals.jeetodeals.Model.RazorpayOrder;
 import com.deals.jeetodeals.Model.ShippingAddress;
 
 import java.io.Serializable;
@@ -108,4 +109,13 @@ public class CheckoutResponse implements Serializable {
     public String payment_method;
     public PaymentResult payment_result;
     public Extensions extensions;
+    public RazorpayOrder getRazorpay_order() {
+        return razorpay_order;
+    }
+
+    public void setRazorpay_order(RazorpayOrder razorpay_order) {
+        this.razorpay_order = razorpay_order;
+    }
+
+    public RazorpayOrder razorpay_order;
 }

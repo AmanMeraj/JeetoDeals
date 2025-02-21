@@ -37,6 +37,7 @@ import com.google.gson.Gson;
 import com.razorpay.PaymentData;
 import com.razorpay.PaymentResultWithDataListener;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -159,62 +160,132 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
         }
     }
 
-    private void setupListeners() {
-        // Back button
-        binding.backBtn.setOnClickListener(view -> finish());
+//    private void setupListeners() {
+//        // Back button
+//        binding.backBtn.setOnClickListener(view -> finish());
+//
+//        // Country selection
+//        binding.edtCountry.setOnItemClickListener((parent, view, position, id) -> {
+//            String selectedCountry = parent.getItemAtPosition(position).toString();
+//            if (selectedCountry.equals("India")) {
+//                countryCode = "IN";
+//            }
+//        });
+//
+//        // State selection for billing
+//        binding.edtState.setOnItemClickListener((parent, view, position, id) -> {
+//            String selectedState = parent.getItemAtPosition(position).toString();
+//            selectedBillingStateCode = stateCodeMap.get(selectedState);
+//            Log.d("Selected Billing State", "State: " + selectedState + ", Code: " + selectedBillingStateCode);
+//        });
+//
+//        // State selection for shipping
+//        binding.edtStateShipping.setOnItemClickListener((parent, view, position, id) -> {
+//            String selectedState = parent.getItemAtPosition(position).toString();
+//            selectedShippingStateCode = stateCodeMap.get(selectedState);
+//            Log.d("Selected Shipping State", "State: " + selectedState + ", Code: " + selectedShippingStateCode);
+//        });
+//
+//        // Billing address autocomplete
+//        MaterialAutoCompleteTextView billingAutoComplete = (MaterialAutoCompleteTextView) binding.billingAddressInputText.getEditText();
+//        billingAutoComplete.setOnClickListener(v -> {
+//            binding.billingAddressRel.setVisibility(View.VISIBLE);
+//            binding.shippingCheckBox.setVisibility(View.VISIBLE);
+//        });
+//
+//        // Shipping checkbox
+//        binding.shippingCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//            binding.shippingAddressInputText.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+//            if (!isChecked) {
+//                binding.shippingRel.setVisibility(View.GONE);
+//            }
+//        });
+//
+//        // Shipping address autocomplete
+//        MaterialAutoCompleteTextView shippingAutoComplete = (MaterialAutoCompleteTextView) binding.shippingAddressInputText.getEditText();
+//        shippingAutoComplete.setOnClickListener(v -> binding.shippingRel.setVisibility(View.VISIBLE));
+//
+//        // Checkout button
+//        binding.checkoutBtn.setOnClickListener(view -> {
+//            if (isInternetConnected(ActivityCheckout.this)) {
+//                setdata();
+//            } else {
+//                Toast.makeText(ActivityCheckout.this, "No Internet Connection!", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//
+//        setupEmailValidation();
+//    }
+private void setupListeners() {
+    // Back button
+    binding.backBtn.setOnClickListener(view -> finish());
 
-        // Country selection
-        binding.edtCountry.setOnItemClickListener((parent, view, position, id) -> {
-            String selectedCountry = parent.getItemAtPosition(position).toString();
-            if (selectedCountry.equals("India")) {
-                countryCode = "IN";
+    // Country selection
+    binding.edtCountry.setOnItemClickListener((parent, view, position, id) -> {
+        String selectedCountry = parent.getItemAtPosition(position).toString();
+        if (selectedCountry.equals("India")) {
+            countryCode = "IN";
+        }
+    });
+
+    // State selection for billing
+    binding.edtState.setOnItemClickListener((parent, view, position, id) -> {
+        String selectedState = parent.getItemAtPosition(position).toString();
+        selectedBillingStateCode = stateCodeMap.get(selectedState);
+        Log.d("Selected Billing State", "State: " + selectedState + ", Code: " + selectedBillingStateCode);
+    });
+
+    // State selection for shipping
+    binding.edtStateShipping.setOnItemClickListener((parent, view, position, id) -> {
+        String selectedState = parent.getItemAtPosition(position).toString();
+        selectedShippingStateCode = stateCodeMap.get(selectedState);
+        Log.d("Selected Shipping State", "State: " + selectedState + ", Code: " + selectedShippingStateCode);
+    });
+
+    // Billing address autocomplete - toggle visibility
+    MaterialAutoCompleteTextView billingAutoComplete = (MaterialAutoCompleteTextView) binding.billingAddressInputText.getEditText();
+    billingAutoComplete.setOnClickListener(v -> {
+        if (binding.billingAddressRel.getVisibility() == View.VISIBLE) {
+            binding.billingAddressRel.setVisibility(View.GONE);
+            // Only hide the shipping checkbox if shipping rel is also not visible
+            if (binding.shippingRel.getVisibility() != View.VISIBLE) {
+                binding.shippingCheckBox.setVisibility(View.GONE);
             }
-        });
-
-        // State selection for billing
-        binding.edtState.setOnItemClickListener((parent, view, position, id) -> {
-            String selectedState = parent.getItemAtPosition(position).toString();
-            selectedBillingStateCode = stateCodeMap.get(selectedState);
-            Log.d("Selected Billing State", "State: " + selectedState + ", Code: " + selectedBillingStateCode);
-        });
-
-        // State selection for shipping
-        binding.edtStateShipping.setOnItemClickListener((parent, view, position, id) -> {
-            String selectedState = parent.getItemAtPosition(position).toString();
-            selectedShippingStateCode = stateCodeMap.get(selectedState);
-            Log.d("Selected Shipping State", "State: " + selectedState + ", Code: " + selectedShippingStateCode);
-        });
-
-        // Billing address autocomplete
-        MaterialAutoCompleteTextView billingAutoComplete = (MaterialAutoCompleteTextView) binding.billingAddressInputText.getEditText();
-        billingAutoComplete.setOnClickListener(v -> {
+        } else {
             binding.billingAddressRel.setVisibility(View.VISIBLE);
             binding.shippingCheckBox.setVisibility(View.VISIBLE);
-        });
+        }
+    });
 
-        // Shipping checkbox
-        binding.shippingCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            binding.shippingAddressInputText.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-            if (!isChecked) {
-                binding.shippingRel.setVisibility(View.GONE);
-            }
-        });
+    // Shipping checkbox
+    binding.shippingCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        binding.shippingAddressInputText.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+        if (!isChecked) {
+            binding.shippingRel.setVisibility(View.GONE);
+        }
+    });
 
-        // Shipping address autocomplete
-        MaterialAutoCompleteTextView shippingAutoComplete = (MaterialAutoCompleteTextView) binding.shippingAddressInputText.getEditText();
-        shippingAutoComplete.setOnClickListener(v -> binding.shippingRel.setVisibility(View.VISIBLE));
+    // Shipping address autocomplete - toggle visibility
+    MaterialAutoCompleteTextView shippingAutoComplete = (MaterialAutoCompleteTextView) binding.shippingAddressInputText.getEditText();
+    shippingAutoComplete.setOnClickListener(v -> {
+        if (binding.shippingRel.getVisibility() == View.VISIBLE) {
+            binding.shippingRel.setVisibility(View.GONE);
+        } else {
+            binding.shippingRel.setVisibility(View.VISIBLE);
+        }
+    });
 
-        // Checkout button
-        binding.checkoutBtn.setOnClickListener(view -> {
-            if (isInternetConnected(ActivityCheckout.this)) {
-                setdata();
-            } else {
-                Toast.makeText(ActivityCheckout.this, "No Internet Connection!", Toast.LENGTH_SHORT).show();
-            }
-        });
+    // Checkout button
+    binding.checkoutBtn.setOnClickListener(view -> {
+        if (isInternetConnected(ActivityCheckout.this)) {
+            setdata();
+        } else {
+            Toast.makeText(ActivityCheckout.this, "No Internet Connection!", Toast.LENGTH_SHORT).show();
+        }
+    });
 
-        setupEmailValidation();
-    }
+    setupEmailValidation();
+}
 
     private void setupEmailValidation() {
         TextWatcher emailValidator = new TextWatcher() {
@@ -258,7 +329,7 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
     private void fillFeilds(FragmentsRepository.ApiResponse<GetCheckout> getCheckoutResponse) {
 
         //Order ID
-        orderId= getCheckoutResponse.data.getRazorpay_order().getId();
+//        orderId= getCheckoutResponse.data.getRazorpay_order().getId();
         // Billing address
         binding.edtFirstName.setText(getCheckoutResponse.data.billing_address.getFirst_name());
         binding.edtLastName.setText(getCheckoutResponse.data.billing_address.getLast_name());
@@ -343,12 +414,6 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
         checkout.customer_note = binding.edtOtherNotesShipping.getText().toString().trim();
         checkout.create_account = false;
         checkout.payment_method = getIntent().getStringExtra("payment_method");
-
-        // Payment Data
-        checkout.payment_data = new ArrayList<>();
-        Checkout.PaymentData paymentData = new Checkout.PaymentData();
-        paymentData.razorpay_order_id = String.valueOf(orderId);
-        checkout.payment_data.add(paymentData);
 
         // Extensions
         checkout.extensions = new HashMap<>();
@@ -437,7 +502,8 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
         String paymentMethod = getIntent().getStringExtra("payment_method");
 
         if ("razorpay".equals(paymentMethod)) {
-            startRazorpayPayment();
+//            startRazorpayPayment();
+            processWalletPayment(checkout);
         } else if ("wallet".equals(paymentMethod)) {
             processWalletPayment(checkout);
         } else {
@@ -446,30 +512,59 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
     }
     private void startRazorpayPayment() {
         com.razorpay.Checkout razorpayCheckout = new com.razorpay.Checkout();
-        razorpayCheckout.setKeyID("rzp_test_eB9tKqgSGeVVtQ"); // Note: it's setKeyID, not setKey
+        razorpayCheckout.setKeyID("rzp_test_eB9tKqgSGeVVtQ");
+
+        // Log the initialization
+        Log.d("RAZORPAY_DEBUG", "Initializing Razorpay payment");
+        Log.d("RAZORPAY_DEBUG", "Key ID: rzp_test_eB9tKqgSGeVVtQ");
+        Log.d("RAZORPAY_DEBUG", "Order ID: " + orderId);
 
         try {
+            // Log billing address details
+            Log.d("RAZORPAY_DEBUG", "Billing Details:");
+            Log.d("RAZORPAY_DEBUG", "Email: " + checkoutData.billing_address.email);
+            Log.d("RAZORPAY_DEBUG", "Phone: " + checkoutData.billing_address.phone);
+
+            // Log amount calculation
+            String amountStr = binding.total.getText().toString();
+            Log.d("RAZORPAY_DEBUG", "Original amount string: " + amountStr);
+
+            amountStr = amountStr.replaceAll("[^0-9.]", "");
+            Log.d("RAZORPAY_DEBUG", "Cleaned amount string: " + amountStr);
+
+            double amount = Double.parseDouble(amountStr) * 100;
+            Log.d("RAZORPAY_DEBUG", "Final amount in paise: " + (int)amount);
+
             JSONObject options = new JSONObject();
             options.put("name", "Jeeto Deals");
             options.put("description", "Order Payment");
+            options.put("order_id", orderId);
             options.put("currency", "INR");
-            // Remove non-numeric characters and convert to paise
-            String amountStr = binding.total.getText().toString().replaceAll("[^0-9.]", "");
-            double amount = Double.parseDouble(amountStr) * 100;
             options.put("amount", (int)amount);
-
-            // Add theme color (optional)
             options.put("theme.color", R.color.orange);
 
-            // Add customer information
             JSONObject preFill = new JSONObject();
             preFill.put("email", checkoutData.billing_address.email);
             preFill.put("contact", checkoutData.billing_address.phone);
             options.put("prefill", preFill);
 
+            // Log the final options object
+            Log.d("RAZORPAY_DEBUG", "Final Razorpay options:");
+            Log.d("RAZORPAY_DEBUG", options.toString(4)); // Pretty print JSON with 4 spaces indentation
+
             razorpayCheckout.open(ActivityCheckout.this, options);
+            Log.d("RAZORPAY_DEBUG", "Razorpay checkout opened successfully");
+
         } catch (Exception e) {
-            Log.e("RAZORPAY", "Error in starting payment: " + e.getMessage());
+            Log.e("RAZORPAY_ERROR", "Stack trace: ", e);
+            Log.e("RAZORPAY_ERROR", "Error message: " + e.getMessage());
+
+            if (e instanceof JSONException) {
+                Log.e("RAZORPAY_ERROR", "JSON creation failed");
+            } else if (e instanceof NumberFormatException) {
+                Log.e("RAZORPAY_ERROR", "Amount parsing failed");
+            }
+
             Toast.makeText(this, "Error in payment process: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -506,14 +601,17 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
     public void onPaymentSuccess(String razorpayPaymentId, PaymentData paymentData) {
         Toast.makeText(this, "Payment Successful", Toast.LENGTH_SHORT).show();
 
-        // Update payment data
-        checkoutData.payment_data = new ArrayList<>();
-        Checkout.PaymentData payment = new Checkout.PaymentData();
-        payment.razorpay_payment_id = razorpayPaymentId;
-        checkoutData.payment_data.add(payment);
+//        // Update payment data
+//        checkoutData.payment_data = new ArrayList<>();
+//        Checkout.PaymentData payment = new Checkout.PaymentData();
+//        payment.razorpay_payment_id = razorpayPaymentId;
+//        checkoutData.payment_data.add(payment);
 
-        // Process the final checkout
-        processWalletPayment(checkoutData);
+//        // Process the final checkout
+//        processWalletPayment(checkoutData);
+                        Intent intent = new Intent(ActivityCheckout.this, ActivityMyOrders.class);
+                        startActivity(intent);
+                        finish();
     }
 
     @Override
@@ -534,9 +632,15 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
                 viewModel.postCheckout(auth, nonce, checkout).observe(this, response -> {
                     if (response != null && response.isSuccess && response.data != null) {
                         responsee = response.data;
-                        Intent intent = new Intent(ActivityCheckout.this, ActivityMyOrders.class);
-                        startActivity(intent);
-                        finish();
+                        orderId=responsee.getRazorpay_order().getId();
+                        Log.d("RAZORPAY", "processWalletPayment: "+orderId);
+                        if(responsee.payment_method.matches("razorpay")){
+                            startRazorpayPayment();
+                        }else{
+                            Intent intent = new Intent(ActivityCheckout.this, ActivityMyOrders.class);
+                            startActivity(intent);
+                            finish();
+                        }
                     } else {
                         Log.e("Checkout Error", "Response is null or unsuccessful: " +
                                 (response != null ? response.message : "Unknown error"));
