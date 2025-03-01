@@ -32,6 +32,7 @@ public class TicketFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentTicketBinding.inflate(inflater, container, false);
         ticketViewModel = new ViewModelProvider(this).get(FragmentsViewModel.class);
+        binding.loader.rlLoader.setVisibility(View.VISIBLE);
 
         // Initialize adapters with empty lists
         initializeAdapters();
@@ -44,8 +45,20 @@ public class TicketFragment extends Fragment {
         observeTickets();
 
         // Button click listeners
-        binding.activeBtn.setOnClickListener(view -> switchToActiveTickets());
-        binding.pastBtn.setOnClickListener(view -> switchToPastTickets());
+        binding.activeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.loader.rlLoader.setVisibility(View.VISIBLE);
+                switchToActiveTickets();
+            }
+        });
+        binding.pastBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                binding.loader.rlLoader.setVisibility(View.VISIBLE);
+                switchToPastTickets();
+            }
+        });
 
         return binding.getRoot();
     }
@@ -60,6 +73,7 @@ public class TicketFragment extends Fragment {
         if (authToken != null && customerId != null) {
             ticketViewModel.GetCustomerTickets(authToken, customerId).observe(getViewLifecycleOwner(), response -> {
                 if (response != null && response.isSuccess && response.data != null) {
+                    binding.loader.rlLoader.setVisibility(View.GONE);
                     List<TicketGroupedByProduct> activeTickets = new ArrayList<>();
                     List<TicketGroupedByProduct> pastTickets = new ArrayList<>();
 
@@ -68,12 +82,12 @@ public class TicketFragment extends Fragment {
                     if (activeTicketsMap != null) {
                         for (ProductTickets productTickets : activeTicketsMap.values()) {
                             if (productTickets.getTickets() != null && !productTickets.getTickets().isEmpty()) {
-                                String ticketNumbers = getCommaSeparatedTickets(productTickets.getTickets());
                                 activeTickets.add(new TicketGroupedByProduct(
                                         productTickets.getProduct_name(),
                                         productTickets.getProduct_image(),
-                                        ticketNumbers
+                                        getTicketNumbersList(productTickets.getTickets()) // Pass list instead of String
                                 ));
+
                             }
                         }
                     }
@@ -83,11 +97,10 @@ public class TicketFragment extends Fragment {
                     if (pastTicketsMap != null) {
                         for (ProductTickets productTickets : pastTicketsMap.values()) {
                             if (productTickets.getTickets() != null && !productTickets.getTickets().isEmpty()) {
-                                String ticketNumbers = getCommaSeparatedTickets(productTickets.getTickets());
                                 pastTickets.add(new TicketGroupedByProduct(
                                         productTickets.getProduct_name(),
                                         productTickets.getProduct_image(),
-                                        ticketNumbers
+                                        getTicketNumbersList(productTickets.getTickets())
                                 ));
                             }
                         }
@@ -95,35 +108,46 @@ public class TicketFragment extends Fragment {
 
                     // Update UI based on selected layout
                     if (isActiveLayout) {
+                        binding.loader.rlLoader.setVisibility(View.GONE);
                         updateRecyclerView(activeTickets);
                     } else {
+                        binding.loader.rlLoader.setVisibility(View.GONE);
                         updateRecyclerView(pastTickets);
                     }
                 } else {
+                    binding.loader.rlLoader.setVisibility(View.GONE);
                     showNoDataView();
                 }
             });
         } else {
+            binding.loader.rlLoader.setVisibility(View.GONE);
             showNoDataView();
         }
     }
 
     // Helper method to get comma-separated ticket numbers
-    private String getCommaSeparatedTickets(List<TicketNumber> tickets) {
-        StringBuilder ticketNumbers = new StringBuilder();
-        for (int i = 0; i < tickets.size(); i++) {
-            ticketNumbers.append(tickets.get(i).getTicket_number());
-            if (i < tickets.size() - 1) {
-                ticketNumbers.append(", ");
-            }
+    private List<String> getTicketNumbersList(List<TicketNumber> tickets) {
+        List<String> ticketNumbers = new ArrayList<>();
+        for (TicketNumber ticket : tickets) {
+            ticketNumbers.add(ticket.getTicket_number());
         }
-        return ticketNumbers.toString();
+        return ticketNumbers;
     }
+
 
     private void switchToActiveTickets() {
         binding.activeBtn.setBackgroundResource(R.drawable.orange_wallet_bg);
         binding.pastBtn.setBackgroundResource(R.drawable.grey_btn);
         isActiveLayout = true;
+
+        // Check if active tickets are empty
+        if (activeAdapter.getItemCount() == 0) {
+            showNoDataView();
+        } else {
+            binding.rcTicket.setVisibility(View.VISIBLE);
+            binding.noItem.setVisibility(View.GONE);
+        }
+
         observeTickets();
     }
 
@@ -131,8 +155,18 @@ public class TicketFragment extends Fragment {
         binding.pastBtn.setBackgroundResource(R.drawable.orange_wallet_bg);
         binding.activeBtn.setBackgroundResource(R.drawable.grey_btn);
         isActiveLayout = false;
+
+        // Check if past tickets are empty
+        if (pastAdapter.getItemCount() == 0) {
+            showNoDataView();
+        } else {
+            binding.rcTicket.setVisibility(View.VISIBLE);
+            binding.noItem.setVisibility(View.GONE);
+        }
+
         observeTickets();
     }
+
 
     private void updateRecyclerView(List<TicketGroupedByProduct> tickets) {
         if (tickets != null && !tickets.isEmpty()) {
@@ -141,10 +175,10 @@ public class TicketFragment extends Fragment {
 
             if (isActiveLayout) {
                 activeAdapter.updateTickets(tickets);
-                binding.rcTicket.setAdapter(activeAdapter);  // Set active adapter
+                binding.rcTicket.setAdapter(activeAdapter);
             } else {
                 pastAdapter.updateTickets(tickets);
-                binding.rcTicket.setAdapter(pastAdapter);  // Set past adapter
+                binding.rcTicket.setAdapter(pastAdapter);
             }
         } else {
             showNoDataView();
@@ -154,7 +188,7 @@ public class TicketFragment extends Fragment {
 
     private void showNoDataView() {
         binding.rcTicket.setVisibility(View.GONE);
-        binding.cardNoData.setVisibility(View.VISIBLE);
+        binding.noItem.setVisibility(View.VISIBLE);
     }
 
     private String getAuthToken() {

@@ -7,15 +7,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:cardCornerRadius="15dp"
-        app:cardElevation="5dp"
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="2dp"
         android:id="@+id/material_card">
         <ImageView
             android:id="@+id/image_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
+            android:scaleType="centerInside"
             android:contentDescription="@string/app_name" />
 
     </com.google.android.material.card.MaterialCardView>

@@ -14,6 +14,7 @@ import com.deals.jeetodeals.Model.BannerResponse;
 import com.deals.jeetodeals.Model.CartResponse;
 import com.deals.jeetodeals.Model.Category;
 import com.deals.jeetodeals.Model.Checkout;
+import com.deals.jeetodeals.Model.DrawResponse;
 import com.deals.jeetodeals.Model.FcmResponse;
 import com.deals.jeetodeals.Model.GetCheckout;
 import com.deals.jeetodeals.Model.Login;
@@ -24,6 +25,7 @@ import com.deals.jeetodeals.Model.UpdateAddress;
 import com.deals.jeetodeals.Model.UpdateAddressResponse;
 import com.deals.jeetodeals.Model.User;
 import com.deals.jeetodeals.Model.WalletResponse;
+import com.deals.jeetodeals.Model.WinnerResponse;
 import com.deals.jeetodeals.Model.Wishlist;
 import com.deals.jeetodeals.Model.WishlistCreationResponse;
 import com.deals.jeetodeals.MyOrders.MyOrdersResponse;
@@ -116,6 +118,14 @@ public interface ApiRequest {
             @Header("Authorization") String authorization
     );
 
+    @Headers({"Accept: application/json"})
+    @GET("custom/v1/draws")
+    Call<ArrayList<DrawResponse>> getDraw();
+
+    @Headers({"Accept: application/json"})
+    @GET("custom/v1/winners")
+    Call<ArrayList<WinnerResponse>> getWinner();
+
 //    @Headers({"Accept: application/json"})
 //    @GET("wc/store/v1/products")
 //    Call<List<ShopResponse>> getShop(
@@ -136,6 +146,11 @@ public interface ApiRequest {
             @Query("per_page") int perPage
     );
 
+    @Headers({"Accept: application/json"})
+    @GET("wc/store/v1/products/{id}")  // Add {id} as a placeholder in the URL
+    Call<ShopResponse> getShopWishList(@Path("id") int id); // Pass the ID dynamically
+
+
 
 
     @Headers({"Accept: application/json"})
@@ -145,7 +160,7 @@ public interface ApiRequest {
     );
 
     @Headers({"Accept: application/json"})
-    @GET("wc/store/v1/cart")
+    @GET("custom/v1/app-version")
     Call<AppVersion> getAppVersion(
     );
 

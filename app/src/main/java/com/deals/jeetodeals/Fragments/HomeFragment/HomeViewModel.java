@@ -6,8 +6,10 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.deals.jeetodeals.Model.DrawResponse;
 import com.deals.jeetodeals.Model.ShopResponse;
 import com.deals.jeetodeals.Model.Signup;
+import com.deals.jeetodeals.Model.WinnerResponse;
 import com.deals.jeetodeals.SignupScreen.ExistsResponse;
 import com.deals.jeetodeals.SignupScreen.SignupRepository;
 import com.deals.jeetodeals.Utils.Utility;
@@ -21,6 +23,8 @@ public class HomeViewModel extends AndroidViewModel {
     HomeRepository repository;
     Utility utility= new Utility();
     private LiveData<HomeRepository.ApiResponse<ArrayList<HomeResponse>>> responseLiveData;
+    private LiveData<HomeRepository.ApiResponse<ArrayList<DrawResponse>>> responseLiveData2;
+    private LiveData<HomeRepository.ApiResponse<ArrayList<WinnerResponse>>> responseLiveData3;
     private LiveData<HomeRepository.ApiResponse<List<ShopResponse>>> responseLiveDataShop;
     public HomeViewModel(@NonNull Application application) {
         super(application);
@@ -35,6 +39,15 @@ public class HomeViewModel extends AndroidViewModel {
     public LiveData<HomeRepository.ApiResponse<ArrayList<HomeResponse>>> getHome(String auth, String type,int category) {
         responseLiveData = repository.homeGet(auth,type,category);  // Fixed method call with correct case
         return responseLiveData;
+    }
+
+    public LiveData<HomeRepository.ApiResponse<ArrayList<DrawResponse>>> getDraw() {
+        responseLiveData2 = repository.getDraw();  // Fixed method call with correct case
+        return responseLiveData2;
+    }
+    public LiveData<HomeRepository.ApiResponse<ArrayList<WinnerResponse>>> getWinner() {
+        responseLiveData3 = repository.getWinner();  // Fixed method call with correct case
+        return responseLiveData3;
     }
     public LiveData<HomeRepository.ApiResponse<List<ShopResponse>>> getShop(String auth, String type, int id, int page, int perPage) {
         // Create a map for the filters, passing the type parameter with key "filter[type]"

@@ -48,4 +48,14 @@ public class AppVersion implements Serializable {
     public String calling;
     public String email;
     public String whatsapp;
+
+    public int getVoucher_rate() {
+        return voucher_rate;
+    }
+
+    public void setVoucher_rate(int voucher_rate) {
+        this.voucher_rate = voucher_rate;
+    }
+
+    public int voucher_rate;
 }

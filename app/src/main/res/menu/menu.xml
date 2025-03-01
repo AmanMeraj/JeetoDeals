@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 <item android:id="@+id/home"
     android:title="@string/home"
     android:icon="@drawable/home_jd"/>
@@ -19,5 +20,6 @@
 
     <item android:id="@+id/cart"
     android:title="@string/cart"
+        app:actionViewClass="androidx.appcompat.widget.LinearLayoutCompat"
     android:icon="@drawable/shop_jd"/>
 </menu>

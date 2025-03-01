@@ -2,18 +2,25 @@ package com.deals.jeetodeals.Fragments.HomeFragment;
 
 import static android.content.ContentValues.TAG;
 
+import static androidx.core.util.TypedValueCompat.dpToPx;
+
 import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -21,17 +28,23 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.deals.jeetodeals.Adapters.AdapterDraw;
 import com.deals.jeetodeals.Adapters.AdapterPromotion1;
 import com.deals.jeetodeals.Adapters.AdapterPromotion2;
+import com.deals.jeetodeals.Adapters.AdapterWinner;
 import com.deals.jeetodeals.Adapters.ImagePagerAdapter;
+import com.deals.jeetodeals.BottomSheet.BottomSheetPromotion;
+import com.deals.jeetodeals.ContainerActivity.ContainerActivity;
 import com.deals.jeetodeals.Fragments.FragmentsRepository;
 import com.deals.jeetodeals.Fragments.FragmentsViewModel;
 import com.deals.jeetodeals.Model.AddItems;
 import com.deals.jeetodeals.Model.BannerResponse;
 import com.deals.jeetodeals.Model.CartResponse;
+import com.deals.jeetodeals.Model.DrawResponse;
 import com.deals.jeetodeals.Model.FcmResponse;
 import com.deals.jeetodeals.Model.Items;
 import com.deals.jeetodeals.Model.User;
+import com.deals.jeetodeals.Model.WinnerResponse;
 import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.SignInScreen.SignInActivity;
 import com.deals.jeetodeals.Utils.SharedPref;
@@ -46,12 +59,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemClickListener, AdapterPromotion2.OnItemClickListener2 {
+public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemClickListener, AdapterPromotion2.OnItemClickListener2, BottomSheetPromotion.AddToCartListener ,AdapterDraw.OnButtonClickListner{
     private FragmentHomeBinding binding;
     private HomeViewModel viewModel;
     private FragmentsViewModel fragmentsViewModel;
+    ArrayList<DrawResponse> drawResponse;
     private ArrayList<HomeResponse> responsee;
+    private ArrayList<WinnerResponse> winnerResponse;
     private BannerResponse bannerResponse;
+    private static final String TOPIC = "jeetodeals";
     private CartResponse cartResponse;
     private Utility utility = new Utility();
     private SharedPref pref = new SharedPref();
@@ -68,6 +84,9 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
     private AtomicBoolean isLoadingBalance = new AtomicBoolean(false);
     private AtomicBoolean isLoadingCart = new AtomicBoolean(false);
     private AtomicBoolean isPostingToken = new AtomicBoolean(false);
+
+    // Add to cart button cooldown flag
+    private AtomicBoolean isAddToCartCooldown = new AtomicBoolean(false);
 
     // Track if session expired dialog is showing
     private static AtomicBoolean isSessionDialogShowing = new AtomicBoolean(false);
@@ -95,6 +114,15 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
                     Log.d("NotificationPermission", isGranted ? "Permission granted!" : "Permission denied!");
                 }
         );
+        getParentFragmentManager().setFragmentResultListener("ADD_TO_CART_REQUEST", this,
+                (requestKey, result) -> {
+                    if (result.containsKey("item")) {
+                        HomeResponse item = (HomeResponse) result.getSerializable("item");
+                        if (item != null) {
+                            handleAddToCartAction(item);
+                        }
+                    }
+                });
 
         checkAndRequestNotificationPermission();
 
@@ -109,6 +137,15 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
                 showToast("No internet connection!");
             }
         }
+        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
+                .addOnCompleteListener(task -> {
+                    String msg = "Subscribed to topic: " + TOPIC;
+                    if (!task.isSuccessful()) {
+                        msg = "Topic subscription failed";
+                    }
+                    Log.d(TAG, msg);
+                });
+
 
         // Video view setup
         setupVideoView();
@@ -120,6 +157,8 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         if (!initialDataLoaded) {
             fetchHomeData();
             fetchHomeData2();
+            fetchDrawData();
+            fetchWinnerList();
             getBanner();
             getBalance();
             getCart();
@@ -191,6 +230,7 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         isLoadingBalance.set(false);
         isLoadingCart.set(false);
         isPostingToken.set(false);
+        isAddToCartCooldown.set(false);
     }
 
     @Override
@@ -212,20 +252,18 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
     }
 
     private void setupVideoView() {
-        // Automatically start the video when it's loaded
+        // Get screen width
+        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+
+        // Calculate height based on 3:2 aspect ratio
+        int videoHeight = (screenWidth * 2) / 3;
+
+        // Set the calculated height
+        ViewGroup.LayoutParams layoutParams = binding.videoView.getLayoutParams();
+        layoutParams.height = videoHeight;
+        binding.videoView.setLayoutParams(layoutParams);
+
         binding.videoView.setOnPreparedListener(mp -> {
-            int videoWidth = mp.getVideoWidth();
-            int videoHeight = mp.getVideoHeight();
-            float videoProportion = (float) videoWidth / (float) videoHeight;
-
-            int screenWidth = getResources().getDisplayMetrics().widthPixels;
-            int newHeight = (int) (screenWidth / videoProportion);
-
-            ViewGroup.LayoutParams layoutParams = binding.videoView.getLayoutParams();
-            layoutParams.height = newHeight;
-            binding.videoView.setLayoutParams(layoutParams);
-
-            // Start the video automatically when it's prepared
             binding.videoView.start();
             binding.playPauseButton.setVisibility(View.GONE);
             binding.playPauseButton.setImageResource(R.drawable.pause_jd); // Set to pause icon
@@ -263,8 +301,8 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
                 }, 2000); // Hide after 2 seconds
             }
         });
-
     }
+
 
     // Method to hide the play/pause button after 2 seconds of video play
     private void hidePlayPauseButton() {
@@ -299,6 +337,11 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
     }
 
     private void fetchHomeData() {
+        // Show loader when API call starts
+        if (binding != null) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        }
+
         if (isLoadingHomeData.get() || !isAdded()) return;
 
         isLoadingHomeData.set(true);
@@ -308,7 +351,10 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         viewModel.getHome(auth, type, 20).observe(getViewLifecycleOwner(), response -> {
             isLoadingHomeData.set(false);
 
-            if (!isAdded()) return;
+            if (!isAdded() || binding == null) return;
+
+            // Hide loader regardless of response
+            binding.loader.rlLoader.setVisibility(View.GONE);
 
             if (response != null) {
                 if (response.isSuccess && response.data != null) {
@@ -319,11 +365,116 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
                 } else {
                     showToast(response.message != null ? response.message : "Unknown error");
                 }
+            } else {
+                showToast("Something went wrong!");
+            }
+        });
+    }
+    private void fetchDrawData() {
+        Log.d("fetchDrawData", "Method called");
+
+        // Show loader when API call starts
+        if (binding != null) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        }
+
+        Log.d("fetchDrawData", "Fetching data from API...");
+
+        viewModel.getDraw().observe(getViewLifecycleOwner(), response -> {
+            isLoadingHomeData.set(false);
+
+            if (!isAdded() || binding == null) {
+                Log.d("fetchDrawData", "Fragment not added or binding is null");
+                return;
+            }
+
+            // Hide loader regardless of response
+            binding.loader.rlLoader.setVisibility(View.GONE);
+
+            if (response != null) {
+                Log.d("fetchDrawData", "API Response received: " + response.toString());
+                if (response.isSuccess && response.data != null) {
+                    drawResponse = response.data;
+                    Log.d("fetchDrawData", "Data loaded successfully, setting up RecyclerView");
+                    setupRecyclerViews3(drawResponse);
+                } else {
+                    Log.e("fetchDrawData", "API Response error: " + response.message);
+                    showToast(response.message != null ? response.message : "Unknown error");
+                }
+            } else {
+                Log.e("fetchDrawData", "API response is null");
+                showToast("Something went wrong!");
+            }
+        });
+    }
+    private void fetchWinnerList() {
+        Log.d("fetchWinnerList", "Method called");
+
+        // Show loader when API call starts
+        if (binding != null) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        }
+
+        Log.d("fetchWinnerList", "Fetching data from API...");
+
+        viewModel.getWinner().observe(getViewLifecycleOwner(), response -> {
+            isLoadingHomeData.set(false);
+
+            if (!isAdded() || binding == null) {
+                Log.d("fetchWinnerList", "Fragment not added or binding is null");
+                return;
+            }
+
+            // Hide loader regardless of response
+            binding.loader.rlLoader.setVisibility(View.GONE);
+
+            if (response != null) {
+                Log.d("fetchWinnerList", "API Response received: " + response.toString());
+                if (response.isSuccess && response.data != null) {
+                    winnerResponse = response.data;
+                    Log.d("fetchWinnerList", "Data loaded successfully, setting up RecyclerView");
+                    setupRecyclerViews4(winnerResponse);
+                } else {
+                    Log.e("fetchWinnerList", "API Response error: " + response.message);
+                    showToast(response.message != null ? response.message : "Unknown error");
+                }
+            } else {
+                Log.e("fetchWinnerList", "API response is null");
+                showToast("Something went wrong!");
             }
         });
     }
 
+    private void setupRecyclerViews3(ArrayList<DrawResponse> drawResponse) {
+        Log.d("setupRecyclerViews3", "Setting up RecyclerView with data: " + drawResponse);
+
+        if (binding != null && drawResponse != null) {
+            AdapterDraw adapter = new AdapterDraw(requireActivity(), drawResponse, this);
+            binding.rcDraws.setAdapter(adapter);
+            Log.d("setupRecyclerViews3", "Adapter set successfully.");
+        } else {
+            Log.e("setupRecyclerViews3", "Binding or data is null");
+        }
+    }
+    private void setupRecyclerViews4(ArrayList<WinnerResponse> winnerResponse) {
+        Log.d("setupRecyclerViews3", "Setting up RecyclerView with data: " + drawResponse);
+
+        if (binding != null && winnerResponse != null) {
+            AdapterWinner adapter = new AdapterWinner(requireActivity(), winnerResponse);
+            binding.rcWinners.setAdapter(adapter);
+            Log.d("setupRecyclerViews3", "Adapter set successfully.");
+        } else {
+            Log.e("setupRecyclerViews3", "Binding or data is null");
+        }
+    }
+
+
     private void fetchHomeData2() {
+        // Show loader when API call starts
+        if (binding != null) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        }
+
         if (isLoadingHomeData2.get() || !isAdded()) return;
 
         isLoadingHomeData2.set(true);
@@ -333,7 +484,10 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         viewModel.getHome(auth, type, 21).observe(getViewLifecycleOwner(), response -> {
             isLoadingHomeData2.set(false);
 
-            if (!isAdded()) return;
+            if (!isAdded() || binding == null) return;
+
+            // Hide loader regardless of response
+            binding.loader.rlLoader.setVisibility(View.GONE);
 
             if (response != null) {
                 if (response.isSuccess && response.data != null) {
@@ -344,6 +498,8 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
                 } else {
                     showToast(response.message != null ? response.message : "Unknown error");
                 }
+            } else {
+                showToast("Something went wrong!");
             }
         });
     }
@@ -381,6 +537,11 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
     }
 
     public void getBanner() {
+        // Show loader when API call starts
+        if (binding != null) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        }
+
         if (isLoadingBanner.get() || !isAdded()) return;
 
         isLoadingBanner.set(true);
@@ -389,7 +550,10 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         fragmentsViewModel.getBanner(auth).observe(getViewLifecycleOwner(), response -> {
             isLoadingBanner.set(false);
 
-            if (!isAdded()) return;
+            if (!isAdded() || binding == null) return;
+
+            // Hide loader regardless of response
+            binding.loader.rlLoader.setVisibility(View.GONE);
 
             if (response != null) {
                 if (response.isSuccess && response.data != null) {
@@ -416,6 +580,8 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
                 } else {
                     Log.w(TAG, "Banner retrieval failed: " + response.message);
                 }
+            } else {
+                showToast("Something went wrong!");
             }
         });
     }
@@ -434,6 +600,11 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
     }
 
     public void getCart() {
+        // Show loader when API call starts
+        if (binding != null) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        }
+
         if (isLoadingCart.get() || !isAdded()) return;
 
         isLoadingCart.set(true);
@@ -442,7 +613,10 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         fragmentsViewModel.getCart(auth).observe(getViewLifecycleOwner(), response -> {
             isLoadingCart.set(false);
 
-            if (!isAdded()) return;
+            if (!isAdded() || binding == null) return;
+
+            // Hide loader regardless of response
+            binding.loader.rlLoader.setVisibility(View.GONE);
 
             if (response != null) {
                 if (response.isSuccess && response.data != null) {
@@ -450,11 +624,24 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
                     String nonce = FragmentsRepository.getNonce();
                     pref.setPrefString(requireActivity(), pref.nonce, nonce);
                     Log.d("GET CART NONCE", "getCart: " + nonce);
+
+                    // Update cart badge count
+                    if (cartResponse.getItems() != null) {
+                        int cartCount = cartResponse.getItems_count();
+                        pref.setPrefInteger(requireActivity(), pref.cart_count, cartCount);
+
+                        // Update badge in ContainerActivity
+                        if (getActivity() instanceof ContainerActivity) {
+                            ((ContainerActivity) getActivity()).updateCartBadge(cartCount);
+                        }
+                    }
                 } else if ("Unauthorized".equals(response.message)) {
                     handleSessionExpiry();
                 } else {
                     Log.w(TAG, "Cart retrieval failed: " + response.message);
                 }
+            } else {
+                showToast("Something went wrong!");
             }
         });
     }
@@ -475,16 +662,48 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
 
     @Override
     public void onAddToCartClicked(HomeResponse item) {
+        // Check if button is in cooldown period
+        if (isAddToCartCooldown.get()) {
+            return;
+        }
+
+        // Set cooldown flag to prevent rapid clicks
+        isAddToCartCooldown.set(true);
+
+        // Show loader when adding to cart
+        if (binding != null) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        }
+
+        // Start cooldown timer
+        handler.postDelayed(() -> isAddToCartCooldown.set(false), 1000);
+
         handleAddToCartAction(item);
     }
 
     @Override
     public void onAddToCartClicked2(HomeResponse item) {
+        // Check if button is in cooldown period
+        if (isAddToCartCooldown.get()) {
+            return;
+        }
+
+        // Set cooldown flag to prevent rapid clicks
+        isAddToCartCooldown.set(true);
+
+        // Show loader when adding to cart
+        if (binding != null) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        }
+
+        // Start cooldown timer
+        handler.postDelayed(() -> isAddToCartCooldown.set(false), 1000);
+
         handleAddToCartAction(item);
     }
 
     private void handleAddToCartAction(HomeResponse item) {
-        if (!isAdded()) return;
+        if (!isAdded() || binding == null) return;
 
         String authToken = "Bearer " + pref.getPrefString(requireContext(), pref.user_token);
         String nonce = pref.getPrefString(requireActivity(), pref.nonce);
@@ -513,13 +732,20 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
     }
 
     private void showCartClearDialog(HomeResponse item, String authToken, String nonce) {
-        if (!isAdded()) return;
+        if (!isAdded() || binding == null) return;
+
+        // Hide loader before showing dialog
+        binding.loader.rlLoader.setVisibility(View.GONE);
 
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Cart Conflict")
                 .setMessage("Your cart contains items of a different type. Adding this item will clear your cart. Do you want to proceed?")
                 .setPositiveButton("Yes", (dialog, which) -> {
                     dialog.dismiss();
+                    // Show loader again when user confirms
+                    if (binding != null) {
+                        binding.loader.rlLoader.setVisibility(View.VISIBLE);
+                    }
                     addItemToCart(item, authToken, nonce);
                 })
                 .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
@@ -527,18 +753,30 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
     }
 
     private void addItemToCart(HomeResponse item, String authToken, String nonce) {
-        if (!isAdded()) return;
+        if (!isAdded() || binding == null) return;
 
         AddItems addItems = new AddItems();
         addItems.setId(item.getId());
         addItems.setQuantity(1);
 
         fragmentsViewModel.AddToCart(authToken, nonce, addItems).observe(getViewLifecycleOwner(), response -> {
-            if (!isAdded()) return;
+            if (!isAdded() || binding == null) return;
+
+            // Hide loader regardless of response
+            binding.loader.rlLoader.setVisibility(View.GONE);
 
             if (response != null) {
                 if (response.isSuccess && response.data != null) {
                     cartResponse = response.data;
+                    if (cartResponse.getItems() != null) {
+                        int cartCount = cartResponse.getItems_count();
+                        pref.setPrefInteger(requireActivity(), pref.cart_count, cartCount);
+
+                        // Update badge in ContainerActivity
+                        if (getActivity() instanceof ContainerActivity) {
+                            ((ContainerActivity) getActivity()).updateCartBadge(cartCount);
+                        }
+                    }
                     getCart(); // Refresh cart data
                     showToast("Item has been added successfully");
                 } else if ("Session expired".equals(response.message)) {
@@ -546,6 +784,8 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
                 } else {
                     showToast(response.message != null ? response.message : "Unknown error");
                 }
+            } else {
+                showToast("Something went wrong!");
             }
         });
     }
@@ -556,4 +796,46 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
             Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
         }
     }
+
+    private int dpToPx(Context context, float dp) {
+        return (int) (dp * context.getResources().getDisplayMetrics().density);
+    }
+
+    @Override
+    public void onAddToCart(HomeResponse item) {
+        // Implement the cooldown logic here too
+        if (isAddToCartCooldown.get()) {
+            return;
+        }
+
+        // Set cooldown flag to prevent rapid clicks
+        isAddToCartCooldown.set(true);
+
+        // Show loader when adding to cart
+        if (binding != null) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        }
+
+        // Start cooldown timer
+        handler.postDelayed(() -> isAddToCartCooldown.set(false), 1000);
+        handleAddToCartAction(item);
+    }
+
+    @Override
+    public void onButtonClicked(DrawResponse item) {
+        String link = item.getDraw_button_link();
+
+        if (link != null && !link.isEmpty()) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            try {
+                requireActivity().startActivity(intent);
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(requireActivity(), "No browser found to open the link", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(requireActivity(), "Invalid link", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }

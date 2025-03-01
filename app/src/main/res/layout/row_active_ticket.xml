@@ -70,17 +70,14 @@
                 android:text="iPhone 16 Pro Max"
                 android:textColor="@color/black"
                 android:textStyle="bold"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 android:layout_marginBottom="6dp"/>
-
-            <TextView
-                android:fontFamily="@font/inter"
-                android:id="@+id/text_ticket_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="JC-614-131"
-                android:textColor="@color/black"
-                android:textSize="14sp"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/ticket_row"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -19,6 +19,7 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.Wishli
     // Interface for item click actions (delete)
     public interface OnWishlistItemClickListener {
         void onDeleteClick(WishlistResponse item, int position);
+        void  onAddToCartClick(WishlistResponse item,int position);
     }
 
     // Constructor to initialize context, list, and listener
@@ -38,7 +39,7 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.Wishli
     public void onBindViewHolder(WishlistViewHolder holder, int position) {
         WishlistResponse currentItem = wishlistList.get(position);
 
-        holder.binding.vouchersTv.setText(currentItem.getPrice() + " Vouchers");
+        holder.binding.timeTv.setText(currentItem.getPrice() + " Vouchers");
         holder.binding.desc.setText(currentItem.getProduct_name());
 
         Glide.with(context)
@@ -51,6 +52,11 @@ public class WishlistAdapter extends RecyclerView.Adapter<WishlistAdapter.Wishli
         holder.binding.delBtn.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onDeleteClick(currentItem, holder.getAdapterPosition());
+            }
+        });
+        holder.binding.addCartRel.setOnClickListener(v->{
+            if (listener != null) {
+                listener.onAddToCartClick(currentItem, holder.getAdapterPosition());
             }
         });
     }

@@ -19,7 +19,6 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="7dp"
             android:fontFamily="@font/inter_bold"
-            android:text="Voucher 15000"
             android:textColor="@color/white"
             android:textSize="15sp" />
     </RelativeLayout>
@@ -64,7 +63,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_bold"
-                android:text="MacBook Pro M2"
                 android:textColor="@color/black"
                 android:textSize="12sp"
                 android:layout_marginBottom="4dp" />
@@ -74,7 +72,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_bold"
-                android:text="Voucher 7,500"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
 
@@ -83,7 +80,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter"
-                android:text="Win MacBook Pro 16-inch (M2)"
                 android:textColor="@color/black"
                 android:textSize="11sp" />
 

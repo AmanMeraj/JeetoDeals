@@ -1,13 +1,13 @@
 package com.deals.jeetodeals.Model;
 
-import java.io.Serializable;
+import java.util.List;
 
-public class TicketGroupedByProduct implements Serializable {
+public class TicketGroupedByProduct {
     private String productName;
     private String productImage;
-    private String ticketNumbers;
+    private List<String> ticketNumbers;  // Store list instead of single string
 
-    public TicketGroupedByProduct(String productName, String productImage, String ticketNumbers) {
+    public TicketGroupedByProduct(String productName, String productImage, List<String> ticketNumbers) {
         this.productName = productName;
         this.productImage = productImage;
         this.ticketNumbers = ticketNumbers;
@@ -21,7 +21,7 @@ public class TicketGroupedByProduct implements Serializable {
         return productImage;
     }
 
-    public String getTicketNumbers() {
+    public List<String> getTicketNumbers() {
         return ticketNumbers;
     }
 }

@@ -33,6 +33,10 @@ import com.deals.jeetodeals.SignInScreen.SignInActivity;
 import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.Wishlist.ActivityWishlist;
 import com.deals.jeetodeals.databinding.ActivityContainerBinding;
+import com.google.android.material.badge.BadgeDrawable;
+import com.google.android.material.badge.BadgeUtils;
+import com.google.android.material.bottomnavigation.BottomNavigationItemView;
+import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.FirebaseApp;
 
@@ -73,6 +77,7 @@ public class ContainerActivity extends Utility {
 
         // Handle back press to navigate to HomeFragment or close the app
         handleBackPress();
+        setupCartBadge();
     }
 
     private void setupToolbar() {
@@ -184,7 +189,7 @@ public class ContainerActivity extends Utility {
             } else if (itemId == R.id.nav_works) {
                 Toast.makeText(this, "How It Works Clicked", Toast.LENGTH_SHORT).show();
             } else if (itemId == R.id.nav_call) {
-                makePhoneCall();
+                makePhoneCall(pref.getPrefString(this,pref.admin_number));
             } else if (itemId == R.id.nav_email) {
                sendEmailSingleRecipient(pref.getPrefString(this,pref.admin_email),"Need help regarding","Hello there !");
             } else if (itemId == R.id.nav_agreement) {
@@ -262,15 +267,20 @@ public class ContainerActivity extends Utility {
         Log.d("EmailDebug", "Navigation drawer closed");
     }
 
-
-
-
-
-    private void makePhoneCall() {
-        Intent intent = new Intent(Intent.ACTION_DIAL);
-        intent.setData(Uri.parse(pref.getPrefString(this,pref.admin_number)));
-        startActivity(intent);
+    private void makePhoneCall(String phoneNumber) {
+        if (phoneNumber != null && !phoneNumber.isEmpty()) {
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:" + phoneNumber));
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "No dialer app found!", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "Invalid phone number", Toast.LENGTH_SHORT).show();
+        }
     }
+
 
     private void loadFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
@@ -293,5 +303,33 @@ public class ContainerActivity extends Utility {
         };
         getOnBackPressedDispatcher().addCallback(this, callback);
     }
+
+    private void setupCartBadge() {
+        BadgeDrawable badge = binding.bottomNavigation.getOrCreateBadge(R.id.cart);
+        badge.setBackgroundColor(Color.RED);
+        badge.setBadgeTextColor(Color.WHITE);
+        badge.setNumber(getCartItemCount());
+
+        if (getCartItemCount() > 0) {
+            badge.setVisible(true);
+        } else {
+            badge.setVisible(false);
+        }
+    }
+
+    private int getCartItemCount() {
+        return pref.getPrefInteger(this, pref.cart_count);
+    }
+
+    public void updateCartBadge(int count) {
+        BadgeDrawable badge = binding.bottomNavigation.getOrCreateBadge(R.id.cart);
+        if (count > 0) {
+            badge.setNumber(count);
+            badge.setVisible(true);
+        } else {
+            badge.setVisible(false);
+        }
+    }
+
 
 }

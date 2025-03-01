@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.deals.jeetodeals.Model.Cart;
 import com.deals.jeetodeals.Model.Items;
 import com.deals.jeetodeals.R;
+import com.deals.jeetodeals.Utils.SharedPref;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.List;
 public class AdapterCart extends RecyclerView.Adapter<AdapterCart.QuantityViewHolder> {
 
     private final Context context;
+    SharedPref pref=new SharedPref();
     private final List<Items> itemList;
     private final OnCartItemActionListener cartItemActionListener;
 
@@ -61,7 +63,26 @@ public class AdapterCart extends RecyclerView.Adapter<AdapterCart.QuantityViewHo
         Log.d("ITEM LIST", "onBindViewHolder: " + itemList.size());
 
         holder.textPhoneName.setText(item.getName());
-        holder.textTicketId.setText(item.getPrices().getCurrency_symbol() + " " + item.getPrices().getPrice());
+        if(item.getType().equalsIgnoreCase("lottery")){
+            int voucherRate = pref.getPrefInteger(context, pref.voucher_rate);
+            String itemPrice = item.getPrices().getPrice();
+
+            Log.d("AdapterCart", "Voucher Rate: " + voucherRate);
+            Log.d("AdapterCart", "Item Price: " + itemPrice);
+
+            if (voucherRate != 0 && itemPrice != null && !itemPrice.isEmpty()) {
+                try {
+                    int calculatedPrice = (int) (Integer.parseInt(itemPrice) / (float) voucherRate);
+                    holder.textTicketId.setText(item.getPrices().getCurrency_prefix() + " " + calculatedPrice);
+                } catch (NumberFormatException e) {
+                    Log.e("AdapterCart", "Error parsing item price: " + itemPrice, e);
+                    holder.textTicketId.setText(item.getPrices().getCurrency_symbol() + " " + itemPrice);
+                }
+            } else {
+                holder.textTicketId.setText(item.getPrices().getCurrency_symbol() + " " + itemPrice);
+            }
+        }
+
         holder.desc.setText(item.getName());
         holder.textQuantity.setText(String.valueOf(item.getQuantity()));
         if (!item.getImages().isEmpty()) {

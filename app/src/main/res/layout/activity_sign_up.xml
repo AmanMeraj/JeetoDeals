@@ -448,12 +448,54 @@
                     android:textSize="13sp"
                     android:textColor="@color/white"
                     android:fontFamily="@font/inter_bold"
-                    android:text="@string/i_agree_to_the_user_agreement_and_privacy_policy"
                     android:backgroundTint="@color/white"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
                 </com.google.android.material.checkbox.MaterialCheckBox>
+                <TextView
+                    android:id="@+id/text1"
+                    android:textSize="11sp"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="I agree to the"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="3dp"
+                    android:layout_toEndOf="@+id/checkbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/text_user_agreement"
+                    android:textSize="11sp"
+                    android:textColor="@color/orange"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="User Agreement"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="3dp"
+                    android:layout_toEndOf="@+id/text1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/text2"
+                    android:textSize="11sp"
+                    android:textColor="@color/white"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="&amp;"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="3dp"
+                    android:layout_toEndOf="@+id/text_user_agreement"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/text_privacy_policy"
+                    android:textSize="11sp"
+                    android:textColor="@color/orange"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="Privacy Policy"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/text2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
             </RelativeLayout>
 

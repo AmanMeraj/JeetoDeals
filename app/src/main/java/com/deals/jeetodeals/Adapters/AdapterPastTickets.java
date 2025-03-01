@@ -4,16 +4,19 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.deals.jeetodeals.Model.TicketGroupedByProduct;
+import com.deals.jeetodeals.R;
+import com.deals.jeetodeals.Utils.SharedPref;
 import com.deals.jeetodeals.databinding.RowPastTicketBinding;
 import java.util.List;
-import com.deals.jeetodeals.R;
 
 public class AdapterPastTickets extends RecyclerView.Adapter<AdapterPastTickets.ViewHolder> {
     private final Context context;
     private List<TicketGroupedByProduct> tickets;
+    private static SharedPref pref= new SharedPref();
     private OnPastTicketClickListener listener;
 
     public interface OnPastTicketClickListener {
@@ -67,14 +70,18 @@ public class AdapterPastTickets extends RecyclerView.Adapter<AdapterPastTickets.
         }
 
         void bind(TicketGroupedByProduct ticket) {
-            binding.textPhoneName.setText(ticket.getProductName()); // Set Product Name
-            binding.textTicketId.setText(ticket.getTicketNumbers()); // Set Comma-separated Ticket Numbers
+            binding.textPhoneName.setText(ticket.getProductName());
 
             Glide.with(context)
                     .load(ticket.getProductImage())
                     .placeholder(R.drawable.promotion_image)
                     .error(R.drawable.promotion_image)
                     .into(binding.imagePhone);
+
+            // Set up RecyclerView for ticket numbers
+            TickectChildAdapter ticketNumberAdapter = new TickectChildAdapter(context, ticket.getTicketNumbers(),pref.getPrefString(context,pref.user_name));
+            binding.ticketRow.setLayoutManager(new LinearLayoutManager(context));
+            binding.ticketRow.setAdapter(ticketNumberAdapter);
 
             itemView.setOnClickListener(v -> {
                 if (listener != null) {

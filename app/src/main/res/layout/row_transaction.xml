@@ -34,7 +34,7 @@
             android:layout_centerInParent="true"
             android:layout_marginEnd="10dp"
             android:layout_toStartOf="@+id/amount"
-            android:textSize="15sp"
+            android:textSize="13sp"
             android:layout_toEndOf="@+id/image_card"
             android:textColor="@color/black"
             android:fontFamily="@font/inter_bold"
@@ -48,9 +48,9 @@
            android:layout_marginEnd="10dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:textSize="18sp"
+            android:textSize="13sp"
             android:textColor="@color/orange"
-            android:text="₹ 500"
+            android:text="Voucher 500"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <TextView

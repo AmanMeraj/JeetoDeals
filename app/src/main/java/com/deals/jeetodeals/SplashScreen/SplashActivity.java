@@ -68,6 +68,7 @@ public class SplashActivity extends Utility {
                 String whatsapp = response.data.getWhatsapp();
                 String email = response.data.getEmail();
                 String calling = response.data.getCalling();
+                int voucher=response.data.getVoucher_rate();
 
                 if (whatsapp != null) {
                     pref.setPrefString(this, pref.admin_whatsapp, whatsapp);
@@ -78,6 +79,9 @@ public class SplashActivity extends Utility {
                 if (calling != null) {
                     pref.setPrefString(this, pref.admin_number, calling);
                 }
+
+                    pref.setPrefInteger(this,pref.voucher_rate,voucher);
+                Log.d("TAG", "proceed: "+pref.getPrefInteger(this,pref.voucher_rate));
             } else {
                 Log.d("AppVersion", "Response or response.data is null");
                 continueNavigation();

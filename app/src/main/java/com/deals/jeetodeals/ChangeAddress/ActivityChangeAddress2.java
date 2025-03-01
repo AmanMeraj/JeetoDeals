@@ -145,13 +145,16 @@ public class ActivityChangeAddress2 extends Utility {
     }
 
     private void sendUpdateRequest(UpdateAddress update, boolean isBilling) {
+        binding.loader.rlLoader.setVisibility(View.VISIBLE);
         String auth = "Bearer " + pref.getPrefString(this, pref.user_token);
 
         viewModel.UpdateAddress(auth, update).observe(this, response -> {
             if (response != null && response.isSuccess) {
+                binding.loader.rlLoader.setVisibility(View.GONE);
                 Toast.makeText(this, (isBilling ? "Billing" : "Shipping") + " address updated successfully!", Toast.LENGTH_SHORT).show();
                 if (!isBilling) finish();
             } else {
+                binding.loader.rlLoader.setVisibility(View.GONE);
                 Toast.makeText(this, "Failed to update " + (isBilling ? "billing" : "shipping") + " address!", Toast.LENGTH_SHORT).show();
             }
         });

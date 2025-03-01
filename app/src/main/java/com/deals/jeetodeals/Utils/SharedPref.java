@@ -8,6 +8,7 @@ public class SharedPref {
     private static final String LOGIN_SHARED_FILE = "sappy_Prefs";
     final public String user_token = "user_token";
     final public String login_status = "login_status";
+    final public String cart_count = "cart_count";
     final public String user_status = "user_status";
     final public String user_id = "user_id";
     final public String user_name = "user_name";
@@ -19,6 +20,7 @@ public class SharedPref {
     final public String admin_mobile = "admin_mobile";
     final public String admin_whatsapp = "admin_whatsapp";
     final public String admin_email = "admin_email";
+    final public String voucher_rate = "voucher_rate";
     final public String admin_number = "admin_number";
     final public String user_dob = "user_dob";
     final public String user_address = "user_address";

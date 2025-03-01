@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.deals.jeetodeals.Adapters.AdapterCart;
 import com.deals.jeetodeals.Checkout.ActivityCheckout;
+import com.deals.jeetodeals.ContainerActivity.ContainerActivity;
 import com.deals.jeetodeals.Model.AddItems;
 import com.deals.jeetodeals.Model.CartResponse;
 import com.deals.jeetodeals.Model.Items;
@@ -31,6 +32,7 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
 
     FragmentCartBinding binding;
     Utility utility = new Utility();
+    private boolean isWalletSelected = false; // Track selection state
     SharedPref pref = new SharedPref();
     FragmentsViewModel fragmentsViewModel;
     CartResponse responsee;
@@ -79,43 +81,68 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
 
         return binding.getRoot();
     }
+    private void toggleWalletSelection(Total totals) {
+        isWalletSelected = !isWalletSelected;
+        binding.walletBalance.setChecked(isWalletSelected);
+        updateProceedButton(totals);
+    }
+
+    private void updateProceedButton(Total totals) {
+        int walletBalance = Integer.parseInt(pref.getPrefString(requireActivity(), pref.main_balance));
+        int totalPrice = Integer.parseInt(totals.getTotal_price());
+
+        if (isWalletSelected && walletBalance >= totalPrice) {
+            binding.proceedBtn.setVisibility(View.VISIBLE);
+        } else {
+            binding.proceedBtn.setVisibility(View.GONE);
+        }
+    }
 
     public void getCart() {
+        showLoader(true);
+
         String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
         Log.d("TAG", "getCart: " + auth);
+
         fragmentsViewModel.getCart(auth).observe(getViewLifecycleOwner(), response -> {
+
             if (response != null && response.isSuccess && response.data != null) {
+                showLoader(false);
                 responsee = response.data;
                 String nonce = FragmentsRepository.getNonce();
                 pref.setPrefString(requireActivity(), pref.nonce, nonce);
 
                 itemList = responsee.items; // Store items in the list
+                int cartCount = responsee.getItems_count();
+                pref.setPrefInteger(requireActivity(), pref.cart_count, cartCount);
+                if (getActivity() instanceof ContainerActivity) {
+                    ((ContainerActivity) getActivity()).updateCartBadge(cartCount);
+                }
 
                 populateRC(responsee.totals);
             } else {
+                showLoader(false);
+                binding.ivEmptyCart.setVisibility(View.VISIBLE); // Show empty cart icon
                 Toast.makeText(requireContext(), response != null ? response.message : "Unknown error", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+
     private void populateRC(Total totals) {
         if (itemList.isEmpty()) {
+            binding.noItem.setVisibility(View.VISIBLE);
             binding.cardTotal.setVisibility(View.GONE);
             binding.tvTotal.setVisibility(View.GONE);
             binding.proceedBtn.setVisibility(View.GONE);
             binding.rcCart.setVisibility(View.GONE);
-            binding.ivEmptyCart.setVisibility(View.VISIBLE);
-
-            Glide.with(this)
-                    .asGif()
-                    .load(R.drawable.empty_cart)
-                    .into(binding.ivEmptyCart);
+            binding.walletBalance.setVisibility(View.GONE);
+            return; // Exit if no items
         } else {
+            binding.noItem.setVisibility(View.GONE);
             binding.cardTotal.setVisibility(View.VISIBLE);
             binding.tvTotal.setVisibility(View.VISIBLE);
-            binding.proceedBtn.setVisibility(View.VISIBLE);
             binding.rcCart.setVisibility(View.VISIBLE);
-            binding.ivEmptyCart.setVisibility(View.GONE);
         }
 
         // Perform actions based on item type
@@ -133,25 +160,23 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
 
         adapter = new AdapterCart(requireActivity(), itemList, this);
         binding.rcCart.setAdapter(adapter);
-        if(allLottery){
-            binding.walletBalance.setVisibility(View.GONE);
-            binding.total.setText(responsee.totals.currency_code+" "+responsee.totals.getTotal_price());
-            binding.subTotal.setText(responsee.totals.currency_code+" "+responsee.totals.getTotal_items());
-            binding.shipping.setText(responsee.totals.total_shipping);
-            binding.discount.setText(responsee.totals.total_discount);
-        }else{
-            binding.walletBalance.setVisibility(View.VISIBLE);
-            binding.walletBalance.setText("Wallet Balance :"+" "+"Vouchers "+pref.getPrefString(requireActivity(),pref.main_balance));
-            binding.total.setText(responsee.totals.currency_symbol+" "+responsee.totals.getTotal_price());
-            binding.subTotal.setText(responsee.totals.currency_symbol+" "+responsee.totals.getTotal_items());
-            binding.shipping.setText(responsee.totals.total_shipping);
-            binding.discount.setText(responsee.totals.total_discount);
 
-            if(Integer.valueOf(pref.getPrefString(requireActivity(),pref.main_balance))<Integer.valueOf(totals.getTotal_price())){
-                binding.proceedBtn.setVisibility(View.GONE);
-            }else{
-                binding.proceedBtn.setVisibility(View.VISIBLE);
-            }
+        if (allLottery) {
+            binding.walletBalance.setVisibility(View.GONE);
+            binding.total.setText(responsee.totals.currency_code + " " + responsee.totals.getTotal_price());
+            binding.subTotal.setText(responsee.totals.currency_code + " " + responsee.totals.getTotal_items());
+        } else {
+            binding.walletBalance.setVisibility(View.VISIBLE);
+            binding.walletBalance.setText("Wallet Balance: Vouchers " + pref.getPrefString(requireActivity(), pref.main_balance));
+
+            binding.total.setText(responsee.totals.currency_symbol + " " + responsee.totals.getTotal_price());
+            binding.subTotal.setText(responsee.totals.currency_symbol + " " + responsee.totals.getTotal_items());
+
+            // Wallet Balance Selection Logic
+            binding.walletBalance.setOnClickListener(v -> toggleWalletSelection(totals));
+
+            // Initially check if the wallet is selected or not
+            updateProceedButton(totals);
         }
     }
 
@@ -162,6 +187,7 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
     @Override
     public void onItemDeleted(int position) {
         if (position >= 0 && position < itemList.size()) {
+            showLoader(true);
             String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
             String nonce = pref.getPrefString(requireActivity(), pref.nonce);
             AddItems delete = new AddItems();
@@ -173,20 +199,15 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
                     itemList.remove(position);
                     adapter.notifyItemRemoved(position);
                     adapter.notifyItemRangeChanged(position, itemList.size());
-
-                    if (itemList.isEmpty()) { // Hide views if cart is empty
-                        binding.cardTotal.setVisibility(View.GONE);
-                        binding.tvTotal.setVisibility(View.GONE);
-                    }
-
                     Toast.makeText(requireContext(), "Item removed", Toast.LENGTH_SHORT).show();
-                    getCart();
                 } else {
                     Toast.makeText(requireContext(), response != null ? response.message : "Unknown error", Toast.LENGTH_SHORT).show();
                 }
+                getCart(); // Call getCart() to refresh the UI
             });
         }
     }
+
 
 
     @Override
@@ -194,12 +215,14 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
         if (position >= 0 && position < itemList.size()) {
             Items item = itemList.get(position);
 
-            if (item.getQuantity() < item.getQuantity_limits().getMaximum()) { // Max limit check
+            if (item.getQuantity() < item.getQuantity_limits().getMaximum()) {
+                showLoader(true);
+
                 item.setQuantity(item.getQuantity() + 1);
-                adapter.notifyItemChanged(position); // Update UI
+                adapter.notifyItemChanged(position);
             } else {
                 Toast.makeText(requireContext(), "Maximum quantity reached", Toast.LENGTH_SHORT).show();
-                return; // Exit function early to prevent API call
+                return;
             }
 
             String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
@@ -207,33 +230,33 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
 
             AddItems add = new AddItems();
             add.setKey(item.getKey());
-            add.setQuantity(item.getQuantity()); // Send updated quantity
+            add.setQuantity(item.getQuantity());
 
             fragmentsViewModel.UpdateItem(auth, nonce, add).observe(getViewLifecycleOwner(), response -> {
                 if (response != null && response.isSuccess && response.data != null) {
                     responsee = response.data;
-                    itemList.set(position, item); // Update the item in the list
-                    adapter.notifyItemChanged(position); // Refresh UI for that item
                     Toast.makeText(requireContext(), "Quantity updated", Toast.LENGTH_SHORT).show();
-                    getCart(); // Fetch the updated cart
                 } else {
                     Toast.makeText(requireContext(), response != null ? response.message : "Unknown error", Toast.LENGTH_SHORT).show();
                 }
+                getCart(); // Refresh the UI
             });
         }
     }
+
 
     @Override
     public void onQuantityDecreased(int position) {
         if (position >= 0 && position < itemList.size()) {
             Items item = itemList.get(position);
 
-            if (item.getQuantity() > item.getQuantity_limits().getMinimum()) { // Ensure it doesn't go below min limit
+            if (item.getQuantity() > item.getQuantity_limits().getMinimum()) {
+                showLoader(true);
                 item.setQuantity(item.getQuantity() - 1);
-                adapter.notifyItemChanged(position); // Refresh UI
+                adapter.notifyItemChanged(position);
             } else {
                 Toast.makeText(requireContext(), "Minimum quantity reached", Toast.LENGTH_SHORT).show();
-                return; // Prevent unnecessary API call
+                return;
             }
 
             String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
@@ -241,21 +264,31 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
 
             AddItems add = new AddItems();
             add.setKey(item.getKey());
-            add.setQuantity(item.getQuantity()); // Send updated quantity
+            add.setQuantity(item.getQuantity());
 
             fragmentsViewModel.UpdateItem(auth, nonce, add).observe(getViewLifecycleOwner(), response -> {
                 if (response != null && response.isSuccess && response.data != null) {
                     responsee = response.data;
-                    itemList.set(position, item); // Update item in the list
-                    adapter.notifyItemChanged(position); // Refresh UI
                     Toast.makeText(requireContext(), "Quantity updated", Toast.LENGTH_SHORT).show();
-                    getCart(); // Fetch the updated cart
                 } else {
                     Toast.makeText(requireContext(), response != null ? response.message : "Unknown error", Toast.LENGTH_SHORT).show();
                 }
+                getCart(); // Refresh the UI
             });
         }
     }
+    private void showLoader(boolean show) {
+        if (show) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE); // Show loader
+            binding.layoutCart.setVisibility(View.GONE); // Hide entire cart layout
+            binding.ivEmptyCart.setVisibility(View.GONE); // Hide empty cart message
+        } else {
+            binding.loader.rlLoader.setVisibility(View.GONE); // Hide loader
+            binding.layoutCart.setVisibility(View.VISIBLE); // Show cart layout
+        }
+    }
+
+
 
 
 }

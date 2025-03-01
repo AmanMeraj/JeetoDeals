@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+        android:paddingVertical="8dp"
+        android:fontFamily="@font/inter"
+        android:id="@+id/text_ticket_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="JC-614-131"
+        android:textColor="@color/black"
+        android:textSize="12sp"/>
+    <ImageView
+        android:padding="3dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/qr"
+        android:layout_marginEnd="3dp"
+        android:id="@+id/image"
+        android:layout_alignParentEnd="true"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
+
+</RelativeLayout>

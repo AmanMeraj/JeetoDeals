@@ -53,7 +53,7 @@ public class WalletFragment extends Fragment {
             binding.loader.rlLoader.setVisibility(View.GONE);
             if (apiResponse != null) {
                 if (apiResponse.isSuccess) {
-                   binding.balance.setText("Vouchers "+apiResponse.data);
+                   binding.balance.setText("Voucher "+apiResponse.data);
                 } else {
                     // Display the error message from the API response
                     Toast.makeText(requireActivity(), apiResponse.message, Toast.LENGTH_SHORT).show();

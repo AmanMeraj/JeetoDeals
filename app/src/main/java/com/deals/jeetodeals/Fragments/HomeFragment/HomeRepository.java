@@ -4,7 +4,10 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+
+import com.deals.jeetodeals.Model.DrawResponse;
 import com.deals.jeetodeals.Model.ShopResponse;
+import com.deals.jeetodeals.Model.WinnerResponse;
 import com.deals.jeetodeals.retrofit.ApiRequest;
 import com.deals.jeetodeals.retrofit.RetrofitRequest;
 import org.json.JSONObject;
@@ -49,6 +52,54 @@ public class HomeRepository {
 
             @Override
             public void onFailure(@NonNull Call<ArrayList<HomeResponse>> call, @NonNull Throwable t) {
+                handleNetworkFailure(call, t, liveData);
+            }
+        });
+
+        return liveData;
+    }
+    public LiveData<ApiResponse<ArrayList<DrawResponse>>> getDraw() {
+        final MutableLiveData<ApiResponse<ArrayList<DrawResponse>>> liveData = new MutableLiveData<>();
+
+        Call<ArrayList<DrawResponse>> call = apiRequest.getDraw();
+        call.enqueue(new Callback<ArrayList<DrawResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<ArrayList<DrawResponse>> call, @NonNull Response<ArrayList<DrawResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.setValue(new ApiResponse<>(response.body(), true, null, 0));
+                } else if (response.code() == ERROR_SESSION_EXPIRED) {
+                    handleSessionExpiry(liveData);
+                } else {
+                    handleErrorResponse(response, liveData);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ArrayList<DrawResponse>> call, @NonNull Throwable t) {
+                handleNetworkFailure(call, t, liveData);
+            }
+        });
+
+        return liveData;
+    }
+    public LiveData<ApiResponse<ArrayList<WinnerResponse>>> getWinner() {
+        final MutableLiveData<ApiResponse<ArrayList<WinnerResponse>>> liveData = new MutableLiveData<>();
+
+        Call<ArrayList<WinnerResponse>> call = apiRequest.getWinner();
+        call.enqueue(new Callback<ArrayList<WinnerResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<ArrayList<WinnerResponse>> call, @NonNull Response<ArrayList<WinnerResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.setValue(new ApiResponse<>(response.body(), true, null, 0));
+                } else if (response.code() == ERROR_SESSION_EXPIRED) {
+                    handleSessionExpiry(liveData);
+                } else {
+                    handleErrorResponse(response, liveData);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ArrayList<WinnerResponse>> call, @NonNull Throwable t) {
                 handleNetworkFailure(call, t, liveData);
             }
         });

@@ -39,6 +39,7 @@ ChangeAddressResponse responsee;
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        binding.loader.rlLoader.setVisibility(View.VISIBLE);
         binding.backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,17 +89,20 @@ ChangeAddressResponse responsee;
         viewModel.GetAddress(auth).observe(this, response -> {
             if (response != null) {
                 if (response.isSuccess) {
+                    binding.loader.rlLoader.setVisibility(View.GONE);
                     // Log the raw response for debugging
                     Log.d("API Response", "Raw Response: " + response.data);
                     responsee = response.data;
                     setBillingData(response);  // Pass response to the method
                     setShippingData(response);
                 } else {
+                    binding.loader.rlLoader.setVisibility(View.GONE);
                     Log.d("TAG", "Error: " + response.message);
                     Toast.makeText(this, response.message, Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(this, "Login failed! Please check your network connection.", Toast.LENGTH_SHORT).show();
+                binding.loader.rlLoader.setVisibility(View.GONE);
+                Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
             }
         });
     }

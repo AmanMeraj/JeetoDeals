@@ -26,11 +26,11 @@
                 android:text="@string/_54_sold_out_of_1000"
                 android:textColor="@color/black"
                 android:fontFamily="@font/inter_bold"
-                android:textSize="13sp" />
+                android:textSize="15sp" />
 
             <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/progress_indicator"
-                android:layout_width="140dp"
+                android:layout_width="180dp"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="5dp"
                 android:layout_marginHorizontal="10dp"
@@ -45,8 +45,8 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/image_card"
-                android:layout_width="120dp"
-                android:layout_height="100dp"
+                android:layout_width="160dp"
+                android:layout_height="150dp"
                 android:layout_marginVertical="10dp"
                 android:layout_below="@id/progress_indicator"
                 android:layout_centerHorizontal="true"
@@ -59,11 +59,27 @@
                     android:scaleType="fitXY"
                     android:src="@drawable/promotion_image" />
             </androidx.cardview.widget.CardView>
+            <com.deals.jeetodeals.VerticalTextView
+                android:fontFamily="@font/inter_bold"
+                android:paddingVertical="5dp"
+                android:gravity="end"
+                android:paddingEnd="0dp"
+                android:layout_below="@+id/my_ticket"
+                android:layout_marginVertical="2dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginHorizontal="7dp"
+                android:layout_width="wrap_content"
+                android:layout_marginRight="20dp"
+                android:textColor="@color/orange"
+                android:rotation="180"
+                android:textSize="13sp"
+                android:text="BUY"
+                android:layout_height="wrap_content"/>
 
             <com.deals.jeetodeals.VerticalTextView
-                android:paddingHorizontal="5dp"
+
                 android:paddingVertical="5dp"
-                android:layout_marginVertical="5dp"
+                android:layout_marginVertical="1dp"
                 android:layout_marginHorizontal="7dp"
                 android:id="@+id/my_ticket"
                 android:layout_width="wrap_content"
@@ -71,7 +87,7 @@
                 android:layout_below="@id/image_card"
                 android:text="My Ticket"
                 android:fontFamily="@font/inter"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:textColor="@color/black"
                 android:rotation="180" />
 
@@ -86,7 +102,7 @@
                 android:text="Get a Chance to"
                 android:textSize="13sp"
                 android:textColor="@color/black"
-                android:fontFamily="@font/inter_bold"
+                android:fontFamily="@font/inter"
                 android:layout_marginTop="5dp" />
 
             <TextView
@@ -99,8 +115,20 @@
                 android:text="WIN"
                 android:textColor="@color/orange"
                 android:textSize="18sp"
-                android:fontFamily="@font/inter_extrabold"
-                android:layout_marginTop="2dp" />
+                android:fontFamily="@font/inter_extrabold" />
+            <TextView
+                android:id="@+id/name"
+                android:layout_alignRight="@+id/image_card"
+                android:layout_width="wrap_content"
+                android:text="Name"
+                android:textSize="13sp"
+                android:gravity="end"
+                android:layout_toEndOf="@id/my_ticket"
+                android:layout_marginEnd="-20dp"
+                android:layout_below="@+id/tv_win"
+                android:textColor="@color/black"
+                android:fontFamily="@font/inter_bold"
+                android:layout_height="20dp"/>
 
             <RelativeLayout
                 android:layout_marginStart="-4dp"
@@ -109,15 +137,17 @@
                 android:id="@+id/button_rel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_win"
+                android:layout_below="@id/name"
                 android:layout_alignRight="@+id/image_card"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="20dp">
 
                 <TextView
+                    android:id="@+id/tv_add"
+                    android:layout_alignParentEnd="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingStart="8dp"
+                    android:paddingStart="15dp"
                     android:paddingEnd="45dp"
                     android:paddingVertical="4dp"
                     android:text="Add to cart"
@@ -131,7 +161,7 @@
                 android:id="@+id/bag"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_below="@id/tv_win"
+                android:layout_below="@id/name"
                 android:layout_alignEnd="@id/button_rel"
                 android:layout_marginTop="7dp"
                 android:layout_marginEnd="5dp"

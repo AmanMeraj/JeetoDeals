@@ -3,19 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        app:cardCornerRadius="18dp"
+
+<!--    <androidx.cardview.widget.CardView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--    app:cardCornerRadius="18dp"-->
+<!--    android:layout_marginHorizontal="10dp"-->
+<!--    android:layout_marginVertical="10dp">-->
+
+    <ImageView
+        android:layout_marginTop="10dp"
         android:layout_marginHorizontal="10dp"
-        android:layout_marginVertical="10dp"
-        android:layout_height="match_parent">
-        <ImageView
-            android:id="@+id/image_pager_item"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop" />
+        android:id="@+id/image_pager_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+    android:scaleType="fitCenter" />
 
-    </androidx.cardview.widget.CardView>
+<!--</androidx.cardview.widget.CardView>-->
 
-
-</FrameLayout>
+    </FrameLayout>

@@ -43,6 +43,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ActivityCheckout extends Utility implements PaymentResultWithDataListener {
     ActivityCheckoutBinding binding;
@@ -138,6 +139,15 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
         binding.edtCountry.setText(countryNames[0], false);
         binding.edtCountryShipping.setText(countryNames[0], false);
 
+        // Disable dropdown (prevent opening)
+        binding.edtCountry.setFocusable(false);
+        binding.edtCountry.setClickable(false);
+        binding.edtCountry.setOnTouchListener((v, event) -> true); // Blocks touch event
+
+        binding.edtCountryShipping.setFocusable(false);
+        binding.edtCountryShipping.setClickable(false);
+        binding.edtCountryShipping.setOnTouchListener((v, event) -> true);
+
         // Initial visibility states
         binding.billingAddressRel.setVisibility(View.GONE);
         binding.shippingCheckBox.setVisibility(View.GONE);
@@ -145,77 +155,35 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
         binding.shippingRel.setVisibility(View.GONE);
     }
 
+
+
     private void handleIntentData() {
         CartResponse cartResponse = (CartResponse) getIntent().getSerializableExtra("cart_response");
         String paymentMethod = getIntent().getStringExtra("payment_method");
 
         if (cartResponse != null) {
-            binding.subtotal.setText(cartResponse.totals.getCurrency_prefix() + " " + cartResponse.totals.getTotal_items());
+            if (cartResponse.getItems() != null && !cartResponse.getItems().isEmpty() && cartResponse.getItems().get(0) != null) {
+                String itemType = cartResponse.getItems().get(0).getType();
+                Log.d("ActivityCheckout", "Item Type: " + itemType);
+
+                if ("lottery".equals(itemType)) {  // Avoids null pointer crash
+                    binding.subtotal.setText(cartResponse.totals.getCurrency_code() + " " + cartResponse.totals.getTotal_items());
+                    binding.total.setText(cartResponse.totals.getCurrency_code() + " " + cartResponse.totals.getTotal_price());
+                } else {
+                    binding.subtotal.setText(cartResponse.totals.getCurrency_prefix() + " " + cartResponse.totals.getTotal_items());
+                    binding.total.setText(cartResponse.totals.getCurrency_prefix() + " " + cartResponse.totals.getTotal_price());
+                }
+            } else {
+                Log.e("ActivityCheckout", "Cart items list is null or empty");
+            }
+
             binding.shipping.setText(cartResponse.totals.getTotal_shipping());
             binding.discount.setText(cartResponse.totals.getTotal_discount());
-            binding.total.setText(cartResponse.totals.getCurrency_prefix() + " " + cartResponse.totals.getTotal_price());
         } else {
             Log.e("ActivityCheckout", "CartResponse is null");
             Toast.makeText(this, "Failed to load cart data", Toast.LENGTH_SHORT).show();
         }
     }
-
-//    private void setupListeners() {
-//        // Back button
-//        binding.backBtn.setOnClickListener(view -> finish());
-//
-//        // Country selection
-//        binding.edtCountry.setOnItemClickListener((parent, view, position, id) -> {
-//            String selectedCountry = parent.getItemAtPosition(position).toString();
-//            if (selectedCountry.equals("India")) {
-//                countryCode = "IN";
-//            }
-//        });
-//
-//        // State selection for billing
-//        binding.edtState.setOnItemClickListener((parent, view, position, id) -> {
-//            String selectedState = parent.getItemAtPosition(position).toString();
-//            selectedBillingStateCode = stateCodeMap.get(selectedState);
-//            Log.d("Selected Billing State", "State: " + selectedState + ", Code: " + selectedBillingStateCode);
-//        });
-//
-//        // State selection for shipping
-//        binding.edtStateShipping.setOnItemClickListener((parent, view, position, id) -> {
-//            String selectedState = parent.getItemAtPosition(position).toString();
-//            selectedShippingStateCode = stateCodeMap.get(selectedState);
-//            Log.d("Selected Shipping State", "State: " + selectedState + ", Code: " + selectedShippingStateCode);
-//        });
-//
-//        // Billing address autocomplete
-//        MaterialAutoCompleteTextView billingAutoComplete = (MaterialAutoCompleteTextView) binding.billingAddressInputText.getEditText();
-//        billingAutoComplete.setOnClickListener(v -> {
-//            binding.billingAddressRel.setVisibility(View.VISIBLE);
-//            binding.shippingCheckBox.setVisibility(View.VISIBLE);
-//        });
-//
-//        // Shipping checkbox
-//        binding.shippingCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-//            binding.shippingAddressInputText.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-//            if (!isChecked) {
-//                binding.shippingRel.setVisibility(View.GONE);
-//            }
-//        });
-//
-//        // Shipping address autocomplete
-//        MaterialAutoCompleteTextView shippingAutoComplete = (MaterialAutoCompleteTextView) binding.shippingAddressInputText.getEditText();
-//        shippingAutoComplete.setOnClickListener(v -> binding.shippingRel.setVisibility(View.VISIBLE));
-//
-//        // Checkout button
-//        binding.checkoutBtn.setOnClickListener(view -> {
-//            if (isInternetConnected(ActivityCheckout.this)) {
-//                setdata();
-//            } else {
-//                Toast.makeText(ActivityCheckout.this, "No Internet Connection!", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//
-//        setupEmailValidation();
-//    }
 private void setupListeners() {
     // Back button
     binding.backBtn.setOnClickListener(view -> finish());
@@ -334,7 +302,7 @@ private void setupListeners() {
         binding.edtFirstName.setText(getCheckoutResponse.data.billing_address.getFirst_name());
         binding.edtLastName.setText(getCheckoutResponse.data.billing_address.getLast_name());
         binding.edtCompanyName.setText(getCheckoutResponse.data.billing_address.getCompany());
-        binding.edtCountry.setText(getCheckoutResponse.data.billing_address.getCountry());
+//        binding.edtCountry.setText(getCheckoutResponse.data.billing_address.getCountry());
         binding.edtStreetAddress.setText(getCheckoutResponse.data.billing_address.getAddress_1());
         binding.edtApartment.setText(getCheckoutResponse.data.billing_address.getAddress_2());
         binding.edtTown.setText(getCheckoutResponse.data.billing_address.getCity());
@@ -355,7 +323,7 @@ private void setupListeners() {
         binding.edtFirstNameShipping.setText(getCheckoutResponse.data.shipping_address.getFirst_name());
         binding.edtLastNameShipping.setText(getCheckoutResponse.data.shipping_address.getLast_name());
         binding.edtCompanyNameShipping.setText(getCheckoutResponse.data.shipping_address.getCompany());
-        binding.edtCountryShipping.setText(getCheckoutResponse.data.shipping_address.getCountry());
+//        binding.edtCountryShipping.setText(getCheckoutResponse.data.shipping_address.getCountry());
         binding.edtStreetAddressShipping.setText(getCheckoutResponse.data.shipping_address.getAddress_1());
         binding.edtApartmentShipping.setText(getCheckoutResponse.data.shipping_address.getAddress_2());
         binding.edtTownShipping.setText(getCheckoutResponse.data.shipping_address.getCity());
@@ -502,7 +470,6 @@ private void setupListeners() {
         String paymentMethod = getIntent().getStringExtra("payment_method");
 
         if ("razorpay".equals(paymentMethod)) {
-//            startRazorpayPayment();
             processWalletPayment(checkout);
         } else if ("wallet".equals(paymentMethod)) {
             processWalletPayment(checkout);
@@ -600,15 +567,6 @@ private void setupListeners() {
     @Override
     public void onPaymentSuccess(String razorpayPaymentId, PaymentData paymentData) {
         Toast.makeText(this, "Payment Successful", Toast.LENGTH_SHORT).show();
-
-//        // Update payment data
-//        checkoutData.payment_data = new ArrayList<>();
-//        Checkout.PaymentData payment = new Checkout.PaymentData();
-//        payment.razorpay_payment_id = razorpayPaymentId;
-//        checkoutData.payment_data.add(payment);
-
-//        // Process the final checkout
-//        processWalletPayment(checkoutData);
                         Intent intent = new Intent(ActivityCheckout.this, ActivityMyOrders.class);
                         startActivity(intent);
                         finish();

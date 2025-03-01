@@ -1,5 +1,6 @@
 package com.deals.jeetodeals.Adapters;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.deals.jeetodeals.Model.OrderItem;
 import com.deals.jeetodeals.Model.Orders;
 import com.deals.jeetodeals.MyOrders.MyOrdersResponse;
 import com.deals.jeetodeals.R;
+import com.deals.jeetodeals.Utils.SharedPref;
 import com.deals.jeetodeals.databinding.RowOrderBinding;
 
 import java.text.ParseException;
@@ -26,6 +28,7 @@ import java.util.Map;
 
 public class AdapterOrders extends RecyclerView.Adapter<AdapterOrders.ViewHolder> {
     private final Context context;
+    SharedPref pref = new SharedPref();
     private final List<MyOrdersResponse> itemList;
 
     public AdapterOrders(Context context, List<MyOrdersResponse> itemList) {
@@ -79,14 +82,27 @@ public class AdapterOrders extends RecyclerView.Adapter<AdapterOrders.ViewHolder
 
             // Assuming OrderItem has a method getQuantity() to get item quantity
             int quantity = item.getQuantity();
-            holder.binding.tvVoucher.setText("Vouchers: " + order.getTotal() + " for " + quantity + " Items");
+            int voucherRate = pref.getPrefInteger(context, pref.voucher_rate);
+            String itemPrice = order.getTotal();
+
+            Log.d("AdapterCart", "Voucher Rate: " + voucherRate);
+            Log.d("AdapterCart", "Item Price: " + itemPrice);
+            Log.d("AdapterCart", "Order Total: " + order.getTotal());
+
+            if (voucherRate != 0 && itemPrice != null && !itemPrice.isEmpty()) {
+                try {
+                    int calculatedPrice = (int) (Integer.parseInt(itemPrice) / (float) voucherRate);// Divide total by calculated price
+
+                    holder.binding.tvVoucher.setText("Vouchers: " + calculatedPrice + " for " + quantity + " Items");
+                } catch (NumberFormatException e) {
+                    Log.e("AdapterCart", "Error parsing item price: " + itemPrice, e);
+                    holder.binding.tvVoucher.setText("Vouchers: " + order.getTotal() + " for " + quantity + " Items");
+                }
+            } else {
+                holder.binding.tvVoucher.setText("Vouchers: " + order.getTotal() + " for " + quantity + " Items");
+            }
+
         }
-
-
-        // Load placeholder image
-        Glide.with(context)
-                .load(R.drawable.promotion_image)
-                .into(holder.binding.imagePhone);
     }
 
     private void setStatusColor(TextView textView, String status) {

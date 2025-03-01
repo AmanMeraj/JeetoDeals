@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.deals.jeetodeals.Model.ShopResponse;
 import com.deals.jeetodeals.Model.Wishlist;
 
 import java.util.ArrayList;
@@ -30,5 +31,9 @@ public class WishlistViewModel extends AndroidViewModel {
     }
     public LiveData<WishlistRepository.ApiResponse<WishlistDeleteResponse>> deleteWishlist(String auth, Wishlist wishlist) {
         return repository.deleteWishlist(auth, wishlist);
+    }
+
+    public LiveData<WishlistRepository.ApiResponse<ShopResponse>> getShopWishlist(int id) {
+        return repository.getShopWishlist(id);
     }
 }

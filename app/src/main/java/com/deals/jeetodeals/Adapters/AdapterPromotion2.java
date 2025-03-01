@@ -2,6 +2,8 @@ package com.deals.jeetodeals.Adapters;
 
 import android.content.Context;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import com.deals.jeetodeals.BottomSheet.BottomSheetPromotion;
 import com.deals.jeetodeals.Fragments.HomeFragment.HomeResponse;
 import com.deals.jeetodeals.Model.Promotion;
 import com.deals.jeetodeals.R;
+import com.deals.jeetodeals.Utils.SharedPref;
 import com.deals.jeetodeals.databinding.RowPromotion2Binding;
 
 import java.text.ParseException;
@@ -27,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 public class AdapterPromotion2 extends RecyclerView.Adapter<AdapterPromotion2.PromotionViewHolder> {
     private final Context context;
+    SharedPref pref= new SharedPref();
     private final ArrayList<HomeResponse> itemList;
     private final OnItemClickListener2 listener;
 
@@ -73,7 +77,32 @@ public class AdapterPromotion2 extends RecyclerView.Adapter<AdapterPromotion2.Pr
         holder.binding.textItemLeft.setText(promotion.getExtensions().getCustom_lottery_data().getMax_tickets());
         holder.binding.heading.setText(promotion.getName());
         holder.binding.heading2.setText(promotion.getName());
-        holder.binding.vouchersTv.setText(promotion.getPrices().getPrice() + " " + promotion.getPrices().getCurrency_prefix());
+        // Set data to views
+        Log.d("AdapterCard2", "Raw Price: " + promotion.getPrices().getPrice());
+        Log.d("AdapterCard2", "Currency Prefix: " + promotion.getPrices().getCurrency_prefix());
+
+        if (context != null) {
+            int voucherRate = pref.getPrefInteger(context, pref.voucher_rate);
+            Log.d("AdapterCard2", "Voucher Rate from SharedPref: " + voucherRate);
+
+            // Ensure voucherRate is not zero to prevent division errors
+            if (voucherRate != 0) {
+                try {
+                    float price = Float.parseFloat(promotion.getPrices().getPrice());
+                    float calculatedPrice = price / voucherRate;
+                    Log.d("AdapterCard2", "Calculated Price: " + calculatedPrice);
+                    holder.binding.vouchersTv.setText((int) calculatedPrice + " " + promotion.getPrices().getCurrency_prefix());
+                } catch (NumberFormatException e) {
+                    Log.e("AdapterCard2", "Error parsing price: " + promotion.getPrices().getPrice(), e);
+                    holder.binding.vouchersTv.setText("Invalid Price");
+                }
+            } else {
+                holder.binding.vouchersTv.setText("Invalid Rate");
+            }
+        } else {
+            Log.e("AdapterCard2", "Context is null");
+            holder.binding.vouchersTv.setText("Context is null");
+        }
         String endDate = promotion.getExtensions().getCustom_lottery_data().getLottery_dates_to(); // e.g., "2025-05-31 00:00"
         calculateCountdown(holder, endDate);
         String formattedDate = formatDate(endDate);
@@ -94,9 +123,16 @@ public class AdapterPromotion2 extends RecyclerView.Adapter<AdapterPromotion2.Pr
         holder.binding.addCartBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                holder.binding.addCartBtn.setEnabled(false);
+                holder.binding.tvAdd.setText("Adding...");
                 if (listener != null) {
                     listener.onAddToCartClicked2(promotion);
                 }
+                // Re-enable button after delay (this is a backup in case the fragment's cooldown doesn't work)
+                new Handler().postDelayed(() -> {
+                    holder.binding.addCartBtn.setEnabled(true);
+                    holder.binding.tvAdd.setText("Add to Cart");
+                }, 1000); // 1
             }
         });
     }

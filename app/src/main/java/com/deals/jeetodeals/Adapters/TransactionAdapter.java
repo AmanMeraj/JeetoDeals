@@ -41,9 +41,9 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
 //        holder.binding.desc.setText(transaction.getDescription());
         try {
             double amount = Double.parseDouble(transaction.getAmount());
-            holder.binding.amount.setText(String.format("₹ %.2f", amount));
+            holder.binding.amount.setText(transaction.currency+String.format(" %.0f", amount));
         } catch (NumberFormatException e) {
-            holder.binding.amount.setText("₹ 0.00"); // Fallback for invalid values
+            holder.binding.amount.setText(transaction.currency+" 0.00"); // Fallback for invalid values
             e.printStackTrace(); // Logs the error for debugging
         }
 

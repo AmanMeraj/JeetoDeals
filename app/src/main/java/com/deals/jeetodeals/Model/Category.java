@@ -51,11 +51,11 @@ public class Category implements Serializable {
         this.count = count;
     }
 
-    public Object getImage() {
+    public Image getImage() {
         return image;
     }
 
-    public void setImage(Object image) {
+    public void setImage(Image image) {
         this.image = image;
     }
 
@@ -81,7 +81,7 @@ public class Category implements Serializable {
     public String description;
     public int parent;
     public int count;
-    public Object image;
+    public Image image;
     public int review_count;
     public String permalink;
 }

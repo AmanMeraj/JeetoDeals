@@ -26,58 +26,16 @@
 
     </RelativeLayout>
 
-    <androidx.cardview.widget.CardView
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginVertical="20dp"
-        android:layout_below="@+id/toolbar"
-        android:id="@+id/card_jeeto_shop"
-        android:layout_width="match_parent"
-        app:cardCornerRadius="18dp"
-        app:cardElevation="10dp"
-        android:layout_height="140dp">
-        <RelativeLayout
-            android:id="@+id/bg_image_rel"
-            android:background="@drawable/bg_img"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <RelativeLayout
-                android:id="@+id/bg_black_gradient_rel"
-                android:background="@drawable/bg_black_gradient"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <TextView
-                    android:id="@+id/text1"
-                    android:layout_centerVertical="true"
-                    android:layout_marginHorizontal="20dp"
-                    android:text="New Collection"
-                    android:textColor="@color/green"
-                    android:fontFamily="@font/inter_bold"
-                    android:textSize="15sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <TextView
-                    android:text="Jeeto Shop"
-                    android:textSize="25sp"
-                    android:layout_below="@+id/text1"
-                    android:textColor="@color/white"
-                    android:layout_marginHorizontal="20dp"
-                    android:fontFamily="@font/inter_bold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
 
-            </RelativeLayout>
-
-        </RelativeLayout>
-
-    </androidx.cardview.widget.CardView>
     <TextView
+        android:layout_marginTop="20dp"
         android:text="My Wishlist"
         android:fontFamily="@font/inter_bold"
         android:layout_marginBottom="20dp"
         android:layout_marginHorizontal="10dp"
         android:textSize="18sp"
         android:textColor="@color/black"
-        android:layout_below="@+id/card_jeeto_shop"
+        android:layout_below="@+id/toolbar"
         android:id="@+id/tv_my_wishlist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
@@ -91,5 +49,37 @@
         android:layout_below="@+id/tv_my_wishlist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+    <RelativeLayout
+        android:visibility="gone"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:id="@+id/no_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_centerHorizontal="true"
+            android:padding="5dp"
+            android:id="@+id/image"
+            android:src="@drawable/logo_jd"
+            android:layout_width="80dp"
+            android:layout_height="80dp"/>
+        <TextView
+            android:layout_centerHorizontal="true"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:text="Your Wishlist is empty"
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/inter_bold"
+            android:layout_below="@+id/image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
+    <include layout="@layout/view_loader"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:id="@+id/loader"
+        />
 
 </RelativeLayout>

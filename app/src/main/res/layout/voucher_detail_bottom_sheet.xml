@@ -136,50 +136,17 @@
                     <LinearLayout
                         android:weightSum="2"
                         android:background="@drawable/orange_curve_btn"
-                        android:layout_marginVertical="10dp"
+                        android:layout_marginVertical="15dp"
                         android:layout_marginHorizontal="10dp"
                         android:layout_toEndOf="@+id/tv_vouchers"
                         android:layout_below="@+id/tv_draw_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
                         <RelativeLayout
-                            android:layout_weight="0.9"
-                            android:layout_width="0dp"
-                            android:id="@+id/btn_buy"
-                            android:textColor="@color/white"
-                            android:layout_height="wrap_content"
-                            android:background="@color/transparent">
-                            <TextView
-                                android:layout_marginHorizontal="10dp"
-                                android:id="@+id/buy_amount"
-                                android:text="Buy AED10"
-                                android:textColor="@color/white"
-                                android:textSize="15sp"
-                                android:paddingTop="3dp"
-                                android:paddingHorizontal="10dp"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content">
-
-                            </TextView>
-                            <TextView
-                                android:paddingBottom="5dp"
-                                android:layout_below="@+id/buy_amount"
-                                android:id="@+id/tv_jeeto_shopping"
-                                android:text="Jeeto Shopping..."
-                                android:textColor="@color/white"
-                                android:textSize="11sp"
-                                android:layout_marginHorizontal="10dp"
-                                android:paddingHorizontal="10dp"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content">
-
-                            </TextView>
-
-                        </RelativeLayout>
-                        <RelativeLayout
+                            android:paddingVertical="8dp"
                             android:id="@+id/add_cart_btn"
                             android:background="@drawable/green_btn2"
-                            android:layout_weight="1.1"
+                            android:layout_weight="2"
                             android:layout_width="0dp"
                             android:layout_height="match_parent">
                             <TextView

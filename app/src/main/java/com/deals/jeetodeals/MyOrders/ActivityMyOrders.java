@@ -55,24 +55,39 @@ ArrayList<MyOrdersResponse> responsee;
     }
 
     private void getOrders() {
+        binding.loader.rlLoader.setVisibility(View.VISIBLE);
         String auth = "Bearer "+pref.getPrefString(this,pref.user_token);
         viewModel.getOrders(auth).observe(this,response->{
             if(response!=null){
                 if(response.isSuccess && response.data!=null){
+                    binding.loader.rlLoader.setVisibility(View.GONE);
                     responsee=response.data;
                     setUpRecyclerView(responsee);
 
                 }else{
+                    binding.loader.rlLoader.setVisibility(View.GONE);
                     Toast.makeText(this, ""+response.message, Toast.LENGTH_SHORT).show();
                 }
             }else{
+                binding.loader.rlLoader.setVisibility(View.GONE);
                 Toast.makeText(this, ""+response.message, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void setUpRecyclerView(ArrayList<MyOrdersResponse> responsee) {
-        AdapterOrders adapter = new AdapterOrders(this, responsee);
-        binding.rcOrders.setAdapter(adapter);
+        if (responsee == null || responsee.isEmpty()) {
+            // Hide RecyclerView and Show "No Items" View
+            binding.rcOrders.setVisibility(View.GONE);
+            binding.noItem.setVisibility(View.VISIBLE);  // Ensure you have this view in XML
+        } else {
+            // Show RecyclerView and Hide "No Items" View
+            binding.rcOrders.setVisibility(View.VISIBLE);
+            binding.noItem.setVisibility(View.GONE);
+
+            AdapterOrders adapter = new AdapterOrders(this, responsee);
+            binding.rcOrders.setAdapter(adapter);
+        }
     }
+
 }

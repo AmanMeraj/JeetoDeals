@@ -1,8 +1,29 @@
 package com.deals.jeetodeals.Model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class AddItems implements Serializable {
+    private int id;
+    private int quantity;
+    private List<Map<String, String>> variation;
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    private  String key;
+
+    public AddItems() {
+        this.variation = new ArrayList<>();
+    }
+
     public int getId() {
         return id;
     }
@@ -19,17 +40,11 @@ public class AddItems implements Serializable {
         this.quantity = quantity;
     }
 
-    public int id;
-    public int quantity;
-
-    public String getKey() {
-        return key;
+    public List<Map<String, String>> getVariation() {
+        return variation;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setVariation(List<Map<String, String>> variation) {
+        this.variation = variation;
     }
-
-    public  String key;
-
 }

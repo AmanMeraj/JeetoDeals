@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.deals.jeetodeals.Fragments.FragmentsRepository;
+import com.deals.jeetodeals.Model.ShopResponse;
 import com.deals.jeetodeals.Model.WalletResponse;
 import com.deals.jeetodeals.Model.Wishlist;
 import com.deals.jeetodeals.retrofit.ApiRequest;
@@ -98,6 +99,37 @@ public class WishlistRepository {
 
         return liveData;
     }
+    public LiveData<WishlistRepository.ApiResponse<ShopResponse>> getShopWishlist(int id) {
+        final MutableLiveData<WishlistRepository.ApiResponse<ShopResponse>> liveData = new MutableLiveData<>();
+        final String SUCCESS_MESSAGE = "Successful";
+
+        apiRequest.getShopWishList(id).enqueue(new Callback<ShopResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ShopResponse> call, @NonNull Response<ShopResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ShopResponse responseBody = response.body();
+                    liveData.setValue(new WishlistRepository.ApiResponse<>(
+                            responseBody,
+                            true, SUCCESS_MESSAGE
+                    ));
+                } else {
+                    handleErrorResponse4(response, liveData);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ShopResponse> call, @NonNull Throwable t) {
+                Log.e("TAG", "API call failed: " + t.getMessage());
+                liveData.setValue(new WishlistRepository.ApiResponse<>(
+                        null,
+                        false,
+                        "Failed to connect. Please check your network."
+                ));
+            }
+        });
+
+        return liveData;
+    }
     private final MutableLiveData<ApiResponse<WishlistDeleteResponse>> responseLiveDataDelete = new MutableLiveData<>();
 
     // Constructor to initialize the repository with the API service
@@ -150,6 +182,20 @@ public class WishlistRepository {
         }
     }
   private void handleErrorResponse(Response<?> response, MutableLiveData<WishlistRepository.ApiResponse<WishlistAddResponse>> liveData) {
+        try {
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                String errorMessage = extractDynamicErrorMessage(errorBody);
+                liveData.setValue(new WishlistRepository.ApiResponse<>(null, false, errorMessage));
+            } else {
+                liveData.setValue(new WishlistRepository.ApiResponse<>(null, false, "An unknown error occurred."));
+            }
+        } catch (Exception e) {
+            Log.e("TAG", "Error parsing error response: " + e.getMessage());
+            liveData.setValue(new WishlistRepository.ApiResponse<>(null, false, "An unknown error occurred."));
+        }
+    }
+  private void handleErrorResponse4(Response<?> response, MutableLiveData<WishlistRepository.ApiResponse<ShopResponse>> liveData) {
         try {
             if (response.errorBody() != null) {
                 String errorBody = response.errorBody().string();

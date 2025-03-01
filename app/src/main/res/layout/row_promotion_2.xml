@@ -147,17 +147,37 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <TextView
-                    android:layout_gravity="center"
+                <RelativeLayout
                     android:gravity="center"
-                    android:layout_weight="1.20"
-                    android:id="@+id/vouchers_tv"
+                    android:layout_gravity="center"
+                    android:layout_weight="1.2"
                     android:layout_width="0dp"
-                    android:text="60 Vouchers"
-                    android:textColor="@color/orange"
-                    android:textSize="17sp"
-                    android:fontFamily="@font/inter_extrabold"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/buy"
+                        android:text="BUY"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/inter_bold"
+                        android:textSize="13sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:layout_marginStart="3dp"
+                        android:layout_toEndOf="@+id/buy"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:id="@+id/vouchers_tv"
+                        android:layout_width="wrap_content"
+                        android:text="60 Vouchers"
+                        android:textColor="@color/orange"
+                        android:textSize="13sp"
+                        android:fontFamily="@font/inter_extrabold"
+                        android:layout_height="wrap_content"/>
+                </RelativeLayout>
+
+
                 <ImageView
                     android:id="@+id/info_btn"
                     android:src="@drawable/info"
@@ -181,6 +201,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
                         <TextView
+                            android:id="@+id/tv_add"
                             android:layout_marginTop="2dp"
                             android:gravity="center"
                             android:paddingVertical="7dp"

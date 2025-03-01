@@ -1,5 +1,7 @@
 package com.deals.jeetodeals.Fragments;
 
+import static android.content.ContentValues.TAG;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -23,6 +25,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -31,13 +34,17 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.deals.jeetodeals.Adapters.AdapterCard2;
 import com.deals.jeetodeals.Adapters.CategoryAdapter;
+import com.deals.jeetodeals.BottomSheet.ShopBottomSheetDialogFragment;
+import com.deals.jeetodeals.ContainerActivity.ContainerActivity;
 import com.deals.jeetodeals.Fragments.HomeFragment.HomeViewModel;
 import com.deals.jeetodeals.Model.AddItems;
+import com.deals.jeetodeals.Model.Attribute;
 import com.deals.jeetodeals.Model.BannerResponse;
 import com.deals.jeetodeals.Model.CartResponse;
 import com.deals.jeetodeals.Model.Category;
 import com.deals.jeetodeals.Model.Items;
 import com.deals.jeetodeals.Model.ShopResponse;
+import com.deals.jeetodeals.Model.Variations;
 import com.deals.jeetodeals.Model.Wishlist;
 import com.deals.jeetodeals.Model.WishlistCreationResponse;
 import com.deals.jeetodeals.R;
@@ -49,20 +56,24 @@ import com.deals.jeetodeals.databinding.FragmentShopBinding;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.jar.Attributes;
 
-public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickListener {
+public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickListener,CategoryAdapter.OnCategoryClickListener {
     private static final String TAG = "ShopFragment";
 
     private FragmentShopBinding binding;
     private View selectedRelativeLayout;
+    private CartResponse cartResponse;
     private final SharedPref pref = new SharedPref();
     private final Utility utility = new Utility();
     private int selectedCategoryId = -1; // Default value, indicating no category selected
     private List<ShopResponse> shopItems = new ArrayList<>();
-
-    private CartResponse cartResponse;
     private Handler handler = new Handler();
+    CategoryAdapter categoryAdapter;
     private BannerResponse bannerResponse;
     private ArrayList<Category>categories;
     private HomeViewModel viewModel;
@@ -71,12 +82,13 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     private WishlistViewModel wishlistViewModel;
     private WishlistAddResponse addResponse;
     private int currentPage = 1;
-    private int productIdd ;
-    private final int perPage = 6;
+    private int productIdd;
+    private int perPage = 10; // Initial value, will be increased by 10 each time
     private boolean isLoading = false;
     private boolean isLastPage = false;
     private AdapterCard2 adapter;
     private WishlistCreationResponse responsee;
+    private AtomicBoolean isLoadingCart = new AtomicBoolean(false);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -105,8 +117,6 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
 
     private void setupInitialData() {
         if (utility.isInternetConnected(requireActivity())) {
-            setupVideoView();
-            getBanner();
             getCategory();
         } else {
             Toast.makeText(requireActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
@@ -134,7 +144,7 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
 
                     // Automatically select and fetch products for the first valid category
                     Category firstCategory = categories.get(0);
-                    fetchProductsByCategory(firstCategory.getId());
+                    fetchProductsByCategory(firstCategory.getId(), true);
 
                     // Set UI as selected
                     binding.rcCategory.post(() -> {
@@ -155,131 +165,31 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         });
     }
 
-
-
     private void setupCategories(ArrayList<Category> data) {
-        CategoryAdapter adapter = new CategoryAdapter(data, this::handleCategoryClick,requireActivity());
-        binding.rcCategory.setAdapter(adapter);
-    }
-    private void setupVideoView() {
-        // Automatically start the video when it's loaded
-        binding.videoView.setOnPreparedListener(mp -> {
-            int videoWidth = mp.getVideoWidth();
-            int videoHeight = mp.getVideoHeight();
-            float videoProportion = (float) videoWidth / (float) videoHeight;
+        // Use the parameter data instead of referencing categories field
+        categories = data; // Assuming you have a class member variable called categories
 
-            int screenWidth = getResources().getDisplayMetrics().widthPixels;
-            int newHeight = (int) (screenWidth / videoProportion);
+        // Create adapter with the correct data
+        categoryAdapter = new CategoryAdapter(categories, this, requireContext());
+        binding.rcCategory.setAdapter(categoryAdapter);
+        binding.rcCategory.setLayoutManager(
+                new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        );
 
-            ViewGroup.LayoutParams layoutParams = binding.videoView.getLayoutParams();
-            layoutParams.height = newHeight;
-            binding.videoView.setLayoutParams(layoutParams);
+        // Pre-select the first item and update its visual state
+        if (!categories.isEmpty()) {
+            // Set the first category as selected in the adapter
+            categoryAdapter.setSelectedPosition(0); // This will handle the visual selection
 
-            // Start the video automatically when it's prepared
-            binding.videoView.start();
-            binding.playPauseButton.setImageResource(R.drawable.pause_jd); // Set to pause icon
-            isPlaying = true; // Set the state to playing
-        });
+            // Set the selected category ID and fetch products
+            selectedCategoryId = categories.get(0).getId();
+            fetchProductsByCategory(selectedCategoryId, true);
 
-        // Handle play/pause button click
-        binding.playPauseButton.setOnClickListener(v -> {
-            if (isPlaying) {
-                binding.videoView.pause();
-                binding.playPauseButton.setImageResource(R.drawable.play_jd); // Set play icon
-            } else {
-                binding.videoView.start();
-                binding.playPauseButton.setImageResource(R.drawable.pause_jd); // Set pause icon
-                hidePlayPauseButton();
-            }
-            isPlaying = !isPlaying;
-        });
-
-        // Handle video completion
-        binding.videoView.setOnCompletionListener(mp -> {
-            isPlaying = false;
-            binding.playPauseButton.setImageResource(R.drawable.play_jd); // Reset to play icon
-            binding.playPauseButton.setVisibility(View.VISIBLE); // Make the button visible again
-        });
-
-        // Handle click on video view to show the button for 2 seconds
-        binding.videoView.setOnClickListener(v -> {
-            binding.playPauseButton.setVisibility(View.VISIBLE); // Show the play/pause button
-            handler.postDelayed(() -> binding.playPauseButton.setVisibility(View.INVISIBLE), 2000); // Hide after 2 seconds
-        });
+            // Optional: store the adapter as a class member if you need to access it later
+        }
     }
 
-    // Method to hide the play/pause button after 2 seconds of video play
-    private void hidePlayPauseButton() {
-        handler.postDelayed(() -> {
-            if (binding != null) {
-                binding.playPauseButton.setVisibility(View.INVISIBLE);
-            }
-        }, 2000);
-    }
-
-    public void getBanner() {
-        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
-        viewModel2.getBanner(auth).observe(getViewLifecycleOwner(), response -> {
-            if (response != null && response.isSuccess && response.data != null) {
-                bannerResponse = response.data;
-
-                // Prepare a list to hold image URLs (either image or video)
-                List<String> imageUrlList = new ArrayList<>();
-
-                // If there is a video URL, handle video logic as before
-                if (bannerResponse.getVideo_banner_url() != null && !bannerResponse.getVideo_banner_url().isEmpty()) {
-                    Uri videoUri = Uri.parse(bannerResponse.getJeeto_shop_banner_video());
-                    binding.videoView.setVideoURI(videoUri);
-                    binding.videoView.start();
-                }
-
-                // If there's an image URL, add it to the list
-                if (bannerResponse.getImage_banner_url() != null && !bannerResponse.getImage_banner_url().isEmpty()) {
-                    Glide.with(requireActivity())
-                            .asBitmap()  // Load as Bitmap
-                            .load(bannerResponse.getImage_banner_url())
-                            .into(new CustomTarget<Bitmap>() {
-
-                                @Override
-                                public void onResourceReady(@NonNull Bitmap resource, @Nullable com.bumptech.glide.request.transition.Transition<? super Bitmap> transition) {
-                                    Drawable drawable = new BitmapDrawable(requireActivity().getResources(), resource);
-                                    binding.bgImageRel.setBackground(drawable); // Set background dynamically
-                                }
-
-                                @Override
-                                public void onLoadCleared(@Nullable Drawable placeholder) {
-                                    // Optional: Handle clearing of background if needed
-                                }
-                            });
-
-                }
-
-
-            } else {
-                Toast.makeText(requireContext(), response != null ? response.message : "Unknown error", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-
-    private void handleCategoryClick(Category category, ImageView imageView, int id) {
-        View parent = (View) imageView.getParent();
-        RelativeLayout relativeLayout = parent.findViewById(R.id.rel_bg);
-
-        updateCategorySelection(relativeLayout);
-        animateCategorySelection(imageView);
-
-        // Reset pagination state when switching categories
-        selectedCategoryId = id;
-        currentPage = 1;
-        isLastPage = false;
-        isLoading = false;
-        shopItems.clear();
-        adapter.notifyDataSetChanged();
-
-        fetchProductsByCategory(id);
-    }
-    private void fetchProductsByCategory(int id) {
+    private void fetchProductsByCategory(int id, boolean isInitialLoad) {
         if (isLoading || isLastPage) {
             return;
         }
@@ -289,6 +199,16 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
 
         String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
 
+        // For initial load, reset pagination parameters
+        if (isInitialLoad) {
+            currentPage = 1; // Reset to page 1
+            shopItems.clear();
+            adapter.notifyDataSetChanged();
+            isLastPage = false; // Reset this flag when switching categories
+        }
+
+        Log.d(TAG, "Fetching category id: " + id + ", page: " + currentPage + ", perPage: " + perPage);
+
         viewModel.getShop(auth, "simple|variable", id, currentPage, perPage).observe(getViewLifecycleOwner(), response -> {
             isLoading = false;
             binding.loader.rlLoader.setVisibility(View.GONE); // Hide loading indicator
@@ -296,48 +216,63 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
             if (response != null && response.isSuccess && response.data != null) {
                 if (response.data.isEmpty()) {
                     isLastPage = true;
-                    if (currentPage == 1) {
+                    if (isInitialLoad) {
                         // No items found for this category
                         Toast.makeText(requireContext(), "No items found in this category", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    // Add new items and notify adapter
-                    int startPos = shopItems.size();
+                    Log.d(TAG, "Received " + response.data.size() + " items for page " + currentPage);
+
+                    // Add new items to the existing list
                     shopItems.addAll(response.data);
-                    adapter.notifyItemRangeInserted(startPos, response.data.size());
-                    currentPage++;
+                    adapter.notifyDataSetChanged();
+
+                    // Check if we've reached the end of all available products
+                    if (response.data.size() < perPage) {
+                        isLastPage = true;
+                        Log.d(TAG, "Reached last page (received fewer items than requested)");
+                    } else {
+                        // Only increment the page if we're not at the last page
+                        currentPage++;
+                        Log.d(TAG, "Incremented page to: " + currentPage + " for next fetch");
+                    }
                 }
             } else {
                 handleError(response != null ? response.message : "Unknown error");
             }
         });
     }
-
     private void setupScrollListener() {
         binding.rcItems.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                if (layoutManager != null && dy > 0) { // Scrolling down
-                    int visibleItemCount = layoutManager.getChildCount();
-                    int totalItemCount = layoutManager.getItemCount();
-                    int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+                super.onScrolled(recyclerView, dx, dy);
 
-                    // Load more when we're 3 items away from the end
-                    if (!isLoading && !isLastPage &&
-                            (visibleItemCount + firstVisibleItemPosition) >= totalItemCount - 3) {
-                        if (selectedCategoryId != -1) {
-                            Log.d(TAG, "Loading more items. Page: " + currentPage);
-                            fetchProductsByCategory(selectedCategoryId);
-                        }
+                if (dy <= 0) {
+                    // Not scrolling down, ignore
+                    return;
+                }
+
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (layoutManager == null) {
+                    return;
+                }
+
+                int visibleItemCount = layoutManager.getChildCount();
+                int totalItemCount = layoutManager.getItemCount();
+                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+
+                // Calculate if we're near the end of the list (load when 3 items from the end)
+                if (!isLoading && !isLastPage) {
+                    if ((visibleItemCount + firstVisibleItemPosition + 3) >= totalItemCount
+                            && firstVisibleItemPosition >= 0) {
+                        Log.d(TAG, "Scroll triggered loading more items. Going to fetch page: " + currentPage);
+                        fetchProductsByCategory(selectedCategoryId, false);
                     }
                 }
             }
         });
     }
-
-
-
 
 
     private void updateCategorySelection(RelativeLayout newSelection) {
@@ -349,6 +284,10 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     }
 
     private void animateCategorySelection(ImageView imageView) {
+        if (imageView == null) {
+            Log.e("ShopFragment", "View is null, cannot animate");
+            return; // Prevent crash
+        }
         AnimatorSet scaleUp = createScaleAnimation(imageView, 1.2f, 300);
         scaleUp.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -383,16 +322,13 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         wishlist.setProduct_id(Integer.parseInt(productId));
         Log.d(TAG, "addToWishlist: "+wishlist.getProduct_id() +" "+auth);
 
-
-        Log.d("WISHLIST", "addToWishlist: "+auth);
-        Log.d("WISHLIST", "addToWishlist: "+wishlist.getProduct_id());
-
         wishlistViewModel.addWishlist(auth, wishlist).observe(getViewLifecycleOwner(), response -> {
-            binding.loader.rlLoader.setVisibility(View.GONE);
             if (response != null && response.isSuccess && response.data != null) {
+                binding.loader.rlLoader.setVisibility(View.GONE);
                 addResponse = response.data;
                 Toast.makeText(requireActivity(), response.message, Toast.LENGTH_SHORT).show();
             } else {
+                binding.loader.rlLoader.setVisibility(View.GONE);
                 handleError(response != null ? response.message : "Unknown error");
             }
         });
@@ -411,62 +347,136 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         String authToken = getAuthToken();
         String nonce = pref.getPrefString(requireActivity(), pref.nonce);
 
-        // First check current cart state
-        checkCartAndAddItem(item, authToken, nonce);
+        if (item.getType().equals("simple")) {
+            ShopBottomSheetDialogFragment bottomSheet = ShopBottomSheetDialogFragment.newInstance(item);
+
+            bottomSheet.setAddToCartListener(new ShopBottomSheetDialogFragment.AddToCartListener() {
+                @Override
+                public void onCartItemAdded(ShopResponse item, String size, int quantity) {
+                    checkCartAndAddItem(item, authToken, nonce, null, quantity);
+                }
+            });
+
+            bottomSheet.show(requireActivity().getSupportFragmentManager(), "ProductBottomSheet");
+            // Directly add to cart without opening the bottom sheet
+
+        } else {
+            // Open bottom sheet for variable products
+            ShopBottomSheetDialogFragment bottomSheet = ShopBottomSheetDialogFragment.newInstance(item);
+
+            bottomSheet.setAddToCartListener(new ShopBottomSheetDialogFragment.AddToCartListener() {
+                @Override
+                public void onCartItemAdded(ShopResponse item, String size, int quantity) {
+                    checkCartAndAddItem(item, authToken, nonce, size, quantity);
+                }
+            });
+
+            bottomSheet.show(requireActivity().getSupportFragmentManager(), "ProductBottomSheet");
+        }
     }
 
-    private void checkCartAndAddItem(ShopResponse item, String authToken, String nonce) {
+    private void checkCartAndAddItem(ShopResponse item, String authToken, String nonce, String size, int quantity) {
+        if (binding != null) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        }
         viewModel2.getCart(authToken).observe(getViewLifecycleOwner(), response -> {
             if (response != null && response.isSuccess && response.data != null) {
+                binding.loader.rlLoader.setVisibility(View.GONE);
                 CartResponse currentCart = response.data;
                 logCartState(item, currentCart);
 
-                if (canAddDirectly(item, currentCart)) {
-                    addItemToCart(item, authToken, nonce);
+                if (currentCart.getItems() == null || currentCart.getItems().isEmpty()) {
+                    binding.loader.rlLoader.setVisibility(View.GONE);
+                    // Cart is empty, can add directly
+                    addItemToCart(item, authToken, nonce, size, quantity);
                 } else {
-                    showCartClearDialog(item, authToken, nonce);
+                    binding.loader.rlLoader.setVisibility(View.GONE);
+                    // Check if current items are lottery type and new item is not lottery
+                    boolean isCartLottery = false;
+                    boolean isCartSimpleOrVariable = false;
+
+                    // Determine what's in the cart currently
+                    for (Items cartItem : currentCart.getItems()) {
+                        String cartItemType = cartItem.getType().toLowerCase();
+                        if (cartItemType.equals("lottery")) {
+                            isCartLottery = true;
+                        } else if (cartItemType.equals("simple") || cartItemType.equals("variable")) {
+                            isCartSimpleOrVariable = true;
+                        }
+                    }
+
+                    // Is the new item a lottery?
+                    boolean isNewItemLottery = "lottery".equalsIgnoreCase(item.getType());
+
+                    // Check if there's a type conflict (lottery vs simple/variable)
+                    if ((isCartLottery && !isNewItemLottery) || (isCartSimpleOrVariable && isNewItemLottery)) {
+                        binding.loader.rlLoader.setVisibility(View.GONE);
+                        // Type conflict, show dialog
+                        showCartClearDialog(item, authToken, nonce, size, quantity);
+                    } else {
+                        binding.loader.rlLoader.setVisibility(View.GONE);
+                        // No conflict, can add directly
+                        addItemToCart(item, authToken, nonce, size, quantity);
+                    }
+                    if (currentCart.getItems() != null) {
+                        int cartCount = currentCart.getItems_count();
+                        pref.setPrefInteger(requireActivity(), pref.cart_count, cartCount);
+
+                        // Update badge in ContainerActivity
+                        if (getActivity() instanceof ContainerActivity) {
+                            ((ContainerActivity) getActivity()).updateCartBadge(cartCount);
+                        }
+                    }
                 }
             } else {
+                binding.loader.rlLoader.setVisibility(View.GONE);
                 handleError(response != null ? response.message : "Failed to fetch cart");
             }
         });
     }
 
-    private boolean canAddDirectly(ShopResponse newItem, CartResponse cart) {
-        if (cart == null || cart.getItems() == null || cart.getItems().isEmpty()) {
-            return true;
-        }
-
-        String cartType = cart.getItems().get(0).getType();
-        String newItemType = newItem.getType();
-
-        Log.d(TAG, "Cart type: " + cartType + ", New item type: " + newItemType);
-        return cartType.equalsIgnoreCase(newItemType);
-    }
-
-    private void showCartClearDialog(ShopResponse item, String authToken, String nonce) {
+    private void showCartClearDialog(ShopResponse item, String authToken, String nonce, String size, int quantity) {
         new MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Cart Conflict")
                 .setMessage("Your cart contains items of a different type. Adding this item will clear your cart. Do you want to proceed?")
                 .setPositiveButton("Yes", (dialog, which) -> {
                     dialog.dismiss();
-                    addItemToCart(item, authToken, nonce);
+                    addItemToCart(item, authToken, nonce, size, quantity);
                 })
                 .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                 .show();
     }
 
-    private void addItemToCart(ShopResponse item, String authToken, String nonce) {
+    private void addItemToCart(ShopResponse item, String authToken, String nonce, String selectedSize, int quantity) {
+        if (binding != null) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        }
         AddItems addItems = new AddItems();
         addItems.setId(item.getId());
-        addItems.setQuantity(1);
+        addItems.setQuantity(quantity);
 
+        boolean isVariable = "variable".equalsIgnoreCase(item.getType());
+
+        if (isVariable && selectedSize != null && !selectedSize.isEmpty()) {
+            // Create the variation structure in the format the API expects
+            List<Map<String, String>> variationList = new ArrayList<>();
+            Map<String, String> variationMap = new HashMap<>();
+            variationMap.put("attribute", "Size");
+            variationMap.put("value", selectedSize);
+            variationList.add(variationMap);
+
+            addItems.setVariation(variationList);
+        }
+
+        // Send request
         viewModel2.AddToCart(authToken, nonce, addItems)
                 .observe(getViewLifecycleOwner(), response -> {
                     if (response != null && response.isSuccess && response.data != null) {
-                        cartResponse = response.data;
+                        binding.loader.rlLoader.setVisibility(View.GONE);
                         Toast.makeText(requireActivity(), "Item added successfully", Toast.LENGTH_SHORT).show();
+                        getCart();
                     } else {
+                        binding.loader.rlLoader.setVisibility(View.GONE);
                         handleError(response != null ? response.message : "Failed to add item");
                     }
                 });
@@ -497,7 +507,7 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
 
             // Perform a specific action (e.g., show a different message, hide wishlist UI, etc.)
             Toast.makeText(requireContext(), "No items in your wishlist.", Toast.LENGTH_SHORT).show();
-             createWishlist();
+            createWishlist();
             // You can add additional logic here, such as hiding a wishlist section
             // binding.wishlistLayout.setVisibility(View.GONE);
         } else {
@@ -508,13 +518,57 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
 
 
     private void createWishlist(){
+        if (binding != null) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        }
         String auth="Bearer "+pref.getPrefString(requireActivity(), pref.user_token);
         viewModel2.createWishList(auth).observe(getViewLifecycleOwner(),response->{
             if (response != null && response.isSuccess && response.data != null) {
+                binding.loader.rlLoader.setVisibility(View.GONE);
                 responsee = response.data;
                 addToWishlist(String.valueOf(productIdd));
             } else {
+                binding.loader.rlLoader.setVisibility(View.GONE);
                 handleError(response != null ? response.message : "Failed to add item");
+            }
+        });
+    }
+    public void getCart() {
+        if (isLoadingCart.get() || !isAdded()) return;
+
+        isLoadingCart.set(true);
+        if (binding != null) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        }
+        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
+
+        viewModel2.getCart(auth).observe(getViewLifecycleOwner(), response -> {
+            isLoadingCart.set(false);
+
+            if (!isAdded()) return;
+
+            if (response != null) {
+                if (response.isSuccess && response.data != null) {
+                    binding.loader.rlLoader.setVisibility(View.GONE);
+                    cartResponse = response.data;
+                    String nonce = FragmentsRepository.getNonce();
+                    pref.setPrefString(requireActivity(), pref.nonce, nonce);
+                    Log.d("GET CART NONCE", "getCart: " + nonce);
+
+                    // Update cart badge count
+                    if (cartResponse.getItems() != null) {
+                        int cartCount = cartResponse.getItems_count();
+                        pref.setPrefInteger(requireActivity(), pref.cart_count, cartCount);
+
+                        // Update badge in ContainerActivity
+                        if (getActivity() instanceof ContainerActivity) {
+                            ((ContainerActivity) getActivity()).updateCartBadge(cartCount);
+                        }
+                    }
+                } else {
+                    binding.loader.rlLoader.setVisibility(View.GONE);
+                    Log.w(TAG, "Cart retrieval failed: " + response.message);
+                }
             }
         });
     }
@@ -523,5 +577,19 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onCategoryClick(Category category, ImageView imageView, int categoryId) {
+        // Your click handling logic here
+        if (imageView != null) {
+            animateCategorySelection(imageView);
+        }
+
+        selectedCategoryId = categoryId;
+        isLastPage = false;
+        isLoading = false;
+
+        fetchProductsByCategory(categoryId, true);
     }
 }

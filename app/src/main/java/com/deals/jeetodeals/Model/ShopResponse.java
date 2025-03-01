@@ -207,8 +207,25 @@ public class ShopResponse implements Serializable {
     public ArrayList<Image> images;
     public ArrayList<Category> categories;
 //    public ArrayList<Object> tags;
-//    public ArrayList<Attribute> attributes;
-//    public ArrayList<Object> variations;
+    public ArrayList<Attribute> attributes;
+
+    public ArrayList<Variations> getVariations() {
+        return variations;
+    }
+
+    public void setVariations(ArrayList<Variations> variations) {
+        this.variations = variations;
+    }
+
+    public ArrayList<Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(ArrayList<Attribute> attributes) {
+        this.attributes = attributes;
+    }
+
+    public ArrayList<Variations> variations;
     public boolean has_options;
     public boolean is_purchasable;
     public boolean is_in_stock;
