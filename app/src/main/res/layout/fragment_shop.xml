@@ -6,9 +6,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Fragments.ShopFragment">
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -41,7 +39,7 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rc_items"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginBottom="80dp"
                     android:layout_marginHorizontal="10dp"
                     app:spanCount="2"
@@ -49,7 +47,7 @@
                     android:layout_below="@+id/rc_category"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent">
 
                 </androidx.recyclerview.widget.RecyclerView>
 
@@ -58,7 +56,6 @@
             </RelativeLayout>
 
         </RelativeLayout>
-    </androidx.core.widget.NestedScrollView>
 
     <include layout="@layout/view_loader"
         android:layout_height="match_parent"
