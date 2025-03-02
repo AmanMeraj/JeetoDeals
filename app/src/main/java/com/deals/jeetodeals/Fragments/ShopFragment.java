@@ -83,9 +83,10 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     private WishlistAddResponse addResponse;
     private int currentPage = 1;
     private int productIdd;
-    private int perPage = 10; // Initial value, will be increased by 10 each time
+    private int perPage = 20; // Initial value, will be increased by 10 each time
     private boolean isLoading = false;
     private boolean isLastPage = false;
+    private boolean initialLoadComplete = false;
     private AdapterCard2 adapter;
     private WishlistCreationResponse responsee;
     private AtomicBoolean isLoadingCart = new AtomicBoolean(false);
@@ -190,54 +191,62 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     }
 
     private void fetchProductsByCategory(int id, boolean isInitialLoad) {
-        if (isLoading || isLastPage) {
+        if (isLoading || (isLastPage && !isInitialLoad)) {
+            Log.d(TAG, "Skipping fetch - isLoading: " + isLoading + ", isLastPage: " + isLastPage);
             return;
         }
 
         isLoading = true;
-        binding.loader.rlLoader.setVisibility(View.VISIBLE); // Show loading indicator
+
+        if (isInitialLoad) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+            showBottomLoader(false);
+            initialLoadComplete = false;
+        } else {
+            showBottomLoader(true);
+        }
 
         String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
 
-        // For initial load, reset pagination parameters
         if (isInitialLoad) {
-            currentPage = 1; // Reset to page 1
+            currentPage = 1; // Reset to page 1 for initial load
             shopItems.clear();
             adapter.notifyDataSetChanged();
-            isLastPage = false; // Reset this flag when switching categories
+            isLastPage = false;
         }
-
-        Log.d(TAG, "Fetching category id: " + id + ", page: " + currentPage + ", perPage: " + perPage);
 
         viewModel.getShop(auth, "simple|variable", id, currentPage, perPage).observe(getViewLifecycleOwner(), response -> {
             isLoading = false;
-            binding.loader.rlLoader.setVisibility(View.GONE); // Hide loading indicator
+            binding.loader.rlLoader.setVisibility(View.GONE);
+            showBottomLoader(false);
+
+            if (isInitialLoad) {
+                initialLoadComplete = true;
+                Log.d(TAG, "Initial load complete - Setting initialLoadComplete=true");
+            }
 
             if (response != null && response.isSuccess && response.data != null) {
-                if (response.data.isEmpty()) {
-                    isLastPage = true;
-                    if (isInitialLoad) {
-                        // No items found for this category
-                        Toast.makeText(requireContext(), "No items found in this category", Toast.LENGTH_SHORT).show();
+                int itemsReceived = response.data.size();
+                Log.d(TAG, "Received " + itemsReceived + " items for page " + currentPage);
+
+                if (itemsReceived > 0) {
+                    int startPosition = shopItems.size();
+                    shopItems.addAll(response.data);
+                    adapter.notifyItemRangeInserted(startPosition, itemsReceived);
+
+                    if (itemsReceived < perPage) {
+                        isLastPage = true;
+                        Log.d(TAG, "Setting isLastPage=true - Fewer items than requested");
+                    } else {
+                        currentPage++;
+                        Log.d(TAG, "Incremented currentPage to: " + currentPage);
                     }
                 } else {
-                    Log.d(TAG, "Received " + response.data.size() + " items for page " + currentPage);
-
-                    // Add new items to the existing list
-                    shopItems.addAll(response.data);
-                    adapter.notifyDataSetChanged();
-
-                    // Check if we've reached the end of all available products
-                    if (response.data.size() < perPage) {
-                        isLastPage = true;
-                        Log.d(TAG, "Reached last page (received fewer items than requested)");
-                    } else {
-                        // Only increment the page if we're not at the last page
-                        currentPage++;
-                        Log.d(TAG, "Incremented page to: " + currentPage + " for next fetch");
-                    }
+                    isLastPage = true;
+                    Log.d(TAG, "Setting isLastPage=true - Empty response");
                 }
             } else {
+                Log.e(TAG, "API error: " + (response != null ? response.message : "Unknown error"));
                 handleError(response != null ? response.message : "Unknown error");
             }
         });
@@ -247,31 +256,46 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                Log.d(TAG, "onScrolled called - dx: " + dx + ", dy: " + dy);
 
                 if (dy <= 0) {
-                    // Not scrolling down, ignore
+                    Log.d(TAG, "Scrolling up or no vertical scroll - skipping pagination");
                     return;
                 }
 
                 LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                 if (layoutManager == null) {
+                    Log.e(TAG, "LayoutManager is null - cannot check scroll position");
                     return;
                 }
 
                 int visibleItemCount = layoutManager.getChildCount();
                 int totalItemCount = layoutManager.getItemCount();
                 int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+                int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
 
-                // Calculate if we're near the end of the list (load when 3 items from the end)
-                if (!isLoading && !isLastPage) {
-                    if ((visibleItemCount + firstVisibleItemPosition + 3) >= totalItemCount
-                            && firstVisibleItemPosition >= 0) {
-                        Log.d(TAG, "Scroll triggered loading more items. Going to fetch page: " + currentPage);
+                Log.d(TAG, "Scroll positions - visible items: " + visibleItemCount +
+                        ", total items: " + totalItemCount +
+                        ", last visible: " + lastVisibleItemPosition);
+
+                if (!isLoading && !isLastPage && initialLoadComplete) {
+                    if ((lastVisibleItemPosition + 5) >= totalItemCount) {
+                        Log.d(TAG, "PAGINATION TRIGGERED - Loading page: " + currentPage +
+                                ", selectedCategoryId: " + selectedCategoryId);
                         fetchProductsByCategory(selectedCategoryId, false);
                     }
                 }
             }
         });
+    }
+    // Add a method to show/hide a loader at the bottom of the list
+    private void showBottomLoader(boolean show) {
+        if (show) {
+            Log.d(TAG, "Showing bottom loader for pagination");
+            binding.loaderBottom.setVisibility(View.VISIBLE);
+        } else {
+            binding.loaderBottom.setVisibility(View.GONE);
+        }
     }
 
 
@@ -589,6 +613,7 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         selectedCategoryId = categoryId;
         isLastPage = false;
         isLoading = false;
+        initialLoadComplete = false; // Reset this flag too
 
         fetchProductsByCategory(categoryId, true);
     }

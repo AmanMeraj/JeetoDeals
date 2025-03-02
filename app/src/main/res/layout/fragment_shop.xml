@@ -64,5 +64,14 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:id="@+id/loader"/>
+    <ProgressBar
+        android:background="@color/transparent"
+        android:layout_centerInParent="true"
+        android:id="@+id/loaderBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"
+        android:layout_marginVertical="8dp"/>
 
 </RelativeLayout>
