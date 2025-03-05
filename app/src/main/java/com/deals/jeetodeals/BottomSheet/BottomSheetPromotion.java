@@ -4,6 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -138,14 +142,13 @@ public class BottomSheetPromotion extends BottomSheetDialogFragment {
             desc.setText(Html.fromHtml(homeResponse.getDescription(), Html.FROM_HTML_MODE_LEGACY).toString());
             try {
                 String price = homeResponse.getPrices().getPrice();
-                int voucherRate = pref.getPrefInteger(getActivity(), pref.voucher_rate); // Get voucher rate from SharedPref
+                int voucherRate = pref.getPrefInteger(getActivity(), pref.voucher_rate);
 
-                Log.d("Adapter", "Raw Price: " + price + ", Voucher Rate: " + voucherRate);
-
-                // Ensure voucherRate is not zero to prevent division errors
                 if (voucherRate != 0) {
                     int calculatedVouchers = (int) (Float.parseFloat(price) / (float) voucherRate);
-                    vouchers.setText(calculatedVouchers + " Vouchers");
+                    String fullText = calculatedVouchers + " Vouchers";
+
+                    vouchers.setText(fullText);
                 } else {
                     vouchers.setText("Invalid Rate");
                     Log.e("Adapter", "Voucher rate is zero or invalid");
@@ -154,6 +157,8 @@ public class BottomSheetPromotion extends BottomSheetDialogFragment {
                 Log.e("Adapter", "Error parsing price: " + homeResponse.getPrices().getPrice(), e);
                 vouchers.setText("Invalid Price");
             }
+
+
             drawDate.setText("Draw date: " + formattedDate + " or earlier based on the time passed.");
             sold.setText(homeResponse.getExtensions().getCustom_lottery_data().getTotal_sales()+" sold out of "+homeResponse.getExtensions().getCustom_lottery_data().getMax_tickets());
         }

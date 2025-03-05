@@ -42,9 +42,9 @@
                 android:layout_height="wrap_content">
 
                 <!-- Profile Image -->
-                <de.hdodenhof.circleimageview.CircleImageView
+                <ImageView
                     android:id="@+id/profile_image"
-                    android:src="@drawable/profile"
+                    android:src="@drawable/logo_jd"
                     android:layout_marginTop="60dp"
                     android:layout_centerHorizontal="true"
                     android:layout_width="80dp"
@@ -76,7 +76,7 @@
 
                     <!-- First Section: Phone -->
                     <LinearLayout
-                        android:layout_weight="1"
+                        android:layout_weight=".7"
                         android:gravity="center"
                         android:orientation="horizontal"
                         android:layout_width="0dp"
@@ -100,7 +100,7 @@
 
                     <!-- Second Section: Email -->
                     <LinearLayout
-                        android:layout_weight="1"
+                        android:layout_weight="1.3"
                         android:gravity="center"
                         android:orientation="horizontal"
                         android:layout_width="0dp"
@@ -183,17 +183,19 @@
                             android:layout_height="wrap_content">
 
                         </TextView>
-                        <EditText
+                        <TextView
                             android:paddingHorizontal="10dp"
                             android:id="@+id/edt_first_name"
-                            android:background="@drawable/edit_txt_bg"
                             android:layout_marginVertical="10dp"
                             android:layout_below="@+id/user1"
                             android:layout_marginHorizontal="10dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="45dp">
+                            android:textSize="12sp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/inter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
 
-                        </EditText>
+                        </TextView>
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -219,17 +221,19 @@
                             android:layout_height="wrap_content">
 
                         </TextView>
-                        <EditText
+                        <TextView
                             android:paddingHorizontal="10dp"
                             android:id="@+id/edt_last_name"
-                            android:background="@drawable/edit_txt_bg"
                             android:layout_marginVertical="10dp"
                             android:layout_below="@+id/user2"
                             android:layout_marginHorizontal="10dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="45dp">
+                            android:textSize="12sp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/inter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
 
-                        </EditText>
+                        </TextView>
                     </RelativeLayout>
 
 
@@ -288,14 +292,14 @@
                         <ImageView
                             android:layout_marginStart="10dp"
                             android:layout_marginVertical="5dp"
-                            android:src="@drawable/email_svgrepo_com"
+                            android:src="@drawable/user"
                             android:id="@+id/email"
                             android:layout_width="20dp"
                             android:layout_height="20dp"/>
                         <TextView
                             android:layout_marginVertical="5dp"
                             android:layout_marginHorizontal="10dp"
-                            android:text="E Mail Address"
+                            android:text="Natonality"
                             android:textColor="@color/black"
                             android:fontFamily="@font/inter_bold"
                             android:textSize="15sp"
@@ -304,27 +308,29 @@
                             android:layout_height="wrap_content">
 
                         </TextView>
-                        <EditText
+                        <TextView
                             android:paddingHorizontal="10dp"
                             android:id="@+id/edt_eamil_address"
-                            android:background="@drawable/edit_txt_bg"
                             android:layout_marginVertical="10dp"
                             android:layout_below="@+id/email"
+                            android:textSize="12sp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/inter"
                             android:layout_marginHorizontal="10dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="45dp">
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
 
-                        </EditText>
+                        </TextView>
                     </RelativeLayout>
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:layout_marginTop="20dp"
                         android:layout_marginBottom="10dp"
-                        android:text="Update"
+                        android:text="Logout"
                         android:textColor="@color/white"
                         android:textSize="15sp"
-                        android:id="@+id/update_btn"
-                        android:background="@drawable/orange_curve_btn"
+                        android:id="@+id/logout_btn"
+                        android:background="@drawable/log_out_bg"
                         android:layout_width="match_parent"
                         android:layout_height="45dp">
 
@@ -344,6 +350,7 @@
                 android:layout_below="@+id/card_detail"
                 android:layout_height="wrap_content">
                 <RelativeLayout
+                    android:visibility="gone"
                     android:background="@color/white"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">

@@ -61,26 +61,49 @@
 
                 <!-- Details Section -->
                 <RelativeLayout
+                    android:layout_centerVertical="true"
+
                     android:id="@+id/details_section"
                     android:layout_width="match_parent"
+
                     android:layout_height="wrap_content"
                     android:layout_below="@id/circle_indicator"
                     android:padding="16dp">
+                    <RelativeLayout
+                        android:layout_marginTop="80dp"
+                        android:gravity="center"
+                        android:layout_alignParentLeft="true"
+                        android:id="@+id/rel_vouchers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <com.deals.jeetodeals.VerticalTextView
+                            android:layout_marginEnd="10dp"
+                            android:id="@+id/tv_vouchers"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="60 Vouchers"
+                            android:textColor="#000"
+                            android:textSize="18sp"
+                            android:paddingHorizontal="5dp"
+                            android:textStyle="bold"
+                            android:rotation="180"
+
+                            />
+                        <com.deals.jeetodeals.VerticalTextView
+                            android:layout_width="wrap_content"
+                            android:text="Buy"
+                            android:textColor="@color/orange"
+                            android:textSize="18sp"
+                            android:rotation="180"
+                            android:layout_marginStart="-7dp"
+                            android:paddingVertical="3dp"
+                            android:paddingHorizontal="5dp"
+                            android:layout_below="@+id/tv_vouchers"
+                            android:layout_height="wrap_content"/>
+                    </RelativeLayout>
 
                     <!-- Vertical Text "60 Vouchers" -->
-                    <com.deals.jeetodeals.VerticalTextView
-                        android:layout_marginEnd="10dp"
-                        android:id="@+id/tv_vouchers"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="60 Vouchers"
-                        android:textColor="#000"
-                        android:textSize="18sp"
-                        android:paddingHorizontal="5dp"
-                        android:textStyle="bold"
-                        android:rotation="180"
-                        android:layout_alignParentLeft="true"
-                        android:layout_centerVertical="true" />
+
 
                     <!-- Title Text -->
                     <TextView
@@ -92,7 +115,7 @@
                         android:textColor="#FF5722"
                         android:textSize="25sp"
                         android:textStyle="bold"
-                        android:layout_toRightOf="@id/tv_vouchers"
+                        android:layout_toRightOf="@id/rel_vouchers"
                         android:layout_marginStart="8dp" />
 
                     <!-- iPhone Name -->
@@ -106,7 +129,7 @@
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:layout_below="@id/tv_win_title"
-                        android:layout_toRightOf="@id/tv_vouchers" />
+                        android:layout_toRightOf="@id/rel_vouchers" />
 
                     <!-- Draw Date -->
                     <TextView
@@ -118,7 +141,7 @@
                         android:textColor="#000"
                         android:textSize="15sp"
                         android:layout_below="@id/tv_iphone_name"
-                        android:layout_toRightOf="@id/tv_vouchers"
+                        android:layout_toRightOf="@id/rel_vouchers"
                         android:layout_marginTop="8dp" />
                     <TextView
                         android:maxHeight="200dp"
@@ -130,7 +153,7 @@
                         android:textColor="#000"
                         android:textSize="13sp"
                         android:layout_below="@id/tv_desc"
-                        android:layout_toRightOf="@id/tv_vouchers"
+                        android:layout_toRightOf="@id/rel_vouchers"
                         android:layout_marginTop="8dp" />
 
                     <LinearLayout

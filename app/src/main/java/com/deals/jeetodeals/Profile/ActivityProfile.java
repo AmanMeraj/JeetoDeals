@@ -14,8 +14,10 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.deals.jeetodeals.ChangePassword.ActivityChangePassword;
+import com.deals.jeetodeals.ContainerActivity.ContainerActivity;
 import com.deals.jeetodeals.Fragments.FragmentsRepository;
 import com.deals.jeetodeals.R;
+import com.deals.jeetodeals.SignInScreen.SignInActivity;
 import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.databinding.ActivityProfileBinding;
 
@@ -39,14 +41,9 @@ ProfileViewModel viewModel;
         binding.backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent i = new Intent(ActivityProfile.this,ContainerActivity.class);
+                startActivity(i);
                 finish();
-            }
-        });
-        binding.cardChangePass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent= new Intent(ActivityProfile.this, ActivityChangePassword.class);
-                startActivity(intent);
             }
         });
         if (isInternetConnected(this)){
@@ -54,6 +51,17 @@ ProfileViewModel viewModel;
         }else {
             Toast.makeText(this, "No Internet Connection!", Toast.LENGTH_SHORT).show();
         }
+         binding.logoutBtn.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View view) {
+                 pref.setPrefBoolean(ActivityProfile.this, pref.login_status, false);
+
+                 // Redirect to SignInActivity
+                 Intent intent = new Intent(ActivityProfile.this, SignInActivity.class);
+                 startActivity(intent);
+                 finish();
+             }
+         });
     }
     public  void getProfile(){
         binding.loader.rlLoader.setVisibility(View.VISIBLE);
@@ -66,7 +74,7 @@ ProfileViewModel viewModel;
                 binding.emailTv.setText(responsee.email);
                 binding.edtFirstName.setText(responsee.first_name);
                 binding.edtLastName.setText(responsee.last_name);
-                binding.edtEamilAddress.setText(responsee.email);
+                binding.edtEamilAddress.setText(responsee.nationality);
                 binding.nameTv.setText(responsee.first_name+" "+responsee.last_name);
 
             } else {

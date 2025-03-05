@@ -63,25 +63,31 @@ public class AdapterCart extends RecyclerView.Adapter<AdapterCart.QuantityViewHo
         Log.d("ITEM LIST", "onBindViewHolder: " + itemList.size());
 
         holder.textPhoneName.setText(item.getName());
-        if(item.getType().equalsIgnoreCase("lottery")){
             int voucherRate = pref.getPrefInteger(context, pref.voucher_rate);
             String itemPrice = item.getPrices().getPrice();
 
             Log.d("AdapterCart", "Voucher Rate: " + voucherRate);
             Log.d("AdapterCart", "Item Price: " + itemPrice);
 
-            if (voucherRate != 0 && itemPrice != null && !itemPrice.isEmpty()) {
-                try {
-                    int calculatedPrice = (int) (Integer.parseInt(itemPrice) / (float) voucherRate);
-                    holder.textTicketId.setText(item.getPrices().getCurrency_prefix() + " " + calculatedPrice);
-                } catch (NumberFormatException e) {
-                    Log.e("AdapterCart", "Error parsing item price: " + itemPrice, e);
-                    holder.textTicketId.setText(item.getPrices().getCurrency_symbol() + " " + itemPrice);
-                }
-            } else {
-                holder.textTicketId.setText(item.getPrices().getCurrency_symbol() + " " + itemPrice);
+            if(voucherRate != 0 && item.getType().matches("lottery")){
+                int calculatedPrice = (int) (Integer.parseInt(itemPrice) / (float) voucherRate);
+                holder.timeTv.setText(item.getPrices().getCurrency_prefix() + " " + calculatedPrice);
+            }else if(item.getType().matches("simple")||item.getType().matches("variable")){
+                holder.timeTv.setText(item.getPrices().getCurrency_prefix() + " " + itemPrice);
             }
-        }
+
+//            if (voucherRate != 0 && itemPrice != null && !itemPrice.isEmpty()) {
+//                try {
+//                    int calculatedPrice = (int) (Integer.parseInt(itemPrice) / (float) voucherRate);
+//                    holder.textTicketId.setText(item.getPrices().getCurrency_prefix() + " " + calculatedPrice);
+//                } catch (NumberFormatException e) {
+//                    Log.e("AdapterCart", "Error parsing item price: " + itemPrice, e);
+//                    holder.textTicketId.setText(item.getPrices().getCurrency_symbol() + " " + itemPrice);
+//                }
+//            } else {
+//                holder.textTicketId.setText(item.getPrices().getCurrency_symbol() + " " + itemPrice);
+//            }
+
 
         holder.desc.setText(item.getName());
         holder.textQuantity.setText(String.valueOf(item.getQuantity()));
@@ -125,7 +131,7 @@ public class AdapterCart extends RecyclerView.Adapter<AdapterCart.QuantityViewHo
 
 
     static class QuantityViewHolder extends RecyclerView.ViewHolder {
-        TextView textPhoneName, textTicketId, desc, textQuantity;
+        TextView textPhoneName, textTicketId, desc, textQuantity,timeTv;
         ImageView plus, minus,delete,image;
 
         public QuantityViewHolder(@NonNull View itemView) {
@@ -138,6 +144,7 @@ public class AdapterCart extends RecyclerView.Adapter<AdapterCart.QuantityViewHo
             minus = itemView.findViewById(R.id.minus);
             delete= itemView.findViewById(R.id.delete);
             image=itemView.findViewById(R.id.image_phone);
+            timeTv=itemView.findViewById(R.id.time_tv);
         }
     }
 }
