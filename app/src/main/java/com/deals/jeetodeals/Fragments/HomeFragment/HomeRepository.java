@@ -34,10 +34,10 @@ public class HomeRepository {
         apiRequest = RetrofitRequest.getRetrofitInstance().create(ApiRequest.class);
     }
 
-    public LiveData<ApiResponse<ArrayList<HomeResponse>>> homeGet(String auth, String type, int category) {
+    public LiveData<ApiResponse<ArrayList<HomeResponse>>> homeGet( String type, int category) {
         final MutableLiveData<ApiResponse<ArrayList<HomeResponse>>> liveData = new MutableLiveData<>();
 
-        Call<ArrayList<HomeResponse>> call = apiRequest.getHome(auth, type, category);
+        Call<ArrayList<HomeResponse>> call = apiRequest.getHome( type, category);
         call.enqueue(new Callback<ArrayList<HomeResponse>>() {
             @Override
             public void onResponse(@NonNull Call<ArrayList<HomeResponse>> call, @NonNull Response<ArrayList<HomeResponse>> response) {
@@ -107,10 +107,10 @@ public class HomeRepository {
         return liveData;
     }
 
-    public LiveData<ApiResponse<List<ShopResponse>>> shop(String auth, Map<String, String> filters, int id, int page, int perPage) {
+    public LiveData<ApiResponse<List<ShopResponse>>> shop( Map<String, String> filters, int id, int page, int perPage) {
         final MutableLiveData<ApiResponse<List<ShopResponse>>> liveData = new MutableLiveData<>();
 
-        Call<List<ShopResponse>> call = apiRequest.getShop(auth, filters, id, page, perPage);
+        Call<List<ShopResponse>> call = apiRequest.getShop( filters, id, page, perPage);
         call.enqueue(new Callback<List<ShopResponse>>() {
             @Override
             public void onResponse(@NonNull Call<List<ShopResponse>> call, @NonNull Response<List<ShopResponse>> response) {

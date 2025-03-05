@@ -29,6 +29,16 @@ public class OtpResponse implements Serializable {
 
     public String code;
     public String message;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String token;
     public Data data;
 
     public class Data implements Serializable{

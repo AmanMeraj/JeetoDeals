@@ -280,17 +280,21 @@ private void setupListeners() {
     }
 
     private void Checkout() {
+        binding.loader.rlLoader.setVisibility(View.VISIBLE);
         String auth = "Bearer " + pref.getPrefString(this, pref.user_token);
         String nonce = pref.getPrefString(this, pref.nonce);
 
         viewModel.getCheckout(auth, nonce).observe(this, response -> {
             if (response != null && response.isSuccess && response.data != null) {
+
                 getCheckoutResponse = response;
                 fillFeilds(getCheckoutResponse);
             } else {
+                binding.loader.rlLoader.setVisibility(View.GONE);
                 Log.e("Checkout Error", "Response is null or unsuccessful: " + (response != null ? response.message : "Unknown error"));
                 Toast.makeText(this, response != null ? response.message : "Unknown error", Toast.LENGTH_SHORT).show();
             }
+            binding.loader.rlLoader.setVisibility(View.GONE);
         });
     }
 
@@ -338,6 +342,7 @@ private void setupListeners() {
 
         binding.edtPinShipping.setText(getCheckoutResponse.data.shipping_address.getPostcode());
         binding.edtPhoneShipping.setText(getCheckoutResponse.data.shipping_address.getPhone());
+        binding.loader.rlLoader.setVisibility(View.GONE);
     }
 
     private void setdata() {
@@ -468,6 +473,7 @@ private void setupListeners() {
     private void proceedToPayment(Checkout checkout) {
         this.checkoutData = checkout;
         String paymentMethod = getIntent().getStringExtra("payment_method");
+        binding.loader.rlLoader.setVisibility(View.VISIBLE);
 
         if ("razorpay".equals(paymentMethod)) {
             processWalletPayment(checkout);
@@ -479,7 +485,7 @@ private void setupListeners() {
     }
     private void startRazorpayPayment() {
         com.razorpay.Checkout razorpayCheckout = new com.razorpay.Checkout();
-        razorpayCheckout.setKeyID("rzp_test_eB9tKqgSGeVVtQ");
+        razorpayCheckout.setKeyID(pref.getPrefString(this,pref.payment_key));
 
         // Log the initialization
         Log.d("RAZORPAY_DEBUG", "Initializing Razorpay payment");
@@ -589,6 +595,7 @@ private void setupListeners() {
             try {
                 viewModel.postCheckout(auth, nonce, checkout).observe(this, response -> {
                     if (response != null && response.isSuccess && response.data != null) {
+                        binding.loader.rlLoader.setVisibility(View.GONE);
                         responsee = response.data;
                         orderId=responsee.getRazorpay_order().getId();
                         Log.d("RAZORPAY", "processWalletPayment: "+orderId);
@@ -600,11 +607,13 @@ private void setupListeners() {
                             finish();
                         }
                     } else {
+                        binding.loader.rlLoader.setVisibility(View.GONE);
                         Log.e("Checkout Error", "Response is null or unsuccessful: " +
                                 (response != null ? response.message : "Unknown error"));
                         Toast.makeText(this, response != null ? response.message :
                                 "Unknown error", Toast.LENGTH_SHORT).show();
                     }
+                    binding.loader.rlLoader.setVisibility(View.GONE);
                 });
                 break;
             } catch (Exception e) {

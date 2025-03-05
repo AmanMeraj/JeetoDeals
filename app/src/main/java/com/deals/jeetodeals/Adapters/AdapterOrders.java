@@ -67,6 +67,7 @@ public class AdapterOrders extends RecyclerView.Adapter<AdapterOrders.ViewHolder
         holder.binding.timeTv.setText("# "+order.getOrder_id());
         setStatusColor(holder.binding.tvStatus, order.getStatus());
 
+
         // Get first item's name as title
         if (!order.getItems().isEmpty()) {
             Map.Entry<String, OrderItem> firstItem = order.getItems().entrySet().iterator().next();
@@ -82,27 +83,11 @@ public class AdapterOrders extends RecyclerView.Adapter<AdapterOrders.ViewHolder
 
             // Assuming OrderItem has a method getQuantity() to get item quantity
             int quantity = item.getQuantity();
-            int voucherRate = pref.getPrefInteger(context, pref.voucher_rate);
             String itemPrice = order.getTotal();
-
-            Log.d("AdapterCart", "Voucher Rate: " + voucherRate);
-            Log.d("AdapterCart", "Item Price: " + itemPrice);
-            Log.d("AdapterCart", "Order Total: " + order.getTotal());
-
-            if (voucherRate != 0 && itemPrice != null && !itemPrice.isEmpty()) {
-                try {
-                    int calculatedPrice = (int) (Integer.parseInt(itemPrice) / (float) voucherRate);// Divide total by calculated price
-
-                    holder.binding.tvVoucher.setText("Vouchers: " + calculatedPrice + " for " + quantity + " Items");
-                } catch (NumberFormatException e) {
-                    Log.e("AdapterCart", "Error parsing item price: " + itemPrice, e);
-                    holder.binding.tvVoucher.setText("Vouchers: " + order.getTotal() + " for " + quantity + " Items");
-                }
-            } else {
-                holder.binding.tvVoucher.setText("Vouchers: " + order.getTotal() + " for " + quantity + " Items");
+            holder.binding.tvVoucher.setText("Vouchers: " + order.getTotal() + " for " + item.getQuantity() + " Items");
             }
 
-        }
+
     }
 
     private void setStatusColor(TextView textView, String status) {

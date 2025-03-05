@@ -78,8 +78,8 @@ public class FragmentsViewModel extends AndroidViewModel {
         responseLiveDataWallet=repository.getWallet(auth);
         return responseLiveDataWallet;
     }
-    public LiveData<FragmentsRepository.ApiResponse<ArrayList<Category>>> getCategory(String auth){
-        responseLiveDataCategory=repository.category(auth);
+    public LiveData<FragmentsRepository.ApiResponse<ArrayList<Category>>> getCategory(){
+        responseLiveDataCategory=repository.category();
         return responseLiveDataCategory;
     }
     public MutableLiveData<FragmentsRepository.ApiResponse<Integer>> getCurrentBalance(String auth) {
@@ -91,8 +91,8 @@ public class FragmentsViewModel extends AndroidViewModel {
         return responseLiveDataTickets;
     }
 
-    public LiveData<FragmentsRepository.ApiResponse<BannerResponse>> getBanner(String auth) {
-        responseLiveDataBanner = repository.banner(auth);
+    public LiveData<FragmentsRepository.ApiResponse<BannerResponse>> getBanner() {
+        responseLiveDataBanner = repository.banner();
         return responseLiveDataBanner;
     }
     public LiveData<FragmentsRepository.ApiResponse<FcmResponse>> postFcm(String auth, User user) {

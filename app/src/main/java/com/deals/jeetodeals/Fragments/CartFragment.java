@@ -1,5 +1,7 @@
 package com.deals.jeetodeals.Fragments;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -27,6 +29,7 @@ import com.deals.jeetodeals.databinding.FragmentCartBinding;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CartFragment extends Fragment implements AdapterCart.OnCartItemActionListener { // Step 1: Implement interface
 
@@ -37,6 +40,7 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
     FragmentsViewModel fragmentsViewModel;
     CartResponse responsee;
     private AdapterCart adapter;
+    private AtomicBoolean isLoadingBalance = new AtomicBoolean(false);
     private List<Items> itemList = new ArrayList<>(); // Store cart items
 
     @Override
@@ -46,6 +50,7 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
 
         if (utility.isInternetConnected(requireActivity())) {
             getCart();
+            getBalance();
         } else {
             Toast.makeText(requireActivity(), "No internet connection!", Toast.LENGTH_SHORT).show();
         }
@@ -96,6 +101,33 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
         } else {
             binding.proceedBtn.setVisibility(View.GONE);
         }
+    }
+    public void getBalance() {
+        if (isLoadingBalance.get() || !isAdded()) return;
+
+        isLoadingBalance.set(true);
+        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
+
+        fragmentsViewModel.getCurrentBalance(auth).observe(getViewLifecycleOwner(), apiResponse -> {
+            isLoadingBalance.set(false);
+
+            if (!isAdded()) return;
+
+            if (apiResponse != null) {
+                if (apiResponse.isSuccess) {
+                    pref.setPrefString(requireActivity(), pref.main_balance, String.valueOf(apiResponse.data));
+                } else {
+                    Log.w(TAG, "Balance retrieval failed: " + apiResponse.message);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getCart();
+        getBalance();
     }
 
     public void getCart() {

@@ -95,7 +95,6 @@ public interface ApiRequest {
     @Headers({"Accept: application/json"})
     @GET("wc/store/v1/products")
     Call<ArrayList<HomeResponse>> getHome(
-            @Header("Authorization") String authorization,
             @Query("type") String type,
             @Query("category") int category
     );
@@ -115,7 +114,6 @@ public interface ApiRequest {
     @Headers({"Accept: application/json"})
     @GET("wc/store/v1/products/categories")
     Call<ArrayList<Category>> getCategory(
-            @Header("Authorization") String authorization
     );
 
     @Headers({"Accept: application/json"})
@@ -126,20 +124,10 @@ public interface ApiRequest {
     @GET("custom/v1/winners")
     Call<ArrayList<WinnerResponse>> getWinner();
 
-//    @Headers({"Accept: application/json"})
-//    @GET("wc/store/v1/products")
-//    Call<List<ShopResponse>> getShop(
-//            @Header("Authorization") String authorization,
-//            @Query("type") String type,
-//            @Query("category") int id,
-//            @Query("page") int page,
-//            @Query("per_page") int perPage
-//    );
 
     @Headers({"Accept: application/json"})
     @GET("wc/store/v1/products")
     Call<List<ShopResponse>> getShop(
-            @Header("Authorization") String authorization,
             @QueryMap Map<String, String> filters,
             @Query("category") int id,
             @Query("page") int page,
@@ -178,9 +166,7 @@ public interface ApiRequest {
 
     @Headers({"Accept: application/json"})
     @GET("custom/v1/banners")
-    Call<BannerResponse> getBanner(
-            @Header("Authorization") String authorization
-    );
+    Call<BannerResponse> getBanner();
 
     @Headers({"Accept: application/json"})
     @GET("custom/v1/address")

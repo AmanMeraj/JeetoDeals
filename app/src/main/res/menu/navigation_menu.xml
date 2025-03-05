@@ -26,10 +26,10 @@
         android:title="@string/get_in_touch"
         android:id="@+id/nav_contact"
         android:icon="@drawable/contact_jd"/>
-    <item
-        android:title="@string/how_it_works"
-        android:id="@+id/nav_works"
-        android:icon="@drawable/book_jd"/>
+<!--    <item-->
+<!--        android:title="@string/how_it_works"-->
+<!--        android:id="@+id/nav_works"-->
+<!--        android:icon="@drawable/book_jd"/>-->
     <item
         android:title="@string/call_us"
         android:id="@+id/nav_call"
@@ -38,10 +38,6 @@
         android:title="@string/email_us"
         android:id="@+id/nav_email"
         android:icon="@drawable/contact_jd"/>
-    <item
-        android:title="@string/user_agreement"
-        android:id="@+id/nav_agreement"
-        android:icon="@drawable/contract_jd"/>
 </group>
     <group
         android:id="@+id/bottom_group"

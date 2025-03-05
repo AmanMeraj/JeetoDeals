@@ -48,6 +48,7 @@ import com.deals.jeetodeals.Model.Variations;
 import com.deals.jeetodeals.Model.Wishlist;
 import com.deals.jeetodeals.Model.WishlistCreationResponse;
 import com.deals.jeetodeals.R;
+import com.deals.jeetodeals.SignInScreen.SignInActivity;
 import com.deals.jeetodeals.Utils.SharedPref;
 import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.Wishlist.WishlistAddResponse;
@@ -68,6 +69,7 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     private FragmentShopBinding binding;
     private View selectedRelativeLayout;
     private CartResponse cartResponse;
+    boolean isLoggedIn=false;
     private final SharedPref pref = new SharedPref();
     private final Utility utility = new Utility();
     private int selectedCategoryId = -1; // Default value, indicating no category selected
@@ -125,8 +127,7 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     }
 
     private void getCategory() {
-        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
-        viewModel2.getCategory(auth).observe(getViewLifecycleOwner(), response -> {
+        viewModel2.getCategory().observe(getViewLifecycleOwner(), response -> {
             if (response != null && response.isSuccess && response.data != null && !response.data.isEmpty()) {
                 // Filter out unwanted categories
                 List<Category> filteredCategories = new ArrayList<>();
@@ -215,7 +216,7 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
             isLastPage = false;
         }
 
-        viewModel.getShop(auth, "simple|variable", id, currentPage, perPage).observe(getViewLifecycleOwner(), response -> {
+        viewModel.getShop( "simple|variable", id, currentPage, perPage).observe(getViewLifecycleOwner(), response -> {
             isLoading = false;
             binding.loader.rlLoader.setVisibility(View.GONE);
             showBottomLoader(false);
@@ -341,6 +342,16 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     }
 
     private void addToWishlist(String productId) {
+        isLoggedIn = pref.getPrefBoolean(requireContext(), pref.login_status);
+
+        if (!isLoggedIn) {
+            // User is not logged in, redirect to login screen
+            Intent intent = new Intent(requireActivity(), SignInActivity.class);
+            startActivity(intent);
+            requireActivity().finish();
+            return;
+        }
+
         String auth = getAuthToken();
         Wishlist wishlist = new Wishlist();
         wishlist.setProduct_id(Integer.parseInt(productId));
@@ -360,6 +371,17 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
 
     @Override
     public void onShareClick(String permalink) {
+
+        isLoggedIn = pref.getPrefBoolean(requireContext(), pref.login_status);
+
+        if (!isLoggedIn) {
+            // User is not logged in, redirect to login screen
+            Intent intent = new Intent(requireActivity(), SignInActivity.class);
+            startActivity(intent);
+            requireActivity().finish();
+            return;
+        }
+
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, permalink);
@@ -402,6 +424,16 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     private void checkCartAndAddItem(ShopResponse item, String authToken, String nonce, String size, int quantity) {
         if (binding != null) {
             binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        }
+
+        isLoggedIn = pref.getPrefBoolean(requireContext(), pref.login_status);
+
+        if (!isLoggedIn) {
+            // User is not logged in, redirect to login screen
+            Intent intent = new Intent(requireActivity(), SignInActivity.class);
+            startActivity(intent);
+            requireActivity().finish();
+            return;
         }
         viewModel2.getCart(authToken).observe(getViewLifecycleOwner(), response -> {
             if (response != null && response.isSuccess && response.data != null) {

@@ -15,13 +15,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
-import com.deals.jeetodeals.ContainerActivity.ContainerActivity;
 import com.deals.jeetodeals.Fragments.FragmentsRepository;
 import com.deals.jeetodeals.Fragments.FragmentsViewModel;
 import com.deals.jeetodeals.IntroductionScreen.ActivityIntroduction;
 import com.deals.jeetodeals.Model.AppVersion;
 import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.SignInScreen.SignInActivity;
+import com.deals.jeetodeals.SplashVideo.ActivityVideoScreen;
 import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.databinding.ActivitySplashBinding;
 
@@ -68,7 +68,9 @@ public class SplashActivity extends Utility {
                 String whatsapp = response.data.getWhatsapp();
                 String email = response.data.getEmail();
                 String calling = response.data.getCalling();
-                int voucher=response.data.getVoucher_rate();
+                String androidVersion =response.data.getAndriod_version();
+                String paymeny=response.data.getPayment_key();
+                int voucher = response.data.getVoucher_rate();
 
                 if (whatsapp != null) {
                     pref.setPrefString(this, pref.admin_whatsapp, whatsapp);
@@ -79,9 +81,15 @@ public class SplashActivity extends Utility {
                 if (calling != null) {
                     pref.setPrefString(this, pref.admin_number, calling);
                 }
+                if(androidVersion!=null){
+                    pref.setPrefString(this,pref.android_version,androidVersion);
+                }
+                if(paymeny!=null){
+                    pref.setPrefString(this,pref.payment_key,paymeny);
+                }
 
-                    pref.setPrefInteger(this,pref.voucher_rate,voucher);
-                Log.d("TAG", "proceed: "+pref.getPrefInteger(this,pref.voucher_rate));
+                pref.setPrefInteger(this, pref.voucher_rate, voucher);
+                Log.d("TAG", "proceed: " + pref.getPrefInteger(this, pref.voucher_rate));
             } else {
                 Log.d("AppVersion", "Response or response.data is null");
                 continueNavigation();
@@ -151,16 +159,17 @@ public class SplashActivity extends Utility {
     private void continueNavigation() {
         Handler handler = new Handler();
         handler.postDelayed(() -> {
-            if (pref.getPrefBoolean(SplashActivity.this, pref.login_status)) {
-                startActivity(new Intent(SplashActivity.this, ContainerActivity.class));
+            // Check if this is first time launch
+            if (!pref.getPrefBoolean(SplashActivity.this, INTRO_SHOWN_KEY)) {
+                // First time launch, show intro screen
+                startActivity(new Intent(SplashActivity.this, ActivityIntroduction.class));
+                pref.setPrefBoolean(SplashActivity.this, INTRO_SHOWN_KEY, true);
+                finish();
             } else {
-                if (pref.getPrefBoolean(SplashActivity.this, INTRO_SHOWN_KEY)) {
-                    startActivity(new Intent(SplashActivity.this, SignInActivity.class));
-                } else {
-                    startActivity(new Intent(SplashActivity.this, ActivityIntroduction.class));
-                }
+                // Not first time, show video screen
+                startActivity(new Intent(SplashActivity.this, ActivityVideoScreen.class));
+                finish();
             }
-            finish();
-        }, 3000);
+        }, 3000); // Show splash for 3 seconds
     }
 }

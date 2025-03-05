@@ -58,4 +58,32 @@ public class AppVersion implements Serializable {
     }
 
     public int voucher_rate;
+
+    public String getPayment_key() {
+        return payment_key;
+    }
+
+    public void setPayment_key(String payment_key) {
+        this.payment_key = payment_key;
+    }
+
+    public String getIos_version() {
+        return ios_version;
+    }
+
+    public void setIos_version(String ios_version) {
+        this.ios_version = ios_version;
+    }
+
+    public String getAndriod_version() {
+        return andriod_version;
+    }
+
+    public void setAndriod_version(String andriod_version) {
+        this.andriod_version = andriod_version;
+    }
+
+    public String payment_key;
+    public String ios_version;
+    public String andriod_version;
 }

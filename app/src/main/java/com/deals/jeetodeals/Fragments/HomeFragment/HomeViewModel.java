@@ -36,8 +36,8 @@ public class HomeViewModel extends AndroidViewModel {
      * @param type type string containing type of response i want to get.
      * @return LiveData containing ApiResponse with ExistsResponse data and status message.
      */
-    public LiveData<HomeRepository.ApiResponse<ArrayList<HomeResponse>>> getHome(String auth, String type,int category) {
-        responseLiveData = repository.homeGet(auth,type,category);  // Fixed method call with correct case
+    public LiveData<HomeRepository.ApiResponse<ArrayList<HomeResponse>>> getHome( String type,int category) {
+        responseLiveData = repository.homeGet(type,category);  // Fixed method call with correct case
         return responseLiveData;
     }
 
@@ -49,13 +49,13 @@ public class HomeViewModel extends AndroidViewModel {
         responseLiveData3 = repository.getWinner();  // Fixed method call with correct case
         return responseLiveData3;
     }
-    public LiveData<HomeRepository.ApiResponse<List<ShopResponse>>> getShop(String auth, String type, int id, int page, int perPage) {
+    public LiveData<HomeRepository.ApiResponse<List<ShopResponse>>> getShop( String type, int id, int page, int perPage) {
         // Create a map for the filters, passing the type parameter with key "filter[type]"
         Map<String, String> filters = new HashMap<>();
         filters.put("filter[type]", type);
 
         // Call the repository with the filters map and the other parameters
-        return repository.shop(auth, filters, id, page, perPage);
+        return repository.shop( filters, id, page, perPage);
     }
 
 

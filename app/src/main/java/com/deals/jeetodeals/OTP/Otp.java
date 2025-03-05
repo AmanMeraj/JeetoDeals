@@ -14,4 +14,5 @@ public class Otp implements Serializable {
     public String email;
     public String otp;
 
+
 }

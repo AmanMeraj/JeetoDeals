@@ -2,6 +2,7 @@ package com.deals.jeetodeals.ContainerActivity;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
@@ -46,6 +47,7 @@ public class ContainerActivity extends Utility {
 
     ActivityContainerBinding binding;
     private Fragment currentFragment;
+    private  boolean isLoggedIn=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,9 +73,19 @@ public class ContainerActivity extends Utility {
 
         // Handle profile image click
         binding.profileImage.setOnClickListener(view -> {
-            Intent intent = new Intent(ContainerActivity.this, ActivityProfile.class);
-            startActivity(intent);
+             isLoggedIn = pref.getPrefBoolean(ContainerActivity.this, pref.login_status);
+
+            if (isLoggedIn) {
+                // If logged in, open the profile activity
+                Intent intent = new Intent(ContainerActivity.this, ActivityProfile.class);
+                startActivity(intent);
+            } else {
+                // If not logged in, redirect to login activity
+                Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
+                startActivity(intent);}
+            finish();
         });
+
 
         // Handle back press to navigate to HomeFragment or close the app
         handleBackPress();
@@ -110,41 +122,43 @@ public class ContainerActivity extends Utility {
 
     private void setupNavigationView() {
         Menu menu = binding.navigationView.getMenu();
+        boolean isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
 
         // Setup logout item
         MenuItem logoutItem = menu.findItem(R.id.logout);
         if (logoutItem != null) {
-            View logoutView = getLayoutInflater().inflate(R.layout.menu_logout_button, null);
+            if (isLoggedIn) {
+                // Inflate logout button view if logged in
+                View logoutView = getLayoutInflater().inflate(R.layout.menu_logout_button, null);
 
-            // Make sure the view takes up the full width
-            logoutView.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            ));
+                logoutView.setLayoutParams(new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                ));
 
-            logoutView.setOnClickListener(v -> {
-                // Create the Material 3 AlertDialog
-                new MaterialAlertDialogBuilder(this)
-                        .setTitle("Logout")
-                        .setMessage("Are you sure you want to logout?")
-                        .setPositiveButton("Logout", (dialog, which) -> {
-                            // Perform logout
-                            Toast.makeText(this, "Logging out...", Toast.LENGTH_SHORT).show();
-                            pref.setPrefBoolean(this, pref.login_status, false);
+                logoutView.setOnClickListener(v -> {
+                    // Show logout confirmation dialog
+                    new MaterialAlertDialogBuilder(this)
+                            .setTitle("Logout")
+                            .setMessage("Are you sure you want to logout?")
+                            .setPositiveButton("Logout", (dialog, which) -> {
+                                Toast.makeText(this, "Logging out...", Toast.LENGTH_SHORT).show();
+                                pref.setPrefBoolean(this, pref.login_status, false);
 
-                            // Start SignInActivity and finish the current one
-                            Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
-                            startActivity(intent);
-                            finish();
-                        })
-                        .setNegativeButton("Cancel", (dialog, which) -> {
-                            // Cancel the logout (no action)
-                            dialog.dismiss();
-                        })
-                        .show();
-            });
+                                // Redirect to SignInActivity
+                                Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
+                                startActivity(intent);
+                                finish();
+                            })
+                            .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                            .show();
+                });
 
-            logoutItem.setActionView(logoutView);
+                logoutItem.setActionView(logoutView);
+                logoutItem.setVisible(true);
+            } else {
+                logoutItem.setVisible(false);
+            }
         }
 
         // Change text and icon color for all menu items
@@ -152,16 +166,12 @@ public class ContainerActivity extends Utility {
         binding.navigationView.setItemTextColor(whiteColor);
         binding.navigationView.setNavigationItemSelectedListener(item -> {
             int itemId = item.getItemId();
-
-            // Disable icon tint to show original icon colors
             binding.navigationView.setItemIconTintList(null);
 
             // Safely set white color for menu items
             for (int i = 0; i < menu.size(); i++) {
                 MenuItem menuItem = menu.getItem(i);
                 CharSequence title = menuItem.getTitle();
-
-                // Only process if the title is not null
                 if (title != null) {
                     SpannableString spanString = new SpannableString(title);
                     spanString.setSpan(new ForegroundColorSpan(Color.WHITE), 0, spanString.length(), 0);
@@ -169,37 +179,61 @@ public class ContainerActivity extends Utility {
                 }
             }
 
+            // If not logged in, redirect to login page
+            if (!isLoggedIn) {
+                Toast.makeText(this, "Please log in to access this feature", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(ContainerActivity.this, SignInActivity.class));
+                finish();
+                return true;
+            }
+
             // Handle navigation item clicks
-           if (itemId == R.id.nav_ticket) {
+            if (itemId == R.id.nav_ticket) {
                 loadFragment(new TicketFragment());
             } else if (itemId == R.id.nav_order) {
-                Intent intentOrders = new Intent(ContainerActivity.this, ActivityMyOrders.class);
-                startActivity(intentOrders);
+                startActivity(new Intent(ContainerActivity.this, ActivityMyOrders.class));
             } else if (itemId == R.id.nav_wishlist) {
-                Intent wishlist= new Intent(ContainerActivity.this, ActivityWishlist.class);
-                startActivity(wishlist);
+                startActivity(new Intent(ContainerActivity.this, ActivityWishlist.class));
             } else if (itemId == R.id.nav_address) {
-            Intent address= new Intent(ContainerActivity.this, ActivityChangeAddress.class);
-            startActivity(address);
+                startActivity(new Intent(ContainerActivity.this, ActivityChangeAddress.class));
             } else if (itemId == R.id.nav_details) {
-               Intent profile = new Intent(ContainerActivity.this,ActivityProfile.class);
-               startActivity(profile);
+                startActivity(new Intent(ContainerActivity.this, ActivityProfile.class));
             } else if (itemId == R.id.nav_contact) {
-                Toast.makeText(this, "Contact Us Clicked", Toast.LENGTH_SHORT).show();
-            } else if (itemId == R.id.nav_works) {
-                Toast.makeText(this, "How It Works Clicked", Toast.LENGTH_SHORT).show();
+                String adminNumber = pref.getPrefString(this, pref.admin_whatsapp);
+                openWhatsApp(adminNumber, "Hello");
             } else if (itemId == R.id.nav_call) {
-                makePhoneCall(pref.getPrefString(this,pref.admin_number));
+                makePhoneCall(pref.getPrefString(this, pref.admin_number));
             } else if (itemId == R.id.nav_email) {
-               sendEmailSingleRecipient(pref.getPrefString(this,pref.admin_email),"Need help regarding","Hello there !");
-            } else if (itemId == R.id.nav_agreement) {
-                Toast.makeText(this, "User Agreement Clicked", Toast.LENGTH_SHORT).show();
+                sendEmailSingleRecipient(pref.getPrefString(this, pref.admin_email), "Need help regarding", "Hello there!");
             }
 
             binding.main.closeDrawer(binding.navigationView); // Close the drawer after item click
             return true;
         });
     }
+
+    private void openWhatsApp(String phoneNumber, String message) {
+        PackageManager packageManager = getPackageManager();
+        try {
+            // Check if WhatsApp is installed
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            String url = "https://wa.me/" + phoneNumber + "?text=" + Uri.encode(message);
+            intent.setData(Uri.parse(url));
+
+            // Verify if the WhatsApp package exists
+            if (intent.resolveActivity(packageManager) != null) {
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "WhatsApp is not installed on your device", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Unable to open WhatsApp", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
 
 
     private void bottomMenuClick() {
@@ -214,11 +248,42 @@ public class ContainerActivity extends Utility {
             } else if (item.getItemId() == R.id.shop) {
                 fragment = new ShopFragment();
             } else if (item.getItemId() == R.id.ticket) {
-                fragment = new TicketFragment();
+                isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
+
+                if (!isLoggedIn) {
+                    // User is not logged in, redirect to login screen
+                    Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
+                    startActivity(intent);
+                    finish();
+                }else{
+                    fragment = new TicketFragment();
+                }
+
             } else if (item.getItemId() == R.id.wallet) {
-                fragment = new WalletFragment();
+                isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
+
+                if (!isLoggedIn) {
+                    // User is not logged in, redirect to login screen
+                    Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
+                    startActivity(intent);
+                    finish();
+
+                }else{
+                    fragment = new WalletFragment();
+                }
+
             } else if (item.getItemId() == R.id.cart) {
-                fragment = new CartFragment();
+                isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
+
+                if (!isLoggedIn) {
+                    // User is not logged in, redirect to login screen
+                    Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
+                    startActivity(intent);
+                    finish();
+                }else{
+                    fragment = new CartFragment();
+                }
+
             }
 
             // Load the selected fragment if it's not the same as the current one

@@ -235,44 +235,59 @@ public class SignUpActivity extends Utility {
         signup.setOtp_method(otpMethod);
 
         // Observe LiveData from ViewModel
+// Observe LiveData from ViewModel
         viewModel.postSignup(signup).observe(this, response -> {
             binding.loader.rlLoader.setVisibility(View.GONE);
 
             if (response != null) {
                 Log.d("TAG", "Full Response: " + new Gson().toJson(response));
 
-                String code = response.data.getCode(); // Extract the code from the response
-                String message = response.data.getMessage(); // Extract the message from the response
+                ExistsResponse response1 = response.data;
+                if (response.data.getCode().equalsIgnoreCase("400")) {
+                    showToast("Invalid response from server.");
+                    return;
+                }
 
+                String message = response1.getMessage() != null ? response1.getMessage() : "Unknown error";
+                String code = response1.getCode() != null ? response1.getCode() : "";
+                int status = response1.getData().getStatus(); // Get status from response
+
+                StringBuilder errorMessage = new StringBuilder(); // To store multiple errors
+
+                // Check if email or phone already exists
+                if ("email_exists".equalsIgnoreCase(code)) {
+                    errorMessage.append("Email already exists!\n");
+                }
+                if ("phone_exists".equalsIgnoreCase(code)) {
+                    errorMessage.append("Phone number already exists!\n");
+                }
+
+                // If status is not success (e.g., 400 error), or we detected email/phone exists
+                if (status != 200 || errorMessage.length() > 0) {
+                    showToast(errorMessage.length() > 0 ? errorMessage.toString().trim() : message);
+                    return;
+                }
+
+                // Handle success case
                 if (response.isSuccess) {
-                    if ("otp_error".equals(code)) {
-                        // Handle OTP sending failure
-                        Toast.makeText(this, message != null ? message : "Failed to send OTP.", Toast.LENGTH_SHORT).show();
-                    } else if (message != null && message.contains("OTP sent successfully")) {
-                        // Handle OTP sending success
-                        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                    if (message.contains("OTP sent successfully")) {
+                        showToast(message);
                         Intent intent = new Intent(SignUpActivity.this, ActivityOTP.class);
                         intent.putExtra("email", signup.getEmail());
                         startActivity(intent);
                         finish();
-                    } else {
-                        // Handle other success cases
-                        Toast.makeText(this, message != null ? message : "Signup successful!", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    // Handle failure cases
-                    if ("email_exists".equals(code)) {
-                        Toast.makeText(this, "Email already exists!", Toast.LENGTH_SHORT).show();
-                    } else if ("phone_exists".equals(code)) {
-                        Toast.makeText(this, "Phone number already exists!", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(this, message != null ? message : "An unexpected error occurred. Please try again.", Toast.LENGTH_SHORT).show();
-                    }
+                    showToast(message);
                 }
             } else {
-                // Handle null response
-                Toast.makeText(this, "Signup failed! Please contact admin", Toast.LENGTH_SHORT).show();
+                showToast("Signup failed! Please contact admin.");
             }
         });
+
+    }
+
+    private void showToast(String s) {
+        Toast.makeText(this, ""+s, Toast.LENGTH_SHORT).show();
     }
 }

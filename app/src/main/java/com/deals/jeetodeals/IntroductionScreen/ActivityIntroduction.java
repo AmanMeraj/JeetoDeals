@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import com.deals.jeetodeals.Adapters.IntroPagerAdapter2;
+import com.deals.jeetodeals.ContainerActivity.ContainerActivity;
 import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.SignInScreen.SignInActivity;
 import com.deals.jeetodeals.Utils.SharedPref;
@@ -90,7 +91,7 @@ public class ActivityIntroduction extends AppCompatActivity {
     }
 
     private void startSignInActivity() {
-        Intent intent = new Intent(this, SignInActivity.class);
+        Intent intent = new Intent(this, ContainerActivity.class);
         startActivity(intent);
     }
 }

@@ -2,16 +2,21 @@ package com.deals.jeetodeals.Utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 public class SharedPref {
 
     private static final String LOGIN_SHARED_FILE = "sappy_Prefs";
+    // In your SharedPref class
+    public static final String KEY_IS_LOGGED_IN = "is_logged_in";
     final public String user_token = "user_token";
     final public String login_status = "login_status";
     final public String cart_count = "cart_count";
     final public String user_status = "user_status";
     final public String user_id = "user_id";
     final public String user_name = "user_name";
+    final public String payment_key = "payment_key";
+    final public String android_version = "android_version";
     final public String user_nice_name = "user_nice_name";
     final public String nonce = "nonce";
     final public String user_password = "password";
@@ -105,6 +110,21 @@ public class SharedPref {
                 LOGIN_SHARED_FILE, Context.MODE_PRIVATE);
         return settings.getBoolean(key, false);
     }
+    public boolean contains(Context context, String key) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(LOGIN_SHARED_FILE, Context.MODE_PRIVATE);
+        return sharedPreferences.contains(key);
+    }
+
+    public void clearPreferences(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(LOGIN_SHARED_FILE, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
+        Log.d("SharedPreferences", "Preferences Cleared!");
+    }
+
+
+
 
 
 

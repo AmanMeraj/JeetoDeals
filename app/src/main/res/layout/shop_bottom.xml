@@ -20,6 +20,7 @@
                 android:background="@drawable/orange_card_top">
 
                 <TextView
+                    android:visibility="invisible"
                     android:id="@+id/sold_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

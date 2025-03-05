@@ -64,6 +64,7 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
     private HomeViewModel viewModel;
     private FragmentsViewModel fragmentsViewModel;
     ArrayList<DrawResponse> drawResponse;
+    boolean isLoggedIn=false;
     private ArrayList<HomeResponse> responsee;
     private ArrayList<WinnerResponse> winnerResponse;
     private BannerResponse bannerResponse;
@@ -345,10 +346,10 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         if (isLoadingHomeData.get() || !isAdded()) return;
 
         isLoadingHomeData.set(true);
-        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
+//        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
         String type = "lottery";
 
-        viewModel.getHome(auth, type, 20).observe(getViewLifecycleOwner(), response -> {
+        viewModel.getHome( type, 20).observe(getViewLifecycleOwner(), response -> {
             isLoadingHomeData.set(false);
 
             if (!isAdded() || binding == null) return;
@@ -478,10 +479,9 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         if (isLoadingHomeData2.get() || !isAdded()) return;
 
         isLoadingHomeData2.set(true);
-        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
         String type = "lottery";
 
-        viewModel.getHome(auth, type, 21).observe(getViewLifecycleOwner(), response -> {
+        viewModel.getHome( type, 21).observe(getViewLifecycleOwner(), response -> {
             isLoadingHomeData2.set(false);
 
             if (!isAdded() || binding == null) return;
@@ -545,9 +545,8 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         if (isLoadingBanner.get() || !isAdded()) return;
 
         isLoadingBanner.set(true);
-        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
 
-        fragmentsViewModel.getBanner(auth).observe(getViewLifecycleOwner(), response -> {
+        fragmentsViewModel.getBanner().observe(getViewLifecycleOwner(), response -> {
             isLoadingBanner.set(false);
 
             if (!isAdded() || binding == null) return;
@@ -705,6 +704,18 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
     private void handleAddToCartAction(HomeResponse item) {
         if (!isAdded() || binding == null) return;
 
+        // Check if user is logged in
+         isLoggedIn = pref.getPrefBoolean(requireContext(), pref.login_status);
+
+        if (!isLoggedIn) {
+            // User is not logged in, redirect to login screen
+            Intent intent = new Intent(requireActivity(), SignInActivity.class);
+            startActivity(intent);
+            requireActivity().finish();
+            return;
+        }
+
+        // User is logged in, proceed with cart actions
         String authToken = "Bearer " + pref.getPrefString(requireContext(), pref.user_token);
         String nonce = pref.getPrefString(requireActivity(), pref.nonce);
 
@@ -795,10 +806,6 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         if (isAdded() && getContext() != null) {
             Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private int dpToPx(Context context, float dp) {
-        return (int) (dp * context.getResources().getDisplayMetrics().density);
     }
 
     @Override

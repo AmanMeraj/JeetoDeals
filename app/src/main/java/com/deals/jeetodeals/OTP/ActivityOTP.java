@@ -2,6 +2,7 @@ package com.deals.jeetodeals.OTP;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -12,12 +13,15 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.deals.jeetodeals.ContainerActivity.ContainerActivity;
 import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.SignInScreen.SignInActivity;
 import com.deals.jeetodeals.SignupScreen.SignUpActivity;
+import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.databinding.ActivityOtpBinding;
+import com.google.gson.Gson;
 
-public class ActivityOTP extends AppCompatActivity {
+public class ActivityOTP extends Utility {
 
     ActivityOtpBinding binding;
     OtpViewModel viewModel;
@@ -68,6 +72,9 @@ public class ActivityOTP extends AppCompatActivity {
         // Show loader
         binding.loader.rlLoader.setVisibility(View.VISIBLE);
 
+        // Log input values
+        Log.d("OTP_DEBUG", "Verifying OTP: " + otp + " for email: " + email);
+
         // Create OTP object
         Otp otpclass = new Otp();
         otpclass.setOtp(otp);
@@ -79,39 +86,59 @@ public class ActivityOTP extends AppCompatActivity {
             binding.loader.rlLoader.setVisibility(View.GONE);
 
             if (response != null) {
-                if (response.isSuccess && response.data != null) {
-                    String message = response.message; // Response message from ApiResponse
-                    String code = response.data.getCode(); // Assuming OtpResponse has a `getCode()`
+                Log.d("OTP_DEBUG", "OTP API Response: " + new Gson().toJson(response));
 
-                    if ("User registered successfully.".equalsIgnoreCase(message)) {
-                        showToast(message);
-                        navigateToSignIn(); // Navigate to sign-in screen
-                    } else if ("invalid_otp".equalsIgnoreCase(code)) {
+                // Check if response is successful and contains required fields
+                if (response.isSuccess) {
+                    Log.d("OTP_DEBUG", "User registration successful."+response.data.message);
+                    if (response.data != null && "User registered successfully.".equalsIgnoreCase(response.data.message)) {
+                        Log.d("OTP_DEBUG", "User registration successful.");
+
+                        String token = response.data.getToken();
+                        if (token != null && !token.isEmpty()) {
+                            // Store token and login status
+                            pref.setPrefString(ActivityOTP.this, pref.user_token, token);
+                            pref.setPrefBoolean(ActivityOTP.this, pref.login_status, true);
+
+                            Log.d("OTP_DEBUG", "Token saved: " + token);
+                            navigateToContainer();
+                        } else {
+                            Log.e("OTP_DEBUG", "Token is missing! Login failed.");
+                            showToast("Token is missing! Login failed.");
+                        }
+                    } else if (response.data != null && "invalid_otp".equalsIgnoreCase(response.data.getCode())) {
+                        Log.e("OTP_DEBUG", "Invalid OTP entered.");
                         showToast("Invalid OTP. Please try again.");
                     } else {
-                        showToast(message != null ? message : "An unexpected error occurred.");
+                        Log.e("OTP_DEBUG", "Unexpected response: " + response.message);
+                        showToast(response.message != null ? response.message : "An unexpected error occurred.");
                     }
                 } else {
-                    // API failure case
+                    Log.e("OTP_DEBUG", "API failure. Response: " + new Gson().toJson(response));
                     showToast(response.message != null ? response.message : "Verification failed! Please try again later.");
                 }
             } else {
+                Log.e("OTP_DEBUG", "API response is null.");
                 showToast("Verification failed! Please try again later.");
             }
         });
     }
 
 
+
+    // Navigate to the main container activity
+    private void navigateToContainer() {
+        Intent intent = new Intent(ActivityOTP.this, ContainerActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clears back stack
+        startActivity(intent);
+        finish();
+    }
+
+
+
     // Helper method to show Toast messages
     private void showToast(String message) {
         Toast.makeText(ActivityOTP.this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    // Helper method to navigate to SignInActivity
-    private void navigateToSignIn() {
-        Intent intent = new Intent(ActivityOTP.this, SignInActivity.class);
-        startActivity(intent);
-        finish();
     }
 
 

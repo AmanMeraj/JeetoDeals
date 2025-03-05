@@ -217,10 +217,10 @@ public class FragmentsRepository {
 
         return liveData;
     }
-    public LiveData<ApiResponse<BannerResponse>> banner(String auth) {
+    public LiveData<ApiResponse<BannerResponse>> banner() {
         final MutableLiveData<ApiResponse<BannerResponse>> liveData = new MutableLiveData<>();
 
-        apiRequest.getBanner(auth).enqueue(new Callback<BannerResponse>() {
+        apiRequest.getBanner().enqueue(new Callback<BannerResponse>() {
             @Override
             public void onResponse(@NonNull Call<BannerResponse> call, @NonNull Response<BannerResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -288,10 +288,10 @@ public class FragmentsRepository {
 
         return liveData;
     }
-    public LiveData<ApiResponse<ArrayList<Category>>> category(String auth) {
+    public LiveData<ApiResponse<ArrayList<Category>>> category() {
         final MutableLiveData<ApiResponse<ArrayList<Category>>> liveData = new MutableLiveData<>();
 
-        apiRequest.getCategory(auth).enqueue(new Callback<ArrayList<Category>>() {
+        apiRequest.getCategory().enqueue(new Callback<ArrayList<Category>>() {
             @Override
             public void onResponse(@NonNull Call<ArrayList<Category>> call, @NonNull Response<ArrayList<Category>> response) {
                 if (response.isSuccessful() && response.body() != null) {

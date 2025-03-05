@@ -94,11 +94,11 @@ public class WalletFragment extends Fragment {
         if (responsee == null || responsee.isEmpty()) {
             // If the response is empty or null, hide the RecyclerView and show another view
             binding.rcTransaction.setVisibility(View.GONE);
-            binding.cardNoData.setVisibility(View.VISIBLE);  // Assuming noDataView is the view you want to show
+            binding.noItem.setVisibility(View.VISIBLE);  // Assuming noDataView is the view you want to show
         } else {
             // If there is data, show the RecyclerView and hide the other view
             binding.rcTransaction.setVisibility(View.VISIBLE);
-            binding.cardNoData.setVisibility(View.GONE);
+            binding.noItem.setVisibility(View.GONE);
 
             // Set the adapter to RecyclerView
             TransactionAdapter adapter = new TransactionAdapter(requireActivity(), responsee);

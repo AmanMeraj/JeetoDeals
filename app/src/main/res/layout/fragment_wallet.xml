@@ -132,6 +132,33 @@
 
         </ImageView>
     </com.google.android.material.card.MaterialCardView>
+    <RelativeLayout
+        android:visibility="gone"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:id="@+id/no_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_centerHorizontal="true"
+            android:padding="5dp"
+            android:id="@+id/image"
+            android:src="@drawable/logo_jd"
+            android:layout_width="80dp"
+            android:layout_height="80dp"/>
+        <TextView
+            android:layout_centerHorizontal="true"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:text="Your Transaction history is empty"
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/inter_bold"
+            android:layout_below="@+id/image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
 
     <include
         android:id="@+id/loader"
