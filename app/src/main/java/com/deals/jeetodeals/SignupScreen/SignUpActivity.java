@@ -254,6 +254,12 @@ public class SignUpActivity extends Utility {
                 Log.d("TAG", "Full Response: " + new Gson().toJson(response));
 
                 ExistsResponse response1 = response.data;
+
+                if(response.data==null){
+                    showToast(response.message);
+                    return;
+                }
+
                 if (response.data.getCode().equalsIgnoreCase("400")) {
                     showToast("Invalid response from server.");
                     return;

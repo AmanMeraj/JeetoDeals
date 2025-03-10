@@ -41,11 +41,11 @@ public class SignupRepository {
                         // Extract the error message from the response
                         String errorBody = response.errorBody().string();
                         String errorMessage = extractDynamicErrorMessage(errorBody);
-                        Log.d("AMAN", "onResponse: "+errorMessage);
+                        Log.d("AMAN", "onResponse:try "+errorMessage);
                         liveData.setValue(new ApiResponse<>(null, false, errorMessage));
                     } catch (Exception e) {
                         Log.d("AMAN", "onResponse: exception");
-                        Log.e(TAG, "Error parsing error response: " + e.getMessage());
+                        Log.e("AMAN", "Error parsing error response: " + e.getMessage());
                         liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
                     }
                 } else {
