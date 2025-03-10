@@ -711,7 +711,6 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
             // User is not logged in, redirect to login screen
             Intent intent = new Intent(requireActivity(), SignInActivity.class);
             startActivity(intent);
-            requireActivity().finish();
             return;
         }
 

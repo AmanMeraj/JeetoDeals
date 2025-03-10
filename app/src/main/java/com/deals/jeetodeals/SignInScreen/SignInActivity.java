@@ -118,6 +118,7 @@ public class SignInActivity extends Utility {
 
                     // Save token and navigate to the next activity
                     saveToken(responsee.getToken(), responsee.user_display_name, responsee.user_nicename, responsee.user_email);
+                    pref.setPrefBoolean(this,pref.login_status,true);
                     Intent intent = new Intent(SignInActivity.this, ContainerActivity.class);
                     startActivity(intent);
                     finish();

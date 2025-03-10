@@ -1,6 +1,7 @@
 package com.deals.jeetodeals.Profile;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -81,5 +82,17 @@ ProfileViewModel viewModel;
                 Toast.makeText(this, response != null ? response.message : "Unknown error", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            getOnBackPressedDispatcher().onBackPressed();
+        } else {
+            // Create the same navigation as your back button
+            Intent i = new Intent(ActivityProfile.this, ContainerActivity.class);
+            startActivity(i);
+            finish();
+        }
     }
 }

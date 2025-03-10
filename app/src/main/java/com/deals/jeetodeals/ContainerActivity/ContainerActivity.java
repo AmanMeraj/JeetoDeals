@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -47,7 +48,7 @@ public class ContainerActivity extends Utility {
 
     ActivityContainerBinding binding;
     private Fragment currentFragment;
-    private  boolean isLoggedIn=false;
+    private  boolean isLoggedIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,10 +71,9 @@ public class ContainerActivity extends Utility {
             currentFragment = new HomeFragment();
             loadFragment(currentFragment);
         }
-
+        isLoggedIn = pref.getPrefBoolean(ContainerActivity.this, pref.login_status);
         // Handle profile image click
         binding.profileImage.setOnClickListener(view -> {
-             isLoggedIn = pref.getPrefBoolean(ContainerActivity.this, pref.login_status);
 
             if (isLoggedIn) {
                 // If logged in, open the profile activity
@@ -83,7 +83,6 @@ public class ContainerActivity extends Utility {
                 // If not logged in, redirect to login activity
                 Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
                 startActivity(intent);}
-            finish();
         });
 
 
@@ -123,6 +122,18 @@ public class ContainerActivity extends Utility {
     private void setupNavigationView() {
         Menu menu = binding.navigationView.getMenu();
         boolean isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
+
+        View socialLayout = binding.navigationView.getMenu().findItem(R.id.nav_social_media).getActionView();
+
+        // Find ImageViews
+        ImageView imgFacebook = socialLayout.findViewById(R.id.img_facebook);
+        ImageView imgInstagram = socialLayout.findViewById(R.id.img_instagram);
+        ImageView imgTwitter = socialLayout.findViewById(R.id.img_twitter);
+
+        // Set click listeners
+        imgFacebook.setOnClickListener(v -> openSocialMedia("https://www.facebook.com/YourPage"));
+        imgInstagram.setOnClickListener(v -> openSocialMedia("https://www.instagram.com/YourPage"));
+        imgTwitter.setOnClickListener(v -> openSocialMedia("https://twitter.com/YourPage"));
 
         // Setup logout item
         MenuItem logoutItem = menu.findItem(R.id.logout);
@@ -183,7 +194,6 @@ public class ContainerActivity extends Utility {
             if (!isLoggedIn) {
                 Toast.makeText(this, "Please log in to access this feature", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(ContainerActivity.this, SignInActivity.class));
-                finish();
                 return true;
             }
 
@@ -254,7 +264,6 @@ public class ContainerActivity extends Utility {
                     // User is not logged in, redirect to login screen
                     Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
                     startActivity(intent);
-                    finish();
                 }else{
                     fragment = new TicketFragment();
                 }
@@ -266,7 +275,6 @@ public class ContainerActivity extends Utility {
                     // User is not logged in, redirect to login screen
                     Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
                     startActivity(intent);
-                    finish();
 
                 }else{
                     fragment = new WalletFragment();
@@ -279,7 +287,6 @@ public class ContainerActivity extends Utility {
                     // User is not logged in, redirect to login screen
                     Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
                     startActivity(intent);
-                    finish();
                 }else{
                     fragment = new CartFragment();
                 }
@@ -393,6 +400,15 @@ public class ContainerActivity extends Utility {
             badge.setVisible(true);
         } else {
             badge.setVisible(false);
+        }
+    }
+    private void openSocialMedia(String url) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Unable to open link", Toast.LENGTH_SHORT).show();
         }
     }
 

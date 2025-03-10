@@ -31,6 +31,8 @@ public class SignupRepository {
         apiRequest.postSignup(signup).enqueue(new Callback<ExistsResponse>() {
             @Override
             public void onResponse(@NonNull Call<ExistsResponse> call, @NonNull Response<ExistsResponse> response) {
+
+                Log.d("AMAN", "onResponse: "+response.code());
                 if (response.isSuccessful() && response.body() != null) {
                     // Success case: pass the data back
                     liveData.setValue(new ApiResponse<>(response.body(), true, null));
@@ -39,12 +41,15 @@ public class SignupRepository {
                         // Extract the error message from the response
                         String errorBody = response.errorBody().string();
                         String errorMessage = extractDynamicErrorMessage(errorBody);
+                        Log.d("AMAN", "onResponse: "+errorMessage);
                         liveData.setValue(new ApiResponse<>(null, false, errorMessage));
                     } catch (Exception e) {
+                        Log.d("AMAN", "onResponse: exception");
                         Log.e(TAG, "Error parsing error response: " + e.getMessage());
                         liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
                     }
                 } else {
+                    Log.d("AMAN", "onResponse: else");
                     liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
                 }
             }

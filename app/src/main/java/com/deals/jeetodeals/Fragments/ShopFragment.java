@@ -348,7 +348,6 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
             // User is not logged in, redirect to login screen
             Intent intent = new Intent(requireActivity(), SignInActivity.class);
             startActivity(intent);
-            requireActivity().finish();
             return;
         }
 
@@ -378,7 +377,6 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
             // User is not logged in, redirect to login screen
             Intent intent = new Intent(requireActivity(), SignInActivity.class);
             startActivity(intent);
-            requireActivity().finish();
             return;
         }
 
@@ -432,7 +430,6 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
             // User is not logged in, redirect to login screen
             Intent intent = new Intent(requireActivity(), SignInActivity.class);
             startActivity(intent);
-            requireActivity().finish();
             return;
         }
         viewModel2.getCart(authToken).observe(getViewLifecycleOwner(), response -> {
@@ -536,6 +533,12 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
                         handleError(response != null ? response.message : "Failed to add item");
                     }
                 });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getCategory();
     }
 
     private String getAuthToken() {

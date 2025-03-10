@@ -141,7 +141,44 @@
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
             <LinearLayout
+                android:id="@+id/linear_7"
                 android:layout_below="@+id/liner_2"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:id="@+id/textField_dob"
+                    app:boxBackgroundColor="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Date of Birth"
+                    app:startIconDrawable="@drawable/calendar_svg"
+                    android:textColorHint="@color/black"
+                    app:startIconScaleType="centerInside"
+                    app:hintTextColor="@color/black"
+                    app:boxStrokeColor="@color/black"
+                    app:startIconTint="@color/black"
+                    app:startIconContentDescription="Date of Birth">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_dob"
+                        app:boxBackgroundColor="@color/white"
+                        android:textColor="@color/black"
+                        android:textSize="13sp"
+                        android:fontFamily="@font/inter"
+                        android:maxLines="1"
+                        android:maxLength="40"
+                        android:editable="false"
+                        android:inputType="text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_below="@+id/linear_7"
                 android:id="@+id/liner_3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

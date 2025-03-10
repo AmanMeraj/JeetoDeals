@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 <group
     android:checkableBehavior="single">
     <item
@@ -33,12 +34,23 @@
     <item
         android:title="@string/call_us"
         android:id="@+id/nav_call"
-        android:icon="@drawable/contact_jd"/>
+        android:icon="@drawable/phone_jd2"/>
     <item
         android:title="@string/email_us"
         android:id="@+id/nav_email"
-        android:icon="@drawable/contact_jd"/>
+        android:icon="@drawable/mail_jd2"/>
 </group>
+    <group android:id="@+id/nav_group_social">
+        <item android:id="@+id/follow_text"
+           android:enabled="false"
+            android:title="Follow us on">
+        </item>
+        <item
+            android:id="@+id/nav_social_media"
+            android:title=""
+            app:actionLayout="@layout/nav_social_media_layout"
+            android:enabled="false"/>
+    </group>
     <group
         android:id="@+id/bottom_group"
         android:checkableBehavior="single">

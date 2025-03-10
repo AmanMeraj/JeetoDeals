@@ -23,7 +23,13 @@ import com.deals.jeetodeals.SignInScreen.SignInActivity;
 import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.WebViewActivity;
 import com.deals.jeetodeals.databinding.ActivitySignUpBinding;
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.DateValidatorPointBackward;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.gson.Gson;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class SignUpActivity extends Utility {
     ActivitySignUpBinding binding;
@@ -58,6 +64,11 @@ public class SignUpActivity extends Utility {
             Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
             startActivity(intent);
         });
+
+        View.OnClickListener openDatePicker = view -> showDatePicker();
+
+        binding.textFieldDob.setOnClickListener(openDatePicker);
+        binding.edtDob.setOnClickListener(openDatePicker);
 
         // Gender selection logic: Ensure only one is selected
         binding.male.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -289,5 +300,28 @@ public class SignUpActivity extends Utility {
 
     private void showToast(String s) {
         Toast.makeText(this, ""+s, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showDatePicker() {
+        // Create constraints to allow only past dates
+        CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder()
+                .setValidator(DateValidatorPointBackward.now());
+
+        // Build the MaterialDatePicker
+        MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Select Date of Birth")
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .setCalendarConstraints(constraintsBuilder.build())
+                .build();
+
+        // Show DatePicker
+        datePicker.show(getSupportFragmentManager(), "DATE_PICKER");
+
+        // Set date when user selects one
+        datePicker.addOnPositiveButtonClickListener(selection -> {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            String formattedDate = sdf.format(selection);
+            binding.edtDob.setText(formattedDate);
+        });
     }
 }

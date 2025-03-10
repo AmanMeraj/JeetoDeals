@@ -63,6 +63,7 @@
             android:name=".Profile.ActivityProfile"
             android:exported="false" />
         <activity
+            android:launchMode="singleTask"
             android:name=".ContainerActivity.ContainerActivity"
             android:exported="true" />
         <activity
