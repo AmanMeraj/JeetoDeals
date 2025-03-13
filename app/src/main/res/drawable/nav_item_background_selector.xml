@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- No background when item is selected -->
+    <item android:state_checked="true" android:drawable="@android:color/transparent" />
+    <!-- No background when item is pressed -->
+    <item android:state_pressed="true" android:drawable="@android:color/transparent" />
+    <!-- Default transparent background -->
+    <item android:drawable="@android:color/transparent" />
+</selector>

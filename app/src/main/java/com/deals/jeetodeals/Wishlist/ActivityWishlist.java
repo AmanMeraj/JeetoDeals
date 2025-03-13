@@ -87,11 +87,13 @@ public class ActivityWishlist extends Utility {
         });
     }
 
+    // Replace the setupRecyclerView method in ActivityWishlist.java with this:
+
     private void setupRecyclerView(ArrayList<WishlistResponse> responses) {
         if (responses == null || responses.isEmpty()) {
             // Hide RecyclerView and Show "No Items" View
             binding.rcWishlist.setVisibility(View.GONE);
-            binding.noItem.setVisibility(View.VISIBLE);  // Ensure this view exists in XML
+            binding.noItem.setVisibility(View.VISIBLE);
         } else {
             // Show RecyclerView and Hide "No Items" View
             binding.rcWishlist.setVisibility(View.VISIBLE);
@@ -100,13 +102,18 @@ public class ActivityWishlist extends Utility {
             adapter = new WishlistAdapter(this, responses, new WishlistAdapter.OnWishlistItemClickListener() {
                 @Override
                 public void onDeleteClick(WishlistResponse item, int position) {
-                    deleteWishlistItem(item, position);
-                    responses.remove(position); // Remove item from list
-                    adapter.notifyItemRemoved(position);
-                    if (responses.isEmpty()) {
-                        // Hide RecyclerView and show "No Items" view
-                        binding.rcWishlist.setVisibility(View.GONE);
-                        binding.noItem.setVisibility(View.VISIBLE);
+                    // Double-check that position is in range and matches expected item
+                    if (position >= 0 && position < responses.size()
+                            && responses.get(position).getProduct_id() == item.getProduct_id()) {
+                        deleteWishlistItem(item, position);
+                    } else {
+                        // Handle potential position mismatch
+                        for (int i = 0; i < responses.size(); i++) {
+                            if (responses.get(i).getProduct_id() == item.getProduct_id()) {
+                                deleteWishlistItem(item, i);
+                                break;
+                            }
+                        }
                     }
                 }
 
@@ -127,11 +134,60 @@ public class ActivityWishlist extends Utility {
         }
     }
 
+    private void deleteWishlistItem(WishlistResponse item, int position) {
+        if (item == null || item.product_id <= 0) {
+            showToast("Invalid product ID");
+            return;
+        }
+
+        // Show loading indicator if needed
+        binding.loader.rlLoader.setVisibility(View.VISIBLE);
+
+        // Refresh nonce before deletion
+        refreshNonce();
+
+        String auth = "Bearer " + pref.getPrefString(this, pref.user_token);
+        Wishlist wishlist = new Wishlist();
+        wishlist.setProduct_id(item.getProduct_id());
+
+        viewModel.deleteWishlist(auth, wishlist).observe(this, response -> {
+            // Hide loading when response received
+            binding.loader.rlLoader.setVisibility(View.GONE);
+
+            if (response != null && response.isSuccess) {
+                // Double check position is valid before removal
+                if (position >= 0 && position < responses.size()) {
+                    // Remove from the main data source
+                    responses.remove(position);
+                    // Notify adapter of the change
+                    adapter.notifyItemRemoved(position);
+                    adapter.notifyItemRangeChanged(position, responses.size() - position);
+                }
+
+                // Check if we need to show the empty state
+                if (responses.isEmpty()) {
+                    binding.rcWishlist.setVisibility(View.GONE);
+                    binding.noItem.setVisibility(View.VISIBLE);
+                }
+
+                showToast(response.message);
+            } else {
+                assert response != null;
+                showToast(response.message);
+            }
+        });
+    }
+
+
+// In your ActivityWishlist class, modify the getShopWishlist method:
 
     private void getShopWishlist(WishlistResponse item) {
         String auth = "Bearer " + pref.getPrefString(this, pref.user_token);
 
         viewModel.getShopWishlist(item.getProduct_id()).observe(this, response -> {
+            // Always hide the loader when we get a response
+            binding.loader.rlLoader.setVisibility(View.GONE);
+
             if (response != null && response.isSuccess) {
                 shopResponse = response.data;
 
@@ -145,6 +201,9 @@ public class ActivityWishlist extends Utility {
                     bottomSheet.setAddToCartListener(new ShopBottomSheetDialogFragment.AddToCartListener() {
                         @Override
                         public void onCartItemAdded(ShopResponse item, String size, int quantity) {
+                            // Show loader when adding to cart
+                            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+
                             // Refresh nonce again right before adding to cart
                             refreshNonce();
                             checkCartAndAddItem(item, auth, pref.getPrefString(ActivityWishlist.this, pref.nonce), null, quantity);
@@ -159,6 +218,9 @@ public class ActivityWishlist extends Utility {
                     bottomSheet.setAddToCartListener(new ShopBottomSheetDialogFragment.AddToCartListener() {
                         @Override
                         public void onCartItemAdded(ShopResponse item, String size, int quantity) {
+                            // Show loader when adding to cart
+                            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+
                             // Refresh nonce again right before adding to cart
                             refreshNonce();
                             checkCartAndAddItem(item, auth, pref.getPrefString(ActivityWishlist.this, pref.nonce), size, quantity);
@@ -168,36 +230,12 @@ public class ActivityWishlist extends Utility {
                     bottomSheet.show(getSupportFragmentManager(), "ProductBottomSheet");
                 }
             } else {
-                binding.loader.rlLoader.setVisibility(View.GONE);
                 assert response != null;
                 showToast(response.message);
             }
         });
     }
 
-    private void deleteWishlistItem(WishlistResponse item, int position) {
-        if (item == null || item.product_id <= 0) {
-            showToast("Invalid product ID");
-            return;
-        }
-
-        // Refresh nonce before deletion
-        refreshNonce();
-
-        String auth = "Bearer " + pref.getPrefString(this, pref.user_token);
-        Wishlist wishlist = new Wishlist();
-        wishlist.setProduct_id(item.getProduct_id());
-
-        viewModel.deleteWishlist(auth, wishlist).observe(this, response -> {
-            if (response != null && response.isSuccess) {
-                adapter.removeItem(position);
-                showToast(response.message);
-            } else {
-                assert response != null;
-                showToast(response.message);
-            }
-        });
-    }
 
     private void checkCartAndAddItem(ShopResponse item, String authToken, String nonce, String size, int quantity) {
         if (binding != null) {
@@ -429,5 +467,13 @@ public class ActivityWishlist extends Utility {
             // Show the original error message for other cases
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshNonce();
+        getWishlist();
+        getCart();
     }
 }

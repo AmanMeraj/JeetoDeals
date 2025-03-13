@@ -24,6 +24,7 @@ import com.deals.jeetodeals.SignInScreen.SignInActivity;
 import com.deals.jeetodeals.SplashVideo.ActivityVideoScreen;
 import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.databinding.ActivitySplashBinding;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class SplashActivity extends Utility {
     ActivitySplashBinding binding;
@@ -105,7 +106,7 @@ public class SplashActivity extends Utility {
 
         try {
             String currentVersion = getCurrentAppVersion();
-            String latestVersion = response.data.getApp_version(); // API version
+            String latestVersion = response.data.getAndriod_version(); // API version
             boolean forceUpdate = response.data.isForce_update(); // API flag
 
             if (isVersionOlder(currentVersion, latestVersion)) {
@@ -138,11 +139,12 @@ public class SplashActivity extends Utility {
     }
 
     private void showForceUpdateDialog() {
-        new AlertDialog.Builder(this)
+        new MaterialAlertDialogBuilder(this)
                 .setTitle("Update Required")
                 .setMessage("A new version of the app is available. Please update to continue.")
                 .setCancelable(false)
                 .setPositiveButton("Update Now", (dialog, which) -> openPlayStore())
+                .setNegativeButton("Exit", (dialog, which) -> finish())
                 .show();
     }
 

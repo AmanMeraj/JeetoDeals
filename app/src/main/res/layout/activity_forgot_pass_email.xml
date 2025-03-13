@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -7,177 +7,182 @@
     android:background="@drawable/bg_color"
     android:layout_height="match_parent"
     tools:context=".ForgotPassEmail.ActivityForgotPassEmail">
-    <RelativeLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <ImageView
-                android:padding="5dp"
-                android:id="@+id/logo"
-                android:src="@drawable/logo_jd"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="50dp"
-                android:layout_width="120dp"
-                android:layout_height="120dp">
-
-            </ImageView>
             <RelativeLayout
-                android:id="@+id/relative_card_1"
-                android:layout_marginTop="60dp"
-                android:layout_below="@+id/logo"
-                android:layout_marginHorizontal="20dp"
-                android:elevation="10dp"
-                android:background="@drawable/crad_bg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_marginTop="10dp"
-                    android:id="@+id/otp_tv"
-                    android:fontFamily="@font/inter_bold"
-                    android:textSize="18sp"
-                    android:text="Lost your password?"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="10dp"
+                <ImageView
+                    android:padding="5dp"
+                    android:id="@+id/logo"
+                    android:src="@drawable/logo_jd"
                     android:layout_centerHorizontal="true"
-                    android:textColor="@color/black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <TextView
-                    android:layout_below="@+id/otp_tv"
-                    android:id="@+id/enter_otp_tv"
-                    android:fontFamily="@font/inter"
-                    android:textSize="12sp"
-                    android:layout_marginHorizontal="20dp"
-                    android:text="Please enter your username or email address. You will receive a link to create a new password via email."
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="10dp"
-                    android:layout_centerHorizontal="true"
-                    android:textColor="@color/black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_marginTop="50dp"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp">
 
-                </TextView>
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_marginHorizontal="20dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_below="@+id/enter_otp_tv"
-                    android:id="@+id/textField_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:hint="@string/email"
-                    app:startIconDrawable="@drawable/email_svgrepo_com"
-                    android:textColorHint="@color/black"
-                    app:startIconScaleType="centerInside"
-                    app:hintTextColor="@color/black"
-                    app:boxStrokeColor="@color/black"
-                    app:startIconTint="@color/black"
-                    app:startIconContentDescription="User Name">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edt_user"
-                        android:textColor="@color/black"
-                        android:textSize="15sp"
-                        android:fontFamily="@font/inter"
-                        android:maxLines="1"
-                        android:maxLength="40"
-                        android:inputType="text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-
-
-
-
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/login_btn"
-                    android:textSize="15sp"
-                    android:textColor="@color/white"
-                    android:fontFamily="@font/inter_bold"
-                    android:text="Reset Password"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="40dp"
-                    android:layout_below="@+id/textField_email"
-                    android:background="@drawable/orange_btn"
-                    android:layout_marginHorizontal="20dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp">
-
-                </androidx.appcompat.widget.AppCompatButton>
-
-
-            </RelativeLayout>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_register_now"
-                android:background="@color/white"
-                android:elevation="10dp"
-                android:layout_marginVertical="30dp"
-                android:layout_marginHorizontal="20dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="10dp"
-                android:layout_below="@+id/relative_card_1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                </ImageView>
                 <RelativeLayout
-                    android:background="@color/white"
+                    android:id="@+id/relative_card_1"
+                    android:layout_marginTop="60dp"
+                    android:layout_below="@+id/logo"
+                    android:layout_marginHorizontal="20dp"
+                    android:elevation="10dp"
+                    android:background="@drawable/crad_bg"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
-                        android:id="@+id/tv_new_user"
                         android:layout_marginTop="10dp"
+                        android:id="@+id/otp_tv"
+                        android:fontFamily="@font/inter_bold"
+                        android:textSize="18sp"
+                        android:text="Lost your password?"
+                        android:paddingHorizontal="10dp"
                         android:paddingVertical="10dp"
-                        android:paddingHorizontal="10dp"
-                        android:layout_marginHorizontal="10dp"
-                        android:fontFamily="@font/inter"
-                        android:textSize="18sp"
+                        android:layout_centerHorizontal="true"
                         android:textColor="@color/black"
-                        android:text="@string/are_you_a_new_user"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                    </TextView>
+                        android:layout_height="wrap_content"/>
                     <TextView
-                        android:layout_below="@+id/tv_new_user"
+                        android:layout_below="@+id/otp_tv"
+                        android:id="@+id/enter_otp_tv"
+                        android:fontFamily="@font/inter"
+                        android:textSize="12sp"
+                        android:layout_marginHorizontal="20dp"
+                        android:text="Please enter your username or email address. You will receive a link to create a new password via email."
                         android:paddingHorizontal="10dp"
-                        android:layout_marginHorizontal="10dp"
-                        android:fontFamily="@font/inter_extrabold"
-                        android:textSize="18sp"
-                        android:textColor="@color/orange"
-                        android:layout_marginBottom="20dp"
-                        android:text="Register Now"
+                        android:paddingVertical="10dp"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="@color/black"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
 
                     </TextView>
-                    <ImageView
-                        android:padding="10dp"
-                        android:layout_centerVertical="true"
-                        android:layout_alignParentEnd="true"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_marginHorizontal="20dp"
-                        android:src="@drawable/forward_jd"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp">
+                        android:layout_marginBottom="10dp"
+                        android:layout_below="@+id/enter_otp_tv"
+                        android:id="@+id/textField_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:hint="@string/email"
+                        app:startIconDrawable="@drawable/email_svgrepo_com"
+                        android:textColorHint="@color/black"
+                        app:startIconScaleType="centerInside"
+                        app:hintTextColor="@color/black"
+                        app:boxStrokeColor="@color/black"
+                        app:startIconTint="@color/black"
+                        app:startIconContentDescription="User Name">
 
-                    </ImageView>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_user"
+                            android:textColor="@color/black"
+                            android:textSize="15sp"
+                            android:fontFamily="@font/inter"
+                            android:maxLines="1"
+                            android:maxLength="40"
+                            android:inputType="text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+
+
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/login_btn"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="Reset Password"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="40dp"
+                        android:layout_below="@+id/textField_email"
+                        android:background="@drawable/orange_btn"
+                        android:layout_marginHorizontal="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp">
+
+                    </androidx.appcompat.widget.AppCompatButton>
+
+
                 </RelativeLayout>
 
-            </androidx.cardview.widget.CardView>
-        </RelativeLayout>
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card_register_now"
+                    android:background="@color/white"
+                    android:elevation="10dp"
+                    android:layout_marginVertical="30dp"
+                    android:layout_marginHorizontal="20dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="10dp"
+                    android:layout_below="@+id/relative_card_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <RelativeLayout
+                        android:background="@color/white"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/tv_new_user"
+                            android:layout_marginTop="10dp"
+                            android:paddingVertical="10dp"
+                            android:paddingHorizontal="10dp"
+                            android:layout_marginHorizontal="10dp"
+                            android:fontFamily="@font/inter"
+                            android:textSize="18sp"
+                            android:textColor="@color/black"
+                            android:text="@string/are_you_a_new_user"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
 
-        <include
-            android:id="@+id/loader"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            layout="@layout/view_loader" />
+                        </TextView>
+                        <TextView
+                            android:layout_below="@+id/tv_new_user"
+                            android:paddingHorizontal="10dp"
+                            android:layout_marginHorizontal="10dp"
+                            android:fontFamily="@font/inter_extrabold"
+                            android:textSize="18sp"
+                            android:textColor="@color/orange"
+                            android:layout_marginBottom="20dp"
+                            android:text="Register Now"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                        </TextView>
+                        <ImageView
+                            android:padding="10dp"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginHorizontal="20dp"
+                            android:src="@drawable/forward_jd"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp">
+
+                        </ImageView>
+                    </RelativeLayout>
+
+                </androidx.cardview.widget.CardView>
+            </RelativeLayout>
+
+
+
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <include
+        android:id="@+id/loader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/view_loader" />
+
 
     </RelativeLayout>
-
-
-
-    </androidx.core.widget.NestedScrollView>

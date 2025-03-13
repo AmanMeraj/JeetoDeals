@@ -28,6 +28,7 @@ public class AdapterCard2 extends RecyclerView.Adapter<AdapterCard2.PromotionVie
         void onLikeClick(String productId);
         void onShareClick(String permalink);
         void onAddToCartClick(ShopResponse product);
+        void onItemClick(ShopResponse product);
     }
 
     // Setter method for the listener
@@ -75,6 +76,11 @@ public class AdapterCard2 extends RecyclerView.Adapter<AdapterCard2.PromotionVie
         holder.binding.addCartRel.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onAddToCartClick(promotion);
+            }
+        });
+        holder.itemView.setOnClickListener(v ->{
+            if(listener!= null){
+                listener.onItemClick(promotion);
             }
         });
     }

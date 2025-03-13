@@ -419,6 +419,39 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         }
     }
 
+    @Override
+    public void onItemClick(ShopResponse item) {
+        String authToken = getAuthToken();
+        String nonce = pref.getPrefString(requireActivity(), pref.nonce);
+
+        if (item.getType().equals("simple")) {
+            ShopBottomSheetDialogFragment bottomSheet = ShopBottomSheetDialogFragment.newInstance(item);
+
+            bottomSheet.setAddToCartListener(new ShopBottomSheetDialogFragment.AddToCartListener() {
+                @Override
+                public void onCartItemAdded(ShopResponse item, String size, int quantity) {
+                    checkCartAndAddItem(item, authToken, nonce, null, quantity);
+                }
+            });
+
+            bottomSheet.show(requireActivity().getSupportFragmentManager(), "ProductBottomSheet");
+            // Directly add to cart without opening the bottom sheet
+
+        } else {
+            // Open bottom sheet for variable products
+            ShopBottomSheetDialogFragment bottomSheet = ShopBottomSheetDialogFragment.newInstance(item);
+
+            bottomSheet.setAddToCartListener(new ShopBottomSheetDialogFragment.AddToCartListener() {
+                @Override
+                public void onCartItemAdded(ShopResponse item, String size, int quantity) {
+                    checkCartAndAddItem(item, authToken, nonce, size, quantity);
+                }
+            });
+
+            bottomSheet.show(requireActivity().getSupportFragmentManager(), "ProductBottomSheet");
+        }
+    }
+
     private void checkCartAndAddItem(ShopResponse item, String authToken, String nonce, String size, int quantity) {
         if (binding != null) {
             binding.loader.rlLoader.setVisibility(View.VISIBLE);

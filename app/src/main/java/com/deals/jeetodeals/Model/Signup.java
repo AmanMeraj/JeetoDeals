@@ -62,6 +62,16 @@ public class Signup implements Serializable {
     public String firstname;
     public String lastname;
     public String email;
+
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
+
+    public String dob;
     public String password;
     public String gender;
     public String phone;

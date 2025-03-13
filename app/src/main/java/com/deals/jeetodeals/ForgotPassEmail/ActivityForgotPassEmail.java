@@ -1,5 +1,6 @@
 package com.deals.jeetodeals.ForgotPassEmail;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
@@ -18,6 +19,7 @@ import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.SignInScreen.ForgotPassResponse;
 import com.deals.jeetodeals.SignInScreen.SiginRepository;
 import com.deals.jeetodeals.SignInScreen.SigninViewModel;
+import com.deals.jeetodeals.SignupScreen.SignUpActivity;
 import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.databinding.ActivityForgotPassEmailBinding;
 
@@ -47,6 +49,12 @@ public class ActivityForgotPassEmail extends Utility {
                     Toast.makeText(ActivityForgotPassEmail.this, "No Internet Connection!", Toast.LENGTH_SHORT).show();
                 }
             }
+        });
+
+        binding.cardRegisterNow.setOnClickListener(v->{
+            Intent i = new Intent(ActivityForgotPassEmail.this, SignUpActivity.class);
+            startActivity(i);
+            finish();
         });
 
     }

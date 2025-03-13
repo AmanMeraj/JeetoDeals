@@ -85,7 +85,7 @@ public class SignUpActivity extends Utility {
 
         // OTP Selection logic
         binding.mailRelative.setOnClickListener(view -> {
-            OTP = "mail";
+            OTP = "email";
             binding.mailRelative.setBackgroundResource(R.drawable.selected_otp_bg);
             binding.smsRelative.setBackgroundResource(R.drawable.otp_bg);
             binding.whatsappRelative.setBackgroundResource(R.drawable.otp_bg);
@@ -99,7 +99,7 @@ public class SignUpActivity extends Utility {
         });
 
         binding.whatsappRelative.setOnClickListener(view -> {
-            OTP = "whatsApp";
+            OTP = "whatsapp";
             binding.mailRelative.setBackgroundResource(R.drawable.otp_bg);
             binding.smsRelative.setBackgroundResource(R.drawable.otp_bg);
             binding.whatsappRelative.setBackgroundResource(R.drawable.selected_otp_bg);
@@ -183,13 +183,14 @@ public class SignUpActivity extends Utility {
 
         // Validate password
         if (TextUtils.isEmpty(password) || password.length() < 6) {
-            binding.edtPass.setError("Password should be at least 6 characters.");
+            Toast.makeText(this, "Password should be at least 6 characters.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         // Validate confirm password
         if (!password.equals(confirmPassword)) {
-            binding.edtConfPass.setError("Passwords do not match.");
+            Toast.makeText(this, "Passwords do not match.", Toast.LENGTH_SHORT).show();
+
             return;
         }
 
@@ -223,6 +224,7 @@ public class SignUpActivity extends Utility {
         String firstName = binding.edtFirstName.getText() != null ? binding.edtFirstName.getText().toString().trim() : "";
         String lastName = binding.edtLastName.getText() != null ? binding.edtLastName.getText().toString().trim() : "";
         String email = binding.edtEmail.getText() != null ? binding.edtEmail.getText().toString().trim() : "";
+        String dob = binding.edtDob.getText() != null ? binding.edtDob.getText().toString().trim() : "";
         String password = binding.edtPass.getText() != null ? binding.edtPass.getText().toString().trim() : "";
         String phone = binding.edtPhone.getText() != null ? binding.edtPhone.getText().toString().trim() : "";
         String gender = binding.male.isChecked() ? "Male" : "Female";
@@ -240,70 +242,60 @@ public class SignUpActivity extends Utility {
         signup.setFirstname(firstName);
         signup.setLastname(lastName);
         signup.setEmail(email);
+        signup.setDob(dob);
         signup.setPassword(password);
         signup.setGender(gender);
         signup.setPhone(phone);
         signup.setOtp_method(otpMethod);
 
         // Observe LiveData from ViewModel
-// Observe LiveData from ViewModel
         viewModel.postSignup(signup).observe(this, response -> {
             binding.loader.rlLoader.setVisibility(View.GONE);
 
             if (response != null) {
                 Log.d("TAG", "Full Response: " + new Gson().toJson(response));
 
-                ExistsResponse response1 = response.data;
-
-                if(response.data==null){
+                if (response.data == null) {
                     showToast(response.message);
                     return;
                 }
 
-                if (response.data.getCode().equalsIgnoreCase("400")) {
-                    showToast("Invalid response from server.");
-                    return;
-                }
+                // Get important values
+                String message = response.data.getMessage();
+                String code = response.data.getCode() != null ? response.data.getCode() : "";
 
-                String message = response1.getMessage() != null ? response1.getMessage() : "Unknown error";
-                String code = response1.getCode() != null ? response1.getCode() : "";
-                int status = response1.getData().getStatus(); // Get status from response
+                // Check for error conditions first, regardless of isSuccess flag
+                if ("email_exists".equalsIgnoreCase(code) || "phone_exists".equalsIgnoreCase(code)) {
+                    // Handle specific error cases
+                    StringBuilder errorMessage = new StringBuilder();
 
-                StringBuilder errorMessage = new StringBuilder(); // To store multiple errors
-
-                // Check if email or phone already exists
-                if ("email_exists".equalsIgnoreCase(code)) {
-                    errorMessage.append("Email already exists!\n");
-                }
-                if ("phone_exists".equalsIgnoreCase(code)) {
-                    errorMessage.append("Phone number already exists!\n");
-                }
-
-                // If status is not success (e.g., 400 error), or we detected email/phone exists
-                if (status != 200 || errorMessage.length() > 0) {
-                    showToast(errorMessage.length() > 0 ? errorMessage.toString().trim() : message);
-                    return;
-                }
-
-                // Handle success case
-                if (response.isSuccess) {
-                    if (message.contains("OTP sent successfully")) {
-                        showToast(message);
-                        Intent intent = new Intent(SignUpActivity.this, ActivityOTP.class);
-                        intent.putExtra("email", signup.getEmail());
-                        startActivity(intent);
-                        finish();
+                    if ("email_exists".equalsIgnoreCase(code)) {
+                        errorMessage.append("Email already exists!\n");
                     }
+                    if ("phone_exists".equalsIgnoreCase(code)) {
+                        errorMessage.append("Phone number already exists!\n");
+                    }
+
+                    showToast(errorMessage.toString().trim());
+                    return; // Stop processing here to prevent navigation
+                }
+
+                // Only proceed if we have an actual success case (not just isSuccess=true)
+                if (response.isSuccess && message.contains("OTP sent successfully")) {
+                    showToast(message);
+                    Intent intent = new Intent(SignUpActivity.this, ActivityOTP.class);
+                    intent.putExtra("email", signup.getEmail());
+                    startActivity(intent);
+                    finish();
                 } else {
+                    // Handle any other error or unexpected condition
                     showToast(message);
                 }
             } else {
                 showToast("Signup failed! Please contact admin.");
             }
         });
-
     }
-
     private void showToast(String s) {
         Toast.makeText(this, ""+s, Toast.LENGTH_SHORT).show();
     }
@@ -325,7 +317,7 @@ public class SignUpActivity extends Utility {
 
         // Set date when user selects one
         datePicker.addOnPositiveButtonClickListener(selection -> {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             String formattedDate = sdf.format(selection);
             binding.edtDob.setText(formattedDate);
         });

@@ -25,7 +25,8 @@ public class ActivityIntroduction extends AppCompatActivity {
     private int[] images = {
             R.drawable.intro1,
             R.drawable.intro2,
-            R.drawable.intro3
+            R.drawable.intro3,
+            R.drawable.intro4
     };
 
     @Override
@@ -45,12 +46,6 @@ public class ActivityIntroduction extends AppCompatActivity {
             return insets;
         });
 
-//        // Check if intro has been shown before
-//        if (sharedPref.getPrefBoolean(this, INTRO_SHOWN_KEY)) {
-//            startSignInActivity();
-//            finish();
-//            return;
-//        }
 
         // Setup ViewPager
         IntroPagerAdapter2 adapter = new IntroPagerAdapter2(this, images);

@@ -2,43 +2,43 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_height="wrap_content">
 
         <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:id="@+id/orange_rel"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@drawable/orange_card_top">
 
-            <RelativeLayout
-                android:id="@+id/orange_rel"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="@drawable/orange_card_top">
+            <TextView
+                android:id="@+id/sold_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/inter_bold"
+                android:text="In Stock"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:visibility="invisible" />
+        </RelativeLayout>
 
-                <TextView
-                    android:visibility="invisible"
-                    android:id="@+id/sold_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="10dp"
-                    android:text="In Stock"
-                    android:textColor="@color/white"
-                    android:textSize="15sp"
-                    android:fontFamily="@font/inter_bold" />
-            </RelativeLayout>
+        <!-- Main content with ScrollView -->
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/orange_rel"
+            android:layout_marginTop="-25dp"
+            android:fillViewport="true">
 
-            <!-- White Card with ViewPager and Indicator -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/white_card_bg_2"
-                android:layout_below="@id/orange_rel"
-                android:layout_marginTop="-25dp">
+                android:background="@drawable/white_card_bg_2">
 
                 <!-- ViewPager2 -->
                 <androidx.viewpager2.widget.ViewPager2
@@ -56,9 +56,9 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="5dp"
                     app:ci_drawable="@drawable/indicator_selector"
-                    app:ci_width="8dp"
                     app:ci_height="8dp"
-                    app:ci_margin="5dp"/>
+                    app:ci_margin="5dp"
+                    app:ci_width="8dp" />
 
                 <!-- Details Section -->
                 <RelativeLayout
@@ -67,135 +67,152 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/circle_indicator"
                     android:padding="16dp">
+
                     <TextView
-                        android:layout_marginHorizontal="10dp"
                         android:id="@+id/tv_iphone_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="10dp"
                         android:text="iPhone 16 Pro Max"
                         android:textColor="#000"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
-                    <!-- Draw Date -->
+                    <!-- Description with scrollable height -->
                     <TextView
-                        android:layout_marginHorizontal="10dp"
                         android:id="@+id/tv_desc"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_below="@id/tv_iphone_name"
+                        android:layout_marginHorizontal="10dp"
+                        android:layout_marginTop="8dp"
+                        android:maxHeight="260dp"
+                        android:scrollbars="vertical"
                         android:text="Draw Date: 31 December, 2024 or earlier based on the time passed."
                         android:textColor="#000"
-                        android:textSize="13sp"
-                        android:layout_below="@id/tv_iphone_name"
-                        android:layout_marginTop="8dp" />
-                    <TextView
-                        android:maxHeight="200dp"
-                        android:layout_marginHorizontal="10dp"
-                        android:id="@+id/tv_select_size"
-                        android:layout_marginVertical="20dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/inter_extrabold"
-                        android:text="Select Size :"
-                        android:textColor="#000"
-                        android:textSize="15sp"
-                        android:layout_below="@id/tv_desc"
-                        android:layout_marginTop="8dp" />
-                    <androidx.recyclerview.widget.RecyclerView
+                        android:textSize="13sp" />
+
+                    <!-- Size selector section -->
+                    <RelativeLayout
+                        android:id="@+id/rel_size"
                         android:layout_width="match_parent"
-                        android:orientation="horizontal"
-                        android:layout_below="@+id/tv_desc"
-                        android:id="@+id/rc_size"
-                        android:layout_marginHorizontal="10dp"
-                        android:layout_marginVertical="20dp"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        android:layout_toEndOf="@id/tv_select_size"
-                        android:layout_height="wrap_content">
-
-                    </androidx.recyclerview.widget.RecyclerView>
-                    <RelativeLayout
-                        android:layout_marginHorizontal="10dp"
-                        android:layout_below="@+id/tv_select_size"
-                        android:layout_marginStart="10dp"
-                        android:id="@+id/relative_incrementer"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                        <ImageView
-                            android:id="@+id/minus_btn"
-                            android:contentDescription="@string/minus_button"
-                            android:padding="5dp"
-                            android:src="@drawable/minus_jd"
-                            android:background="@drawable/grey_btn"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp">
-
-                        </ImageView>
-                        <TextView
-                            android:text="1"
-                            android:textSize="15sp"
-                            android:textColor="@color/black"
-                            android:fontFamily="@font/inter_bold"
-                            android:gravity="center"
-                            android:id="@+id/text_quantity"
-                            android:layout_centerVertical="true"
-                            android:layout_toEndOf="@+id/minus_btn"
-                            android:paddingHorizontal="20dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"/>
-                        <ImageView
-                            android:layout_toEndOf="@+id/text_quantity"
-                            android:id="@+id/plus_btn"
-                            android:contentDescription="@string/minus_button"
-                            android:padding="8dp"
-                            android:src="@drawable/plus_jd"
-                            android:background="@drawable/grey_btn"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp">
-
-                        </ImageView>
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_marginStart="-4dp"
-                        android:layout_marginEnd="10dp"
-                        android:id="@+id/button_rel"
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@id/tv_select_size"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginBottom="20dp">
+                        android:layout_below="@id/tv_desc"
+                        android:layout_marginTop="16dp">
 
                         <TextView
-                            android:id="@+id/add"
+                            android:layout_centerVertical="true"
+                            android:id="@+id/tv_select_size"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingStart="20dp"
-                            android:paddingEnd="50dp"
-                            android:paddingVertical="8dp"
-                            android:text="Add to cart"
-                            android:textColor="@color/white"
-                            android:textSize="11sp"
-                            android:background="@drawable/green_btn"
-                            android:fontFamily="@font/inter_bold" />
+                            android:layout_marginHorizontal="10dp"
+                            android:fontFamily="@font/inter_extrabold"
+                            android:text="Select Size :"
+                            android:textColor="#000"
+                            android:textSize="15sp" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rc_size"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginVertical="8dp"
+                            android:layout_toEndOf="@id/tv_select_size"
+                            android:orientation="horizontal"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
                     </RelativeLayout>
 
-                    <ImageView
-                        android:layout_marginTop="-2dp"
-                        android:id="@+id/bag"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
-                        android:layout_below="@id/tv_select_size"
-                        android:layout_alignEnd="@id/button_rel"
-                        android:layout_marginEnd="5dp"
-                        android:padding="7dp"
-                        android:background="@drawable/orange_oval"
-                        android:src="@drawable/bag" />
+                    <!-- Bottom section with quantity and add to cart -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/rel_size"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:orientation="horizontal">
 
+                        <!-- Quantity controls -->
+                        <RelativeLayout
+                            android:id="@+id/relative_incrementer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="10dp">
+
+                            <ImageView
+                                android:id="@+id/minus_btn"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:background="@drawable/grey_btn"
+                                android:contentDescription="@string/minus_button"
+                                android:padding="5dp"
+                                android:src="@drawable/minus_jd" />
+
+                            <TextView
+                                android:id="@+id/text_quantity"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_toEndOf="@+id/minus_btn"
+                                android:fontFamily="@font/inter_bold"
+                                android:gravity="center"
+                                android:paddingHorizontal="20dp"
+                                android:text="1"
+                                android:textColor="@color/black"
+                                android:textSize="15sp" />
+
+                            <ImageView
+                                android:id="@+id/plus_btn"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:layout_toEndOf="@+id/text_quantity"
+                                android:background="@drawable/grey_btn"
+                                android:contentDescription="@string/minus_button"
+                                android:padding="8dp"
+                                android:src="@drawable/plus_jd" />
+                        </RelativeLayout>
+
+                        <!-- Spacer -->
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
+
+                        <!-- Add to cart button -->
+                        <RelativeLayout
+                            android:id="@+id/button_rel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="10dp">
+
+                            <TextView
+                                android:id="@+id/add"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/green_btn"
+                                android:fontFamily="@font/inter_bold"
+                                android:paddingStart="20dp"
+                                android:paddingEnd="50dp"
+                                android:paddingVertical="8dp"
+                                android:text="Add to cart"
+                                android:textColor="@color/white"
+                                android:textSize="11sp" />
+
+                            <ImageView
+                                android:id="@+id/bag"
+                                android:layout_width="35dp"
+                                android:layout_height="35dp"
+                                android:layout_alignEnd="@id/add"
+                                android:layout_marginTop="-2dp"
+                                android:layout_marginEnd="5dp"
+                                android:background="@drawable/orange_oval"
+                                android:padding="7dp"
+                                android:src="@drawable/bag" />
+                        </RelativeLayout>
+                    </LinearLayout>
                 </RelativeLayout>
-
             </RelativeLayout>
-
-        </RelativeLayout>
-    </ScrollView>
+        </androidx.core.widget.NestedScrollView>
+    </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

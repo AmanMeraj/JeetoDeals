@@ -76,6 +76,19 @@ public class ActivityVideoScreen extends Utility {
                 }
             }
         });
+        binding.getRoot().setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (player.isPlaying()) {
+                        player.stop();
+                    }
+                    navigateToNextScreen();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     private void navigateToNextScreen() {
