@@ -171,6 +171,7 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
             binding.proceedBtn.setVisibility(View.GONE);
             binding.rcCart.setVisibility(View.GONE);
             binding.walletBalance.setVisibility(View.GONE);
+            binding.tvNotice.setVisibility(View.GONE);
             return; // Exit if no items
         } else {
             binding.noItem.setVisibility(View.GONE);

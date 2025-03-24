@@ -110,7 +110,7 @@
                     android:fontFamily="@font/inter_bold" />
 
                 <RelativeLayout
-                    android:gravity="center"
+
                     android:layout_marginTop="4dp"
                     android:layout_marginEnd="-30dp"
                     android:layout_marginHorizontal="10dp"
@@ -128,8 +128,8 @@
                         android:id="@+id/add_cart_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingStart="15dp"
-                        android:gravity="center"
+                        android:paddingStart="20dp"
+                        android:gravity="start"
                         android:paddingHorizontal="4dp"
                         android:text="REDEEM"
                         android:textColor="@color/white"

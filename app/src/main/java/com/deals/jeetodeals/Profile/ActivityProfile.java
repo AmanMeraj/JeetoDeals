@@ -75,7 +75,11 @@ ProfileViewModel viewModel;
                 binding.emailTv.setText(responsee.email);
                 binding.edtFirstName.setText(responsee.first_name);
                 binding.edtLastName.setText(responsee.last_name);
-                binding.edtEamilAddress.setText(responsee.nationality);
+                if("Indian".equals(responsee.nationality)) {
+                    binding.edtEamilAddress.setText(responsee.nationality);
+                }else{
+                    binding.edtEamilAddress.setText("Indian");
+                }
                 binding.nameTv.setText(responsee.first_name+" "+responsee.last_name);
 
             } else {
