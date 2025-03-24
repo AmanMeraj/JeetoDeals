@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -34,6 +35,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.deals.jeetodeals.Adapters.AdapterCard2;
 import com.deals.jeetodeals.Adapters.CategoryAdapter;
+import com.deals.jeetodeals.Adapters.SortOption;
+import com.deals.jeetodeals.Adapters.SortOptionsAdapter;
 import com.deals.jeetodeals.BottomSheet.ShopBottomSheetDialogFragment;
 import com.deals.jeetodeals.ContainerActivity.ContainerActivity;
 import com.deals.jeetodeals.Fragments.HomeFragment.HomeViewModel;
@@ -55,6 +58,7 @@ import com.deals.jeetodeals.Wishlist.WishlistAddResponse;
 import com.deals.jeetodeals.Wishlist.WishlistViewModel;
 import com.deals.jeetodeals.databinding.FragmentShopBinding;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,6 +71,9 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     private static final String TAG = "ShopFragment";
 
     private FragmentShopBinding binding;
+    private SortOptionsAdapter sortAdapter;
+    private String currentOrder = null;
+    private String currentOrderBy = null;
     private View selectedRelativeLayout;
     private CartResponse cartResponse;
     boolean isLoggedIn=false;
@@ -109,6 +116,7 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         viewModel2 = new ViewModelProvider(this).get(FragmentsViewModel.class);
         wishlistViewModel = new ViewModelProvider(this).get(WishlistViewModel.class);
+        setupSort();
     }
 
     private void initializeRecyclerView() {
@@ -191,67 +199,67 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         }
     }
 
-    private void fetchProductsByCategory(int id, boolean isInitialLoad) {
-        if (isLoading || (isLastPage && !isInitialLoad)) {
-            Log.d(TAG, "Skipping fetch - isLoading: " + isLoading + ", isLastPage: " + isLastPage);
-            return;
-        }
-
-        isLoading = true;
-
-        if (isInitialLoad) {
-            binding.loader.rlLoader.setVisibility(View.VISIBLE);
-            showBottomLoader(false);
-            initialLoadComplete = false;
-        } else {
-            showBottomLoader(true);
-        }
-
-        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
-
-        if (isInitialLoad) {
-            currentPage = 1; // Reset to page 1 for initial load
-            shopItems.clear();
-            adapter.notifyDataSetChanged();
-            isLastPage = false;
-        }
-
-        viewModel.getShop( "simple|variable", id, currentPage, perPage).observe(getViewLifecycleOwner(), response -> {
-            isLoading = false;
-            binding.loader.rlLoader.setVisibility(View.GONE);
-            showBottomLoader(false);
-
-            if (isInitialLoad) {
-                initialLoadComplete = true;
-                Log.d(TAG, "Initial load complete - Setting initialLoadComplete=true");
-            }
-
-            if (response != null && response.isSuccess && response.data != null) {
-                int itemsReceived = response.data.size();
-                Log.d(TAG, "Received " + itemsReceived + " items for page " + currentPage);
-
-                if (itemsReceived > 0) {
-                    int startPosition = shopItems.size();
-                    shopItems.addAll(response.data);
-                    adapter.notifyItemRangeInserted(startPosition, itemsReceived);
-
-                    if (itemsReceived < perPage) {
-                        isLastPage = true;
-                        Log.d(TAG, "Setting isLastPage=true - Fewer items than requested");
-                    } else {
-                        currentPage++;
-                        Log.d(TAG, "Incremented currentPage to: " + currentPage);
-                    }
-                } else {
-                    isLastPage = true;
-                    Log.d(TAG, "Setting isLastPage=true - Empty response");
-                }
-            } else {
-                Log.e(TAG, "API error: " + (response != null ? response.message : "Unknown error"));
-                handleError(response != null ? response.message : "Unknown error");
-            }
-        });
-    }
+//    private void fetchProductsByCategory(int id, boolean isInitialLoad) {
+//        if (isLoading || (isLastPage && !isInitialLoad)) {
+//            Log.d(TAG, "Skipping fetch - isLoading: " + isLoading + ", isLastPage: " + isLastPage);
+//            return;
+//        }
+//
+//        isLoading = true;
+//
+//        if (isInitialLoad) {
+//            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+//            showBottomLoader(false);
+//            initialLoadComplete = false;
+//        } else {
+//            showBottomLoader(true);
+//        }
+//
+//        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
+//
+//        if (isInitialLoad) {
+//            currentPage = 1; // Reset to page 1 for initial load
+//            shopItems.clear();
+//            adapter.notifyDataSetChanged();
+//            isLastPage = false;
+//        }
+//
+//        viewModel.getShop( "simple|variable", id, currentPage, perPage).observe(getViewLifecycleOwner(), response -> {
+//            isLoading = false;
+//            binding.loader.rlLoader.setVisibility(View.GONE);
+//            showBottomLoader(false);
+//
+//            if (isInitialLoad) {
+//                initialLoadComplete = true;
+//                Log.d(TAG, "Initial load complete - Setting initialLoadComplete=true");
+//            }
+//
+//            if (response != null && response.isSuccess && response.data != null) {
+//                int itemsReceived = response.data.size();
+//                Log.d(TAG, "Received " + itemsReceived + " items for page " + currentPage);
+//
+//                if (itemsReceived > 0) {
+//                    int startPosition = shopItems.size();
+//                    shopItems.addAll(response.data);
+//                    adapter.notifyItemRangeInserted(startPosition, itemsReceived);
+//
+//                    if (itemsReceived < perPage) {
+//                        isLastPage = true;
+//                        Log.d(TAG, "Setting isLastPage=true - Fewer items than requested");
+//                    } else {
+//                        currentPage++;
+//                        Log.d(TAG, "Incremented currentPage to: " + currentPage);
+//                    }
+//                } else {
+//                    isLastPage = true;
+//                    Log.d(TAG, "Setting isLastPage=true - Empty response");
+//                }
+//            } else {
+//                Log.e(TAG, "API error: " + (response != null ? response.message : "Unknown error"));
+//                handleError(response != null ? response.message : "Unknown error");
+//            }
+//        });
+//    }
     private void setupScrollListener() {
         binding.rcItems.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -684,5 +692,148 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         initialLoadComplete = false; // Reset this flag too
 
         fetchProductsByCategory(categoryId, true);
+    }
+
+    private void setupSortDropdown() {
+        // Initialize the adapter
+        sortAdapter = new SortOptionsAdapter(
+                requireContext(),
+                android.R.layout.simple_dropdown_item_1line
+        );
+
+        // Set up the dropdown
+        TextInputLayout sortOptionLayout = binding.sortOptionLayout;
+        AutoCompleteTextView sortDropdown = binding.sortDropdown;
+
+        // Important: Set threshold to 0 so it shows all options immediately
+        sortDropdown.setThreshold(0);
+
+        // Important: This allows the dropdown to show on click without typing
+        sortDropdown.setOnClickListener(v -> sortDropdown.showDropDown());
+
+        sortDropdown.setAdapter(sortAdapter);
+
+        // Default selection (Default Sorting - position 4)
+        SortOption defaultOption = sortAdapter.getItem(4);
+        if (defaultOption != null) {
+            sortDropdown.setText(defaultOption.getDisplayName(), false);
+
+            // Also set the initial sort parameters
+            SortOptionsAdapter.Pair<String, String> params = sortAdapter.getSelectedOptionParams(4);
+            currentOrder = params.getFirst();
+            currentOrderBy = params.getSecond();
+        }
+
+        // Listen for selection changes
+        sortDropdown.setOnItemClickListener((parent, view, position, id) -> {
+            SortOption otherOption = sortAdapter.getItem(position);
+            if (otherOption != null) {
+                sortDropdown.setText(otherOption.getDisplayName(), false);
+                SortOptionsAdapter.Pair<String, String> params = sortAdapter.getSelectedOptionParams(position);
+                currentOrder = params.getFirst();
+                currentOrderBy = params.getSecond();
+
+                // Reset pagination and reload products with new sort parameters
+                resetAndRefetchProducts();
+            }
+        });
+    }
+
+    // Add this method to handle resetting and refetching products
+    private void resetAndRefetchProducts() {
+        // Reset pagination state
+        currentPage = 1;
+        isLastPage = false;
+        isLoading = false;
+        initialLoadComplete = false;
+
+        // Clear existing items
+        shopItems.clear();
+        adapter.notifyDataSetChanged();
+
+        // Show loader
+        binding.loader.rlLoader.setVisibility(View.VISIBLE);
+
+        // Fetch products with sort parameters
+        fetchProductsWithSort();
+    }
+
+    // Modify your fetchProductsByCategory method to use this new method
+    private void fetchProductsByCategory(int id, boolean isInitialLoad) {
+        selectedCategoryId = id;
+
+        if (isInitialLoad) {
+            currentPage = 1;
+            isLastPage = false;
+            isLoading = false;
+            initialLoadComplete = false;
+            shopItems.clear();
+            adapter.notifyDataSetChanged();
+        }
+
+        fetchProductsWithSort();
+    }
+
+    // Create a new method to fetch products with sort parameters
+    private void fetchProductsWithSort() {
+        if (isLoading || (isLastPage && currentPage > 1)) {
+            Log.d(TAG, "Skipping fetch - isLoading: " + isLoading + ", isLastPage: " + isLastPage);
+            return;
+        }
+
+        isLoading = true;
+
+        if (currentPage == 1) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+            showBottomLoader(false);
+            initialLoadComplete = false;
+        } else {
+            showBottomLoader(true);
+        }
+
+        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
+
+        // Use the ViewModel's method but modify to pass sort parameters
+        viewModel.getShop("simple|variable", selectedCategoryId, currentPage, perPage,
+                        currentOrder, currentOrderBy)
+                .observe(getViewLifecycleOwner(), response -> {
+                    isLoading = false;
+                    binding.loader.rlLoader.setVisibility(View.GONE);
+                    showBottomLoader(false);
+
+                    if (currentPage == 1) {
+                        initialLoadComplete = true;
+                    }
+
+                    if (response != null && response.isSuccess && response.data != null) {
+                        int itemsReceived = response.data.size();
+                        Log.d(TAG, "Received " + itemsReceived + " items for page " + currentPage);
+
+                        if (itemsReceived > 0) {
+                            int startPosition = shopItems.size();
+                            shopItems.addAll(response.data);
+                            adapter.notifyItemRangeInserted(startPosition, itemsReceived);
+
+                            if (itemsReceived < perPage) {
+                                isLastPage = true;
+                                Log.d(TAG, "Setting isLastPage=true - Fewer items than requested");
+                            } else {
+                                currentPage++;
+                                Log.d(TAG, "Incremented currentPage to: " + currentPage);
+                            }
+                        } else {
+                            isLastPage = true;
+                            Log.d(TAG, "Setting isLastPage=true - Empty response");
+                        }
+                    } else {
+                        Log.e(TAG, "API error: " + (response != null ? response.message : "Unknown error"));
+                        handleError(response != null ? response.message : "Unknown error");
+                    }
+                });
+    }
+
+    // Add this to initializeViewModels() or setupInitialData()
+    private void setupSort() {
+        setupSortDropdown();
     }
 }

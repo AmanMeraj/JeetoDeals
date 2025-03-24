@@ -16,6 +16,7 @@ import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.Utils.SharedPref;
 import com.deals.jeetodeals.databinding.FragmentTicketBinding;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -126,14 +127,16 @@ public class TicketFragment extends Fragment {
     }
 
     // Helper method to get comma-separated ticket numbers
-    private List<String> getTicketNumbersList(List<TicketNumber> tickets) {
-        List<String> ticketNumbers = new ArrayList<>();
+    private List<Map<String, String>> getTicketNumbersList(List<TicketNumber> tickets) {
+        List<Map<String, String>> ticketInfoList = new ArrayList<>();
         for (TicketNumber ticket : tickets) {
-            ticketNumbers.add(ticket.getTicket_number());
+            Map<String, String> ticketInfo = new HashMap<>();
+            ticketInfo.put("ticket_number", ticket.getTicket_number());
+            ticketInfo.put("date_purchased", ticket.getDate_purchased());
+            ticketInfoList.add(ticketInfo);
         }
-        return ticketNumbers;
+        return ticketInfoList;
     }
-
 
     private void switchToActiveTickets() {
         binding.activeBtn.setBackgroundResource(R.drawable.orange_wallet_bg);

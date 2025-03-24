@@ -24,13 +24,43 @@
                     android:id="@+id/jeeto_shop"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/sort_option_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="-5dp"
+                    android:layout_toEndOf="@+id/jeeto_shop"
+                    android:layout_alignTop="@+id/jeeto_shop"
+                   android:layout_marginStart="40dp"
+                    app:boxStrokeWidth=".5dp"
+                    app:boxStrokeWidthFocused="1dp"
+                    android:textColorHint="@color/black"
+                    app:startIconScaleType="centerInside"
+                    app:hintTextColor="@color/black"
+                    android:hint="Sort"
+                    app:boxStrokeColor="@color/black"
+                    app:startIconTint="@color/black"
+                    app:endIconMode="dropdown_menu">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/sort_dropdown"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:padding="12dp"
+                        android:textColor="@color/black"
+                        android:textSize="11sp"/>
+                </com.google.android.material.textfield.TextInputLayout>
+
 
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rc_category"
+                    android:layout_marginTop="20dp"
                     android:layout_marginHorizontal="10dp"
                     android:orientation="horizontal"
-                    android:layout_below="@+id/jeeto_shop"
+                    android:layout_below="@+id/sort_option_layout"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">

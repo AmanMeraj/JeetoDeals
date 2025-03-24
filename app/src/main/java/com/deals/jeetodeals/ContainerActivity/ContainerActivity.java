@@ -72,6 +72,12 @@ public class ContainerActivity extends Utility {
             loadFragment(currentFragment);
         }
         isLoggedIn = pref.getPrefBoolean(ContainerActivity.this, pref.login_status);
+
+        if(isLoggedIn){
+            binding.tvUserNsame.setText("Hi ! "+pref.getPrefString(this,pref.user_name));
+        }else {
+            binding.tvUserNsame.setText("");
+        }
         // Handle profile image click
         binding.profileImage.setOnClickListener(view -> {
 
@@ -451,6 +457,11 @@ public class ContainerActivity extends Utility {
         isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
         setupNavigationView();
         setupCartBadge();
+        if(isLoggedIn){
+            binding.tvUserNsame.setText("Hi ! "+pref.getPrefString(this,pref.user_name));
+        }else {
+            binding.tvUserNsame.setText("");
+        }
     }
 
 

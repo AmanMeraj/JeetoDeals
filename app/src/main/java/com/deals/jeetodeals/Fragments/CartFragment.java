@@ -98,8 +98,10 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
 
         if (isWalletSelected && walletBalance >= totalPrice) {
             binding.proceedBtn.setVisibility(View.VISIBLE);
+            binding.tvNotice.setVisibility(View.GONE);
         } else {
             binding.proceedBtn.setVisibility(View.GONE);
+            binding.tvNotice.setVisibility(View.VISIBLE);
         }
     }
     public void getBalance() {
@@ -198,6 +200,7 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
             binding.total.setText(responsee.totals.currency_code + " " + responsee.totals.getTotal_price());
             binding.subTotal.setText(responsee.totals.currency_code + " " + responsee.totals.getTotal_items());
         } else {
+
             binding.walletBalance.setVisibility(View.VISIBLE);
             binding.walletBalance.setText("Wallet Balance: Vouchers " + pref.getPrefString(requireActivity(), pref.main_balance));
 

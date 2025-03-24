@@ -79,7 +79,7 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.ViewHolder
                     .into(binding.imagePhone);
 
             // Set up RecyclerView for ticket numbers
-            TickectChildAdapter ticketNumberAdapter = new TickectChildAdapter(context, ticket.getTicketNumbers(),pref.getPrefString(context, pref.user_name));
+            TickectChildAdapter ticketNumberAdapter = new TickectChildAdapter(context, ticket.getTicketNumbers(),pref.getPrefString(context,pref.user_name),ticket.getProductName());
             binding.ticketRow.setLayoutManager(new LinearLayoutManager(context));
             binding.ticketRow.setAdapter(ticketNumberAdapter);
 

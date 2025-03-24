@@ -94,7 +94,7 @@
                                 android:layout_width="match_parent"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:maxLength="40"
+                                android:maxLength="60"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -112,7 +112,7 @@
                                 android:id="@+id/edt_last_name"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:maxLength="40"
+                                android:maxLength="60"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
@@ -131,7 +131,6 @@
                                 android:layout_width="match_parent"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:maxLength="500"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -150,7 +149,6 @@
                                 android:layout_width="match_parent"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:maxLength="500"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -169,7 +167,6 @@
                                 android:layout_width="match_parent"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:maxLength="100"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -188,7 +185,7 @@
                                 android:layout_width="match_parent"
                                 android:inputType="number"
                                 android:maxLines="1"
-                                android:maxLength="20"
+                                android:maxLength="40"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -207,7 +204,6 @@
                                 android:layout_width="match_parent"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:maxLength="100"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -227,7 +223,6 @@
                                 android:layout_width="match_parent"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:maxLength="100"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
                         <com.google.android.material.textfield.TextInputLayout
@@ -246,7 +241,7 @@
                                 android:layout_width="match_parent"
                                 android:inputType="number"
                                 android:maxLines="1"
-                                android:maxLength="10"
+                                android:maxLength="12"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
                         <com.google.android.material.textfield.TextInputLayout
@@ -263,9 +258,8 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edt_eamil"
                                 android:layout_width="match_parent"
-                                android:inputType="number"
+                                android:inputType="textEmailAddress"
                                 android:maxLines="1"
-                                android:maxLength="150"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -312,7 +306,7 @@
                                 android:layout_width="match_parent"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:maxLength="40"
+                                android:maxLength="60"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -330,7 +324,7 @@
                                 android:id="@+id/edt_last_name_shipping"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:maxLength="40"
+                                android:maxLength="60"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
@@ -349,7 +343,6 @@
                                 android:layout_width="match_parent"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:maxLength="500"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -368,7 +361,6 @@
                                 android:layout_width="match_parent"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:maxLength="500"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -387,7 +379,6 @@
                                 android:layout_width="match_parent"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:maxLength="100"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -406,7 +397,6 @@
                                 android:layout_width="match_parent"
                                 android:inputType="number"
                                 android:maxLines="1"
-                                android:maxLength="20"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -425,7 +415,6 @@
                                 android:layout_width="match_parent"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:maxLength="100"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -445,30 +434,8 @@
                                 android:layout_width="match_parent"
                                 android:inputType="text"
                                 android:maxLines="1"
-                                android:maxLength="100"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
-<!--                        <com.google.android.material.textfield.TextInputLayout-->
-<!--                            android:id="@+id/textField_phone_shipping"-->
-<!--                            android:layout_below="@id/textField_country_shipping"-->
-<!--                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_marginHorizontal="10dp"-->
-<!--                            android:layout_marginTop="5dp"-->
-<!--                            android:layout_marginBottom="20dp"-->
-<!--                            android:hint="Phone">-->
-
-<!--                            <com.google.android.material.textfield.TextInputEditText-->
-<!--                                android:id="@+id/edt_phone_shipping"-->
-<!--                                android:layout_width="match_parent"-->
-<!--                                android:inputType="text"-->
-<!--                                android:maxLines="1"-->
-<!--                                android:maxLength="100"-->
-<!--                                android:layout_height="wrap_content" />-->
-<!--                        </com.google.android.material.textfield.TextInputLayout>-->
-
-
 
 
                     </RelativeLayout>
