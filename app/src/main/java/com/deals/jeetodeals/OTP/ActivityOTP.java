@@ -90,6 +90,7 @@ public class ActivityOTP extends Utility {
 
                 // Check if response is successful and contains required fields
                 if (response.isSuccess) {
+                    responsee=response.data;
                     Log.d("OTP_DEBUG", "User registration successful."+response.data.message);
                     if (response.data != null && "User registered successfully.".equalsIgnoreCase(response.data.message)) {
                         Log.d("OTP_DEBUG", "User registration successful.");
@@ -99,6 +100,11 @@ public class ActivityOTP extends Utility {
                             // Store token and login status
                             pref.setPrefString(ActivityOTP.this, pref.user_token, token);
                             pref.setPrefBoolean(ActivityOTP.this, pref.login_status, true);
+                            pref.setPrefString(this,pref.first_name,response.data.getFirst_name());
+                            pref.setPrefString(this,pref.last_name,response.data.getLast_name());
+                            pref.setPrefString(this,pref.mobile,response.data.getPhone());
+                            pref.setPrefString(this,pref.user_email,response.data.getUser_email());
+                            pref.setPrefString(this,pref.user_name,response.data.getUser_display_name());
 
                             Log.d("OTP_DEBUG", "Token saved: " + token);
                             navigateToContainer();

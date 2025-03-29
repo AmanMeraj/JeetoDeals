@@ -117,7 +117,7 @@ public class SignInActivity extends Utility {
                     Toast.makeText(this, ""+responsee.getMessage(), Toast.LENGTH_SHORT).show();
 
                     // Save token and navigate to the next activity
-                    saveToken(responsee.getToken(), responsee.user_display_name, responsee.user_nicename, responsee.user_email);
+                    saveToken(responsee.getToken(), responsee.user_display_name, responsee.user_nicename, responsee.user_email,responsee.getFirst_name(),responsee.getLast_name(),responsee.getMobile());
                     pref.setPrefBoolean(this,pref.login_status,true);
                     Intent intent = new Intent(SignInActivity.this, ContainerActivity.class);
                     startActivity(intent);
@@ -136,11 +136,14 @@ public class SignInActivity extends Utility {
     }
 
 
-    private void saveToken(String token,String displayName,String niceName,String email) {
+    private void saveToken(String token,String displayName,String niceName,String email,String firstName,String LastName,String Mobile) {
         pref.setPrefString(this,pref.user_token,token);
         pref.setPrefString(this,pref.user_email,email);
         pref.setPrefString(this,pref.user_name,displayName);
         pref.setPrefString(this,pref.user_nice_name,niceName);
+        pref.setPrefString(this,pref.first_name,firstName);
+        pref.setPrefString(this,pref.last_name,LastName);
+        pref.setPrefString(this,pref.mobile,Mobile);
         pref.setPrefBoolean(this, pref.login_status, true);
     }
 

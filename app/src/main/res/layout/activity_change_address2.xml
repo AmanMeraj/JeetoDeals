@@ -124,7 +124,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="10dp"
                             android:layout_marginVertical="5dp"
-                            android:hint="Address Line 1">
+                            android:hint="Street address">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edt_address_1_billing"
@@ -142,7 +142,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="10dp"
                             android:layout_marginVertical="5dp"
-                            android:hint="Address Line 2">
+                            android:hint="Apartment, suite, unit, etc. (optional)">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edt_address_2_billing"
@@ -160,7 +160,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="10dp"
                             android:layout_marginVertical="5dp"
-                            android:hint="City">
+                            android:hint="Town/City">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edt_city"
@@ -202,28 +202,37 @@
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edt_country"
                                 android:layout_width="match_parent"
-                                android:inputType="text"
+                                android:completionThreshold="3"
+                                android:focusable="false"
+                                android:inputType="none"
+                                android:text="India"
                                 android:maxLines="1"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textField_state"
-                            android:layout_below="@id/textField_country"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_below="@id/textField_country"
                             android:layout_marginHorizontal="10dp"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginBottom="20dp"
-                            android:hint="State">
+                            android:layout_marginVertical="5dp"
+                            android:hint="State"
+                            >
 
-                            <com.google.android.material.textfield.TextInputEditText
+                            <AutoCompleteTextView
+
                                 android:id="@+id/edt_state"
                                 android:layout_width="match_parent"
-                                android:inputType="text"
+                                android:layout_height="55dp"
+                                android:textSize="16sp"
                                 android:maxLines="1"
-                                android:layout_height="wrap_content" />
+                                android:maxLength="40"
+                                android:padding="10dp"
+                                android:inputType="none"
+                                android:focusable="false"
+                                android:clickable="true"/>
                         </com.google.android.material.textfield.TextInputLayout>
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textField_phone"
@@ -336,7 +345,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="10dp"
                             android:layout_marginVertical="5dp"
-                            android:hint="Address Line 1">
+                            android:hint="Street address">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edt_address_1"
@@ -354,7 +363,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="10dp"
                             android:layout_marginVertical="5dp"
-                            android:hint="Address Line 2">
+                            android:hint="Apartment, suite, unit, etc. (optional)">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edt_address_2"
@@ -372,7 +381,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="10dp"
                             android:layout_marginVertical="5dp"
-                            android:hint="City">
+                            android:hint="Town/City">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edt_city_shipping"
@@ -402,39 +411,49 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textField_country_shipping"
-                            android:layout_below="@id/textField_apartment_shipping"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_below="@id/textField_apartment_shipping"
                             android:layout_marginHorizontal="10dp"
                             android:layout_marginVertical="5dp"
-                            android:hint="Country">
+                            android:hint="Country"
+                            >
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edt_country_shipping"
                                 android:layout_width="match_parent"
-                                android:inputType="text"
+                                android:completionThreshold="3"
+                                android:focusable="false"
+                                android:inputType="none"
+                                android:text="India"
                                 android:maxLines="1"
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textField_state_shipping"
-                            android:layout_below="@id/textField_country_shipping"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_below="@id/textField_country_shipping"
                             android:layout_marginHorizontal="10dp"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginBottom="20dp"
-                            android:hint="State">
+                            android:layout_marginVertical="5dp"
+                            android:hint="State"
+                            >
 
-                            <com.google.android.material.textfield.TextInputEditText
+                            <AutoCompleteTextView
+
                                 android:id="@+id/edt_state_shipping"
                                 android:layout_width="match_parent"
-                                android:inputType="text"
+                                android:layout_height="55dp"
+                                android:textSize="16sp"
                                 android:maxLines="1"
-                                android:layout_height="wrap_content" />
+                                android:maxLength="40"
+                                android:padding="10dp"
+                                android:inputType="none"
+                                android:focusable="false"
+                                android:clickable="true"/>
                         </com.google.android.material.textfield.TextInputLayout>
 
 

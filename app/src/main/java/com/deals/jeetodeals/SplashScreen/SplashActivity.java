@@ -71,7 +71,20 @@ public class SplashActivity extends Utility {
                 String calling = response.data.getCalling();
                 String androidVersion =response.data.getAndriod_version();
                 String paymeny=response.data.getPayment_key();
+                String facebook=response.data.getFacebook_page();
+                String insta=response.data.getInstagram_page();
+                String linkedin=response.data.getLinkedin_page();
                 int voucher = response.data.getVoucher_rate();
+
+                if (facebook != null) {
+                    pref.setPrefString(this, pref.facebook, facebook);
+                }
+                if (insta != null) {
+                    pref.setPrefString(this, pref.instagram, insta);
+                }
+                if (linkedin != null) {
+                    pref.setPrefString(this, pref.linkedin, linkedin);
+                }
 
                 if (whatsapp != null) {
                     pref.setPrefString(this, pref.admin_whatsapp, whatsapp);

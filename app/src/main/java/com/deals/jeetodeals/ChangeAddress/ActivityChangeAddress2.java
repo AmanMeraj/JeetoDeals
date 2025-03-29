@@ -2,7 +2,9 @@ package com.deals.jeetodeals.ChangeAddress;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,9 +16,19 @@ import com.deals.jeetodeals.databinding.ActivityChangeAddress2Binding;
 import com.deals.jeetodeals.Model.BillingAddress;
 import com.deals.jeetodeals.Model.ShippingAddress;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ActivityChangeAddress2 extends Utility {
     ActivityChangeAddress2Binding binding;
     ChangeAddressViewModel viewModel;
+    String[] countryNames = {"India"};
+    String[] stateNames = {"Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"};
+    String countryCode = "IN";
+
+    String selectedBillingStateCode,selectedShippingStateCode;
+    private Map<String, String> stateCodeMap;
+    private Map<String, String> stateNameMap;
     String from = "";
 
     @Override
@@ -26,8 +38,12 @@ public class ActivityChangeAddress2 extends Utility {
         setContentView(binding.getRoot());
         viewModel = new ViewModelProvider(this).get(ChangeAddressViewModel.class);
 
+        // Initialize state mappings first
+        initializeStateMappings();
+
         from = getIntent().getStringExtra("edit") != null ? getIntent().getStringExtra("edit") : "";
 
+        // Now set up the fields after state mappings are initialized
         if (from.equals("billing")) {
             setupBillingFields();
         } else {
@@ -36,22 +52,99 @@ public class ActivityChangeAddress2 extends Utility {
 
         binding.backBtn.setOnClickListener(view -> finish());
         binding.updateBtn.setOnClickListener(view -> validateAndUpdateAddress());
+
+        binding.edtState.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedState = parent.getItemAtPosition(position).toString();
+            selectedBillingStateCode = stateCodeMap.get(selectedState);
+            Log.d("Selected Billing State", "State: " + selectedState + ", Code: " + selectedBillingStateCode);
+        });
+
+        binding.edtStateShipping.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedState = parent.getItemAtPosition(position).toString();
+            selectedShippingStateCode = stateCodeMap.get(selectedState);
+            Log.d("Selected Shipping State", "State: " + selectedState + ", Code: " + selectedShippingStateCode);
+        });
+
+        ArrayAdapter<String> stateAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, stateNames);
+
+        binding.edtState.setAdapter(stateAdapter);
+        binding.edtStateShipping.setAdapter(stateAdapter);
+    }
+
+    private void initializeStateMappings() {
+        stateCodeMap = new HashMap<>();
+        stateNameMap = new HashMap<>();
+
+        stateCodeMap.put("Andhra Pradesh", "AP");
+        stateCodeMap.put("Arunachal Pradesh", "AR");
+        stateCodeMap.put("Assam", "AS");
+        stateCodeMap.put("Bihar", "BR");
+        stateCodeMap.put("Chhattisgarh", "CG");
+        stateCodeMap.put("Goa", "GA");
+        stateCodeMap.put("Gujarat", "GJ");
+        stateCodeMap.put("Haryana", "HR");
+        stateCodeMap.put("Himachal Pradesh", "HP");
+        stateCodeMap.put("Jharkhand", "JH");
+        stateCodeMap.put("Karnataka", "KA");
+        stateCodeMap.put("Kerala", "KL");
+        stateCodeMap.put("Madhya Pradesh", "MP");
+        stateCodeMap.put("Maharashtra", "MH");
+        stateCodeMap.put("Manipur", "MN");
+        stateCodeMap.put("Meghalaya", "ML");
+        stateCodeMap.put("Mizoram", "MZ");
+        stateCodeMap.put("Nagaland", "NL");
+        stateCodeMap.put("Odisha", "OD");
+        stateCodeMap.put("Punjab", "PB");
+        stateCodeMap.put("Rajasthan", "RJ");
+        stateCodeMap.put("Sikkim", "SK");
+        stateCodeMap.put("Tamil Nadu", "TN");
+        stateCodeMap.put("Telangana", "TG");
+        stateCodeMap.put("Tripura", "TR");
+        stateCodeMap.put("Uttar Pradesh", "UP");
+        stateCodeMap.put("Uttarakhand", "UK");
+        stateCodeMap.put("West Bengal", "WB");
+
+        // Create reverse mapping
+        for (Map.Entry<String, String> entry : stateCodeMap.entrySet()) {
+            stateNameMap.put(entry.getValue(), entry.getKey());
+        }
     }
 
     private void setupBillingFields() {
         BillingAddress billing = (BillingAddress) getIntent().getSerializableExtra("BillingAddress");
+        binding.edtCountry.setText("India");
+
+        // Retrieve shared preferences
+        String prefFirstName = pref.getPrefString(this, pref.first_name);
+        String prefLastName = pref.getPrefString(this, pref.last_name);
+        String prefPhone = pref.getPrefString(this, pref.mobile);
+        String prefEmail = pref.getPrefString(this, pref.user_email);
+
         if (billing != null) {
-            binding.edtFirstName.setText(billing.getFirst_name());
-            binding.edtLastName.setText(billing.getLast_name());
+            // Use billing address info if available, fallback to shared preferences if empty
+            binding.edtFirstName.setText(!TextUtils.isEmpty(billing.getFirst_name()) ? billing.getFirst_name() : prefFirstName);
+            binding.edtLastName.setText(!TextUtils.isEmpty(billing.getLast_name()) ? billing.getLast_name() : prefLastName);
+            binding.edtPhone.setText(!TextUtils.isEmpty(billing.getPhone()) ? billing.getPhone() : prefPhone);
+            binding.edtEamil.setText(!TextUtils.isEmpty(billing.getEmail()) ? billing.getEmail() : prefEmail);
+
             binding.edtAddress1Billing.setText(billing.getAddress_1());
             binding.edtAddress2Billing.setText(billing.getAddress_2());
             binding.edtCity.setText(billing.getCity());
             binding.edtPostCode.setText(billing.getPostcode());
-            binding.edtCountry.setText(billing.getCountry());
-            binding.edtState.setText(billing.getState());
-            binding.edtPhone.setText(billing.getPhone());
-            binding.edtEamil.setText(billing.getEmail());
+
+            // Store and map state code
+            selectedBillingStateCode = billing.getState();
+            String stateName = stateNameMap != null && billing.getState() != null ? stateNameMap.getOrDefault(billing.getState(), billing.getState()) : billing.getState();
+            binding.edtState.setText(stateName);
+
+        } else {
+            // Billing is null, so use shared preferences for these fields
+            if (!TextUtils.isEmpty(prefFirstName)) binding.edtFirstName.setText(prefFirstName);
+            if (!TextUtils.isEmpty(prefLastName)) binding.edtLastName.setText(prefLastName);
+            if (!TextUtils.isEmpty(prefPhone)) binding.edtPhone.setText(prefPhone);
+            if (!TextUtils.isEmpty(prefEmail)) binding.edtEamil.setText(prefEmail);
         }
+
         binding.shippingAddressInputText.setVisibility(View.GONE);
         binding.billingAddressRel.setVisibility(View.VISIBLE);
         binding.shippingRel.setVisibility(View.GONE);
@@ -59,20 +152,38 @@ public class ActivityChangeAddress2 extends Utility {
 
     private void setupShippingFields() {
         ShippingAddress shipping = (ShippingAddress) getIntent().getSerializableExtra("ShippingAddress");
+        binding.edtCountryShipping.setText("India");
+
+        // Retrieve shared preferences
+        String prefFirstName = pref.getPrefString(this, pref.first_name);
+        String prefLastName = pref.getPrefString(this, pref.last_name);
+
         if (shipping != null) {
-            binding.edtFirstNameShipping.setText(shipping.getFirst_name());
-            binding.edtLastNameShipping.setText(shipping.getLast_name());
+            // Use shipping address info if available, fallback to shared preferences if empty
+            binding.edtFirstNameShipping.setText(!TextUtils.isEmpty(shipping.getFirst_name()) ? shipping.getFirst_name() : prefFirstName);
+            binding.edtLastNameShipping.setText(!TextUtils.isEmpty(shipping.getLast_name()) ? shipping.getLast_name() : prefLastName);
+
             binding.edtAddress1.setText(shipping.getAddress_1());
             binding.edtAddress2.setText(shipping.getAddress_2());
             binding.edtCityShipping.setText(shipping.getCity());
             binding.edtPostCodeShipping.setText(shipping.getPostcode());
-            binding.edtCountryShipping.setText(shipping.getCountry());
-            binding.edtStateShipping.setText(shipping.getState());
+
+            // Store and map state code
+            selectedShippingStateCode = shipping.getState();
+            String stateName = stateNameMap != null && shipping.getState() != null ? stateNameMap.getOrDefault(shipping.getState(), shipping.getState()) : shipping.getState();
+            binding.edtStateShipping.setText(stateName);
+
+        } else {
+            // Shipping is null, so use shared preferences for these fields
+            if (!TextUtils.isEmpty(prefFirstName)) binding.edtFirstNameShipping.setText(prefFirstName);
+            if (!TextUtils.isEmpty(prefLastName)) binding.edtLastNameShipping.setText(prefLastName);
         }
+
         binding.billingAddressRel.setVisibility(View.GONE);
         binding.shippingRel.setVisibility(View.VISIBLE);
         binding.billingAddressInputText.setVisibility(View.GONE);
     }
+
 
     private void validateAndUpdateAddress() {
         boolean isBillingValid = from.equals("billing") && validateBillingFields();
@@ -122,8 +233,16 @@ public class ActivityChangeAddress2 extends Utility {
         update.setBilling_address_2(binding.edtAddress2Billing.getText().toString().trim());
         update.setBilling_city(binding.edtCity.getText().toString().trim());
         update.setBilling_postcode(binding.edtPostCode.getText().toString().trim());
-        update.setBilling_country(binding.edtCountry.getText().toString().trim());
-        update.setBilling_state(binding.edtState.getText().toString().trim());
+        update.setBilling_country("IN");
+        // Use the selected state code instead of the state name
+        if (selectedBillingStateCode != null && !selectedBillingStateCode.isEmpty()) {
+            update.setBilling_state(selectedBillingStateCode);
+        } else {
+            // Fallback: Try to get state code from the current text
+            String stateName = binding.edtState.getText().toString().trim();
+            String stateCode = stateCodeMap.get(stateName);
+            update.setBilling_state(stateCode != null ? stateCode : stateName);
+        }
         update.setBilling_phone(binding.edtPhone.getText().toString().trim());
         update.setBilling_email(binding.edtEamil.getText().toString().trim());
 
@@ -138,8 +257,16 @@ public class ActivityChangeAddress2 extends Utility {
         update.setShipping_address_2(binding.edtAddress2.getText().toString().trim());
         update.setShipping_city(binding.edtCityShipping.getText().toString().trim());
         update.setShipping_postcode(binding.edtPostCodeShipping.getText().toString().trim());
-        update.setShipping_country(binding.edtCountryShipping.getText().toString().trim());
-        update.setShipping_state(binding.edtStateShipping.getText().toString().trim());
+        update.setShipping_country("IN");
+        // Use the selected state code instead of the state name
+        if (selectedShippingStateCode != null && !selectedShippingStateCode.isEmpty()) {
+            update.setShipping_state(selectedShippingStateCode);
+        } else {
+            // Fallback: Try to get state code from the current text
+            String stateName = binding.edtStateShipping.getText().toString().trim();
+            String stateCode = stateCodeMap.get(stateName);
+            update.setShipping_state(stateCode != null ? stateCode : stateName);
+        }
 
         sendUpdateRequest(update, false);
     }

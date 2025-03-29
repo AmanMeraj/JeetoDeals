@@ -95,13 +95,16 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
     private void updateProceedButton(Total totals) {
         int walletBalance = Integer.parseInt(pref.getPrefString(requireActivity(), pref.main_balance));
         int totalPrice = Integer.parseInt(totals.getTotal_price());
+        if( walletBalance >= totalPrice){
+            binding.tvNotice.setVisibility(View.GONE);
+        }else{
+            binding.tvNotice.setVisibility(View.VISIBLE);
+        }
 
         if (isWalletSelected && walletBalance >= totalPrice) {
             binding.proceedBtn.setVisibility(View.VISIBLE);
-            binding.tvNotice.setVisibility(View.GONE);
         } else {
             binding.proceedBtn.setVisibility(View.GONE);
-            binding.tvNotice.setVisibility(View.VISIBLE);
         }
     }
     public void getBalance() {
@@ -206,7 +209,7 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
             binding.walletBalance.setText("Wallet Balance: Vouchers " + pref.getPrefString(requireActivity(), pref.main_balance));
 
             binding.total.setText(responsee.totals.currency_symbol + " " + responsee.totals.getTotal_price());
-            binding.subTotal.setText(responsee.totals.currency_symbol + " " + responsee.totals.getTotal_items());
+            binding.subTotal.setText(responsee.totals.currency_symbol + " " + responsee.totals.getTotal_price());
 
             // Wallet Balance Selection Logic
             binding.walletBalance.setOnClickListener(v -> toggleWalletSelection(totals));

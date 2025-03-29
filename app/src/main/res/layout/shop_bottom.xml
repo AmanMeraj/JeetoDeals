@@ -8,43 +8,74 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <RelativeLayout
-            android:id="@+id/orange_rel"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@drawable/orange_card_top">
-
-            <TextView
-                android:id="@+id/sold_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:fontFamily="@font/inter_bold"
-                android:text="In Stock"
-                android:textColor="@color/white"
-                android:textSize="15sp"
-                android:visibility="invisible" />
-        </RelativeLayout>
-
         <!-- Main content with ScrollView -->
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/orange_rel"
-            android:layout_marginTop="-25dp"
             android:fillViewport="true">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/white_card_bg_2">
+                <ImageView
+                    android:id="@+id/close_img"
+                    android:layout_marginVertical="5dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:rotation="45"
+                    android:src="@drawable/plus_jd"
+                    android:layout_alignParentEnd="true"
+                    android:padding="5dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    app:tint="@color/orange">
+
+                </ImageView>
+
+                <RelativeLayout
+                    android:gravity="center"
+                    android:layout_alignBottom="@+id/vp_images"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_alignTop="@+id/vp_images"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <com.deals.jeetodeals.VerticalTextView
+                        android:layout_width="wrap_content"
+                        android:text="Reedeem"
+                        android:textSize="15sp"
+                        android:layout_below="@+id/coins_tv"
+                        android:textColor="@color/orange"
+                        android:rotation="180"
+                        android:fontFamily="@font/inter_extrabold"
+
+                        android:id="@+id/vertical_redeem_coins_tv"
+                        android:layout_height="wrap_content">
+
+                    </com.deals.jeetodeals.VerticalTextView>
+                    <com.deals.jeetodeals.VerticalTextView
+                        android:layout_marginVertical="5dp"
+                        android:layout_width="wrap_content"
+                        android:text="230 Vouchers"
+                        android:textSize="13sp"
+                        android:textColor="@color/black"
+                        android:rotation="180"
+                        android:fontFamily="@font/inter_bold"
+                        android:id="@+id/coins_tv"
+                        android:layout_height="wrap_content">
+
+                    </com.deals.jeetodeals.VerticalTextView>
+                </RelativeLayout>
+
+
+
 
                 <!-- ViewPager2 -->
                 <androidx.viewpager2.widget.ViewPager2
+                    android:layout_below="@+id/close_img"
+                    android:layout_marginHorizontal="20dp"
                     android:id="@+id/vp_images"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="170dp"
                     android:layout_marginBottom="16dp" />
 
                 <!-- TabLayout for Circle Indicators -->

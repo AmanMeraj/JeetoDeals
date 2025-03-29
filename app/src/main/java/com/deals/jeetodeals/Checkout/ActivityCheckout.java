@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -157,6 +158,7 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
 
 
 
+    // Replace the existing handleIntentData() method with this one
     private void handleIntentData() {
         CartResponse cartResponse = (CartResponse) getIntent().getSerializableExtra("cart_response");
         String paymentMethod = getIntent().getStringExtra("payment_method");
@@ -166,11 +168,21 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
                 String itemType = cartResponse.getItems().get(0).getType();
                 Log.d("ActivityCheckout", "Item Type: " + itemType);
 
-                if ("lottery".equals(itemType)) {  // Avoids null pointer crash
-                    binding.subtotal.setText(cartResponse.totals.getCurrency_code() + " " + cartResponse.totals.getTotal_items());
+                // Check if item type is lottery
+                if ("lottery".equals(itemType)) {
+                    // For lottery items, forcefully hide all shipping-related UI elements
+                    binding.shippingCheckBox.setVisibility(View.GONE);
+                    binding.shippingAddressInputText.setVisibility(View.GONE);
+                    binding.shippingRel.setVisibility(View.GONE);
+
+                    // Uncheck the shipping checkbox to prevent any shipping fields from being processed
+                    binding.shippingCheckBox.setChecked(false);
+
+                    binding.subtotal.setText(cartResponse.totals.getCurrency_code() + " " + cartResponse.totals.getTotal_price());
                     binding.total.setText(cartResponse.totals.getCurrency_code() + " " + cartResponse.totals.getTotal_price());
                 } else {
-                    binding.subtotal.setText(cartResponse.totals.getCurrency_prefix() + " " + cartResponse.totals.getTotal_items());
+                    // For non-lottery items, show shipping options
+                    binding.subtotal.setText(cartResponse.totals.getCurrency_prefix() + " " + cartResponse.totals.getTotal_price());
                     binding.total.setText(cartResponse.totals.getCurrency_prefix() + " " + cartResponse.totals.getTotal_price());
                 }
             } else {
@@ -184,76 +196,103 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
             Toast.makeText(this, "Failed to load cart data", Toast.LENGTH_SHORT).show();
         }
     }
-private void setupListeners() {
-    // Back button
-    binding.backBtn.setOnClickListener(view -> finish());
 
-    // Country selection
-    binding.edtCountry.setOnItemClickListener((parent, view, position, id) -> {
-        String selectedCountry = parent.getItemAtPosition(position).toString();
-        if (selectedCountry.equals("India")) {
-            countryCode = "IN";
-        }
-    });
+    // Also update setupListeners() to maintain proper state of shipping UI elements
+    private void setupListeners() {
+        // Back button
+        binding.backBtn.setOnClickListener(view -> finish());
 
-    // State selection for billing
-    binding.edtState.setOnItemClickListener((parent, view, position, id) -> {
-        String selectedState = parent.getItemAtPosition(position).toString();
-        selectedBillingStateCode = stateCodeMap.get(selectedState);
-        Log.d("Selected Billing State", "State: " + selectedState + ", Code: " + selectedBillingStateCode);
-    });
-
-    // State selection for shipping
-    binding.edtStateShipping.setOnItemClickListener((parent, view, position, id) -> {
-        String selectedState = parent.getItemAtPosition(position).toString();
-        selectedShippingStateCode = stateCodeMap.get(selectedState);
-        Log.d("Selected Shipping State", "State: " + selectedState + ", Code: " + selectedShippingStateCode);
-    });
-
-    // Billing address autocomplete - toggle visibility
-    MaterialAutoCompleteTextView billingAutoComplete = (MaterialAutoCompleteTextView) binding.billingAddressInputText.getEditText();
-    billingAutoComplete.setOnClickListener(v -> {
-        if (binding.billingAddressRel.getVisibility() == View.VISIBLE) {
-            binding.billingAddressRel.setVisibility(View.GONE);
-            // Only hide the shipping checkbox if shipping rel is also not visible
-            if (binding.shippingRel.getVisibility() != View.VISIBLE) {
-                binding.shippingCheckBox.setVisibility(View.GONE);
+        // Country selection
+        binding.edtCountry.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedCountry = parent.getItemAtPosition(position).toString();
+            if (selectedCountry.equals("India")) {
+                countryCode = "IN";
             }
-        } else {
-            binding.billingAddressRel.setVisibility(View.VISIBLE);
-            binding.shippingCheckBox.setVisibility(View.VISIBLE);
-        }
-    });
+        });
 
-    // Shipping checkbox
-    binding.shippingCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-        binding.shippingAddressInputText.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-        if (!isChecked) {
-            binding.shippingRel.setVisibility(View.GONE);
-        }
-    });
+        // State selection for billing
+        binding.edtState.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedState = parent.getItemAtPosition(position).toString();
+            selectedBillingStateCode = stateCodeMap.get(selectedState);
+            Log.d("Selected Billing State", "State: " + selectedState + ", Code: " + selectedBillingStateCode);
+        });
 
-    // Shipping address autocomplete - toggle visibility
-    MaterialAutoCompleteTextView shippingAutoComplete = (MaterialAutoCompleteTextView) binding.shippingAddressInputText.getEditText();
-    shippingAutoComplete.setOnClickListener(v -> {
-        if (binding.shippingRel.getVisibility() == View.VISIBLE) {
-            binding.shippingRel.setVisibility(View.GONE);
-        } else {
-            binding.shippingRel.setVisibility(View.VISIBLE);
-        }
-    });
+        // State selection for shipping
+        binding.edtStateShipping.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedState = parent.getItemAtPosition(position).toString();
+            selectedShippingStateCode = stateCodeMap.get(selectedState);
+            Log.d("Selected Shipping State", "State: " + selectedState + ", Code: " + selectedShippingStateCode);
+        });
 
-    // Checkout button
-    binding.checkoutBtn.setOnClickListener(view -> {
-        if (isInternetConnected(ActivityCheckout.this)) {
-            setdata();
-        } else {
-            Toast.makeText(ActivityCheckout.this, "No Internet Connection!", Toast.LENGTH_SHORT).show();
-        }
-    });
+        // Billing address autocomplete - toggle visibility
+        MaterialAutoCompleteTextView billingAutoComplete = (MaterialAutoCompleteTextView) binding.billingAddressInputText.getEditText();
+        billingAutoComplete.setOnClickListener(v -> {
+            if (binding.billingAddressRel.getVisibility() == View.VISIBLE) {
+                binding.billingAddressRel.setVisibility(View.GONE);
+                // Only hide the shipping checkbox if shipping rel is also not visible
+                if (binding.shippingRel.getVisibility() != View.VISIBLE) {
+                    // First check if this is a lottery item
+                    CartResponse cartResponse = (CartResponse) getIntent().getSerializableExtra("cart_response");
+                    boolean isLottery = false;
 
-    setupEmailValidation();
-}
+                    if (cartResponse != null && cartResponse.getItems() != null &&
+                            !cartResponse.getItems().isEmpty() && cartResponse.getItems().get(0) != null) {
+                        isLottery = "lottery".equals(cartResponse.getItems().get(0).getType());
+                    }
+
+                    // Only hide shipping checkbox if it's not a lottery item
+                    if (!isLottery) {
+                        binding.shippingCheckBox.setVisibility(View.GONE);
+                    }
+                }
+            } else {
+                binding.billingAddressRel.setVisibility(View.VISIBLE);
+
+                // First check if this is a lottery item
+                CartResponse cartResponse = (CartResponse) getIntent().getSerializableExtra("cart_response");
+                boolean isLottery = false;
+
+                if (cartResponse != null && cartResponse.getItems() != null &&
+                        !cartResponse.getItems().isEmpty() && cartResponse.getItems().get(0) != null) {
+                    isLottery = "lottery".equals(cartResponse.getItems().get(0).getType());
+                }
+
+                // Only show shipping checkbox if it's not a lottery item
+                if (!isLottery) {
+                    binding.shippingCheckBox.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        // Shipping checkbox
+        binding.shippingCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            binding.shippingAddressInputText.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            if (!isChecked) {
+                binding.shippingRel.setVisibility(View.GONE);
+            }
+        });
+
+        // Shipping address autocomplete - toggle visibility
+        MaterialAutoCompleteTextView shippingAutoComplete = (MaterialAutoCompleteTextView) binding.shippingAddressInputText.getEditText();
+        shippingAutoComplete.setOnClickListener(v -> {
+            if (binding.shippingRel.getVisibility() == View.VISIBLE) {
+                binding.shippingRel.setVisibility(View.GONE);
+            } else {
+                binding.shippingRel.setVisibility(View.VISIBLE);
+            }
+        });
+
+        // Checkout button
+        binding.checkoutBtn.setOnClickListener(view -> {
+            if (isInternetConnected(ActivityCheckout.this)) {
+                setdata();
+            } else {
+                Toast.makeText(ActivityCheckout.this, "No Internet Connection!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        setupEmailValidation();
+    }
 
     private void setupEmailValidation() {
         TextWatcher emailValidator = new TextWatcher() {
@@ -299,14 +338,26 @@ private void setupListeners() {
     }
 
     private void fillFeilds(FragmentsRepository.ApiResponse<GetCheckout> getCheckoutResponse) {
+        // Retrieve stored values from SharedPreferences
+        String savedFirstName = pref.getPrefString(this,pref.first_name);
+        String savedLastName = pref.getPrefString(this,pref.last_name);
+        String savedPhone = pref.getPrefString(this,pref.mobile);
+        String savedEmail = pref.getPrefString(this,pref.user_email);
 
-        //Order ID
-//        orderId= getCheckoutResponse.data.getRazorpay_order().getId();
-        // Billing address
-        binding.edtFirstName.setText(getCheckoutResponse.data.billing_address.getFirst_name());
-        binding.edtLastName.setText(getCheckoutResponse.data.billing_address.getLast_name());
-        binding.edtCompanyName.setText(getCheckoutResponse.data.billing_address.getCompany());
-//        binding.edtCountry.setText(getCheckoutResponse.data.billing_address.getCountry());
+        // Order ID
+        // orderId = getCheckoutResponse.data.getRazorpay_order().getId();
+
+        // Billing Address
+        String firstName = getCheckoutResponse.data.billing_address.getFirst_name();
+        String lastName = getCheckoutResponse.data.billing_address.getLast_name();
+        String phone = getCheckoutResponse.data.billing_address.getPhone();
+        String email = getCheckoutResponse.data.billing_address.getEmail();
+
+        binding.edtFirstName.setText(!TextUtils.isEmpty(firstName) ? firstName : savedFirstName);
+        binding.edtLastName.setText(!TextUtils.isEmpty(lastName) ? lastName : savedLastName);
+        binding.edtPhone.setText(!TextUtils.isEmpty(phone) ? phone : savedPhone);
+        binding.edtEmail.setText(!TextUtils.isEmpty(email) ? email : savedEmail);
+
         binding.edtStreetAddress.setText(getCheckoutResponse.data.billing_address.getAddress_1());
         binding.edtApartment.setText(getCheckoutResponse.data.billing_address.getAddress_2());
         binding.edtTown.setText(getCheckoutResponse.data.billing_address.getCity());
@@ -320,18 +371,17 @@ private void setupListeners() {
         }
 
         binding.edtPin.setText(getCheckoutResponse.data.billing_address.getPostcode());
-        binding.edtPhone.setText(getCheckoutResponse.data.billing_address.getPhone());
-        binding.edtEmail.setText(getCheckoutResponse.data.billing_address.getEmail());
 
         // Shipping Address
         binding.edtFirstNameShipping.setText(getCheckoutResponse.data.shipping_address.getFirst_name());
         binding.edtLastNameShipping.setText(getCheckoutResponse.data.shipping_address.getLast_name());
-        binding.edtCompanyNameShipping.setText(getCheckoutResponse.data.shipping_address.getCompany());
-//        binding.edtCountryShipping.setText(getCheckoutResponse.data.shipping_address.getCountry());
         binding.edtStreetAddressShipping.setText(getCheckoutResponse.data.shipping_address.getAddress_1());
         binding.edtApartmentShipping.setText(getCheckoutResponse.data.shipping_address.getAddress_2());
         binding.edtTownShipping.setText(getCheckoutResponse.data.shipping_address.getCity());
-
+        binding.edtPhoneShipping.setText(getCheckoutResponse.data.shipping_address.getPhone());
+        binding.edtFirstNameShipping.setText(!TextUtils.isEmpty(firstName) ? firstName : savedFirstName);
+        binding.edtLastNameShipping.setText(!TextUtils.isEmpty(lastName) ? lastName : savedLastName);
+        binding.edtPhoneShipping.setText(!TextUtils.isEmpty(phone) ? phone : savedPhone);
         // Convert state code to name for shipping
         String shippingStateCode = getCheckoutResponse.data.shipping_address.getState();
         String shippingStateName = stateNameMap.get(shippingStateCode);
@@ -341,7 +391,8 @@ private void setupListeners() {
         }
 
         binding.edtPinShipping.setText(getCheckoutResponse.data.shipping_address.getPostcode());
-        binding.edtPhoneShipping.setText(getCheckoutResponse.data.shipping_address.getPhone());
+
+
         binding.loader.rlLoader.setVisibility(View.GONE);
     }
 
@@ -351,7 +402,6 @@ private void setupListeners() {
         // Billing Address
         checkout.billing_address.first_name = binding.edtFirstName.getText().toString().trim();
         checkout.billing_address.last_name = binding.edtLastName.getText().toString().trim();
-        checkout.billing_address.company = binding.edtCompanyName.getText().toString().trim();
         checkout.billing_address.address_1 = binding.edtStreetAddress.getText().toString().trim();
         checkout.billing_address.address_2 = binding.edtApartment.getText().toString().trim();
         checkout.billing_address.city = binding.edtTown.getText().toString().trim();
@@ -368,7 +418,6 @@ private void setupListeners() {
         if (binding.shippingCheckBox.isChecked()) {
             checkout.shipping_address.first_name = binding.edtFirstNameShipping.getText().toString().trim();
             checkout.shipping_address.last_name = binding.edtLastNameShipping.getText().toString().trim();
-            checkout.shipping_address.company = binding.edtCompanyNameShipping.getText().toString().trim();
             checkout.shipping_address.address_1 = binding.edtStreetAddressShipping.getText().toString().trim();
             checkout.shipping_address.address_2 = binding.edtApartmentShipping.getText().toString().trim();
             checkout.shipping_address.city = binding.edtTownShipping.getText().toString().trim();

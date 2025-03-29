@@ -86,4 +86,32 @@ public class AppVersion implements Serializable {
     public String payment_key;
     public String ios_version;
     public String andriod_version;
+
+    public String getFacebook_page() {
+        return facebook_page;
+    }
+
+    public void setFacebook_page(String facebook_page) {
+        this.facebook_page = facebook_page;
+    }
+
+    public String getInstagram_page() {
+        return instagram_page;
+    }
+
+    public void setInstagram_page(String instagram_page) {
+        this.instagram_page = instagram_page;
+    }
+
+    public String getLinkedin_page() {
+        return linkedin_page;
+    }
+
+    public void setLinkedin_page(String linkedin_page) {
+        this.linkedin_page = linkedin_page;
+    }
+
+    public String facebook_page;
+    public String instagram_page;
+    public String linkedin_page;
 }

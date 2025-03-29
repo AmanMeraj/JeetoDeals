@@ -187,31 +187,13 @@
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/textField_company_name"
-                            android:layout_below="@+id/last_name_text_feild"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="10dp"
-                            android:layout_marginVertical="5dp"
-                            android:hint="Company Name">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/edt_company_name"
-                                android:layout_width="match_parent"
-                                android:inputType="text"
-                                android:maxLines="1"
-                                android:maxLength="40"
-                                android:layout_height="wrap_content" />
-                        </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textField_country"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/textField_company_name"
+                            android:layout_below="@id/last_name_text_feild"
                             android:layout_marginHorizontal="10dp"
                             android:layout_marginVertical="5dp"
                             android:hint="Country"
@@ -258,7 +240,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="10dp"
                             android:layout_marginVertical="5dp"
-                            android:hint="Apartment">
+                            android:hint="Apartment, suite, unit, etc. (optional)">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edt_apartment"
@@ -277,7 +259,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="10dp"
                             android:layout_marginVertical="5dp"
-                            android:hint="Town">
+                            android:hint="Town/City">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edt_town"
@@ -440,30 +422,11 @@
                                 android:layout_height="wrap_content" />
                         </com.google.android.material.textfield.TextInputLayout>
                         <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/textField_company_name_shipping"
-                            android:layout_below="@+id/last_name_text_field_shipping"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="10dp"
-                            android:layout_marginVertical="5dp"
-                            android:hint="Company Name">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/edt_company_name_shipping"
-                                android:layout_width="match_parent"
-                                android:inputType="text"
-                                android:maxLines="1"
-                                android:maxLength="40"
-                                android:layout_height="wrap_content" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/textField_country_shipping"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/textField_company_name_shipping"
+                            android:layout_below="@id/last_name_text_field_shipping"
                             android:layout_marginHorizontal="10dp"
                             android:layout_marginVertical="5dp"
                             android:hint="Country"
@@ -511,7 +474,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="10dp"
                             android:layout_marginVertical="5dp"
-                            android:hint="Apartment">
+                            android:hint="Apartment, suite, unit, etc. (optional)">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edt_apartment_shipping"
@@ -530,7 +493,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="10dp"
                             android:layout_marginVertical="5dp"
-                            android:hint="Town">
+                            android:hint="Town/City">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/edt_town_shipping"

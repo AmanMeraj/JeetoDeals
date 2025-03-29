@@ -74,7 +74,7 @@ public class ContainerActivity extends Utility {
         isLoggedIn = pref.getPrefBoolean(ContainerActivity.this, pref.login_status);
 
         if(isLoggedIn){
-            binding.tvUserNsame.setText("Hi ! "+pref.getPrefString(this,pref.user_name));
+            binding.tvUserNsame.setText("Hi ! "+pref.getPrefString(this,pref.first_name)+" "+pref.getPrefString(this,pref.last_name));
         }else {
             binding.tvUserNsame.setText("");
         }
@@ -135,15 +135,16 @@ public class ContainerActivity extends Utility {
         // Find ImageViews
         ImageView imgFacebook = socialLayout.findViewById(R.id.img_facebook);
         ImageView imgInstagram = socialLayout.findViewById(R.id.img_instagram);
-        ImageView imgTwitter = socialLayout.findViewById(R.id.img_twitter);
+        ImageView imgLinkedin = socialLayout.findViewById(R.id.img_linkedin);
 
         // Set click listeners
-        imgFacebook.setOnClickListener(v -> openSocialMedia("https://www.facebook.com/YourPage"));
-        imgInstagram.setOnClickListener(v -> openSocialMedia("https://www.instagram.com/YourPage"));
-        imgTwitter.setOnClickListener(v -> openSocialMedia("https://twitter.com/YourPage"));
+        imgFacebook.setOnClickListener(v -> openSocialMedia(pref.getPrefString(this,pref.facebook)));
+        imgInstagram.setOnClickListener(v -> openSocialMedia(pref.getPrefString(this,pref.instagram)));
+        imgLinkedin.setOnClickListener(v -> openSocialMedia(pref.getPrefString(this,pref.linkedin)));
 
         // Setup logout item
         MenuItem logoutItem = menu.findItem(R.id.logout);
+        MenuItem loginItem = menu.findItem(R.id.nav_signIn);
         if (logoutItem != null) {
             if (isLoggedIn) {
                 // Inflate logout button view if logged in
@@ -173,8 +174,10 @@ public class ContainerActivity extends Utility {
                 });
 
                 logoutItem.setActionView(logoutView);
+                loginItem.setVisible(false);
                 logoutItem.setVisible(true);
             } else {
+                loginItem.setVisible(true);
                 logoutItem.setVisible(false);
             }
         }
@@ -205,7 +208,10 @@ public class ContainerActivity extends Utility {
             }
 
             // Handle navigation item clicks
-            if (itemId == R.id.nav_ticket) {
+            if (itemId == R.id.nav_signIn) {
+                Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
+                startActivity(intent);
+            } else if (itemId == R.id.nav_ticket) {
                 loadFragment(new TicketFragment());
             } else if (itemId == R.id.nav_order) {
                 startActivity(new Intent(ContainerActivity.this, ActivityMyOrders.class));
@@ -458,7 +464,7 @@ public class ContainerActivity extends Utility {
         setupNavigationView();
         setupCartBadge();
         if(isLoggedIn){
-            binding.tvUserNsame.setText("Hi ! "+pref.getPrefString(this,pref.user_name));
+            binding.tvUserNsame.setText("Hi ! "+pref.getPrefString(this,pref.first_name)+" "+pref.getPrefString(this,pref.last_name));
         }else {
             binding.tvUserNsame.setText("");
         }

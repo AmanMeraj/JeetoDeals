@@ -21,6 +21,7 @@ import com.deals.jeetodeals.Model.Image;
 import com.deals.jeetodeals.Model.ShopResponse;
 import com.deals.jeetodeals.Model.Variations;
 import com.deals.jeetodeals.R;
+import com.deals.jeetodeals.VerticalTextView;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import org.json.JSONArray;
@@ -33,11 +34,12 @@ import java.util.List;
 public class ShopBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
     private ViewPager2 viewPager;
+    private VerticalTextView cointxt;
     private CircleIndicator3 circleIndicator;
     private RecyclerView sizeRecyclerView;
     private TextView quantityText,buttonTxt;
     private ImageView minusButton;
-    private ImageView plusButton;
+    private ImageView plusButton,closeButton;
     private View addToCartButton;
     private TextView productNameTextView;
     private TextView drawDateTextView;
@@ -93,6 +95,8 @@ public class ShopBottomSheetDialogFragment extends BottomSheetDialogFragment {
         setupSizeSelector();
         setupQuantityControls();
         setupAddToCart();
+        SetupCloseButton();
+
     }
 
     private void initViews(View view) {
@@ -106,11 +110,15 @@ public class ShopBottomSheetDialogFragment extends BottomSheetDialogFragment {
         buttonTxt=view.findViewById(R.id.add);
         productNameTextView = view.findViewById(R.id.tv_iphone_name);
         drawDateTextView = view.findViewById(R.id.tv_desc);
+        closeButton=view.findViewById(R.id.close_img);
+        cointxt=view.findViewById(R.id.coins_tv);
+
     }
 
     private void setupData() {
         if (shopItem != null) {
             productNameTextView.setText(shopItem.getName());
+            cointxt.setText(shopItem.getPrices().getPrice()+" "+shopItem.getPrices().getCurrency_prefix());
             drawDateTextView.setText(Html.fromHtml(shopItem.getDescription(), Html.FROM_HTML_MODE_LEGACY).toString());
 
         }
@@ -197,6 +205,14 @@ public class ShopBottomSheetDialogFragment extends BottomSheetDialogFragment {
             public void onClick(View v) {
                 currentQuantity++;
                 updateQuantityDisplay();
+            }
+        });
+    }
+    public void SetupCloseButton(){
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
             }
         });
     }

@@ -170,23 +170,60 @@ ChangeAddressResponse responsee;
         BillingAddress billing = response.data.getBillingAddress();
 
         if (billing != null) {
-            // Log to verify data in BillingAddress
-            Log.d("Billing Address", "Billing Address: " + billing.getAddress_1() + ", " + billing.getCity());
+            // Check if all fields are empty
+            boolean isEmpty = TextUtils.isEmpty(billing.getAddress_1()) &&
+                    TextUtils.isEmpty(billing.getAddress_2()) &&
+                    TextUtils.isEmpty(billing.getCity()) &&
+                    TextUtils.isEmpty(billing.getPostcode()) &&
+                    TextUtils.isEmpty(billing.getCountry()) &&
+                    TextUtils.isEmpty(billing.getState());
 
-            // Concatenate billing address fields
-            String billingAddress = billing.getAddress_1() + " "
-                    + billing.getAddress_2() + ", "
-                    + billing.getCity() + ", "
-                    + billing.getPostcode() + ", "
-                    + billing.getCountry() + ", "
-                    + billing.getState();
+            if (!isEmpty) {
+                // Log to verify data in BillingAddress
+                Log.d("Billing Address", "Billing Address: " + billing.getAddress_1() + ", " + billing.getCity());
 
-            // Set the billing address and name data in the views
-            binding.textBillingAddress.setText(billingAddress);
-            binding.textName.setText(billing.getFirst_name() + " " + billing.getLast_name());
+                // Build billing address dynamically, avoiding unnecessary commas
+                StringBuilder billingAddressBuilder = new StringBuilder();
+
+                if (!TextUtils.isEmpty(billing.getAddress_1()))
+                    billingAddressBuilder.append(billing.getAddress_1()).append(" ");
+                if (!TextUtils.isEmpty(billing.getAddress_2()))
+                    billingAddressBuilder.append(billing.getAddress_2()).append(", ");
+                if (!TextUtils.isEmpty(billing.getCity()))
+                    billingAddressBuilder.append(billing.getCity()).append(", ");
+                if (!TextUtils.isEmpty(billing.getPostcode()))
+                    billingAddressBuilder.append(billing.getPostcode()).append(", ");
+                if (!TextUtils.isEmpty(billing.getCountry()))
+                    billingAddressBuilder.append(billing.getCountry()).append(", ");
+                if (!TextUtils.isEmpty(billing.getState()))
+                    billingAddressBuilder.append(billing.getState());
+
+                // Remove any trailing comma and space
+                String billingAddress = billingAddressBuilder.toString().replaceAll(", $", "");
+
+                // Set the billing address in the view
+                binding.textBillingAddress.setText(billingAddress);
+
+            } else {
+                // If all fields are empty, show default message
+                binding.textBillingAddress.setText("Update your Billing Address by clicking on the Edit button");
+            }
+
+            // Handle name separately
+            String firstName = billing.getFirst_name();
+            String lastName = billing.getLast_name();
+
+            if (!TextUtils.isEmpty(firstName) || !TextUtils.isEmpty(lastName)) {
+                binding.textName.setText((TextUtils.isEmpty(firstName) ? "" : firstName) +
+                        (TextUtils.isEmpty(lastName) ? "" : " " + lastName));
+            } else {
+                binding.textName.setText("No Name Provided");
+            }
+
         } else {
             Log.d("Billing Address", "Billing Address is null");
-            binding.textShippingAddress.setText("Update your Billing Address by clicking on the Edit button");
+            binding.textBillingAddress.setText("Update your Billing Address by clicking on the Edit button");
+            binding.textName.setText("No Name Provided");
         }
     }
 

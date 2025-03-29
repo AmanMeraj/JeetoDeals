@@ -81,6 +81,8 @@ public class AdapterOrders extends RecyclerView.Adapter<AdapterOrders.ViewHolder
             OrderItem item = firstItem.getValue();
             holder.binding.tvTitle.setText(item.getProduct_name());
 
+            Glide.with(context).load(item.getProduct_image()).placeholder(R.drawable.no_image).into(holder.binding.imageCardLogo);
+
             // Assuming OrderItem has a method getQuantity() to get item quantity
             int quantity = item.getQuantity();
             String itemPrice = order.getTotal();

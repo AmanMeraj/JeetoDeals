@@ -13,6 +13,9 @@ public class SharedPref {
     final public String login_status = "login_status";
     final public String cart_count = "cart_count";
     final public String user_status = "user_status";
+    final public String first_name = "first_name";
+    final public String last_name = "last_name";
+    final public String mobile = "mobile";
     final public String user_id = "user_id";
     final public String user_name = "user_name";
     final public String payment_key = "payment_key";
@@ -24,6 +27,9 @@ public class SharedPref {
     final public String user_mobile = "user_mobile";
     final public String admin_mobile = "admin_mobile";
     final public String admin_whatsapp = "admin_whatsapp";
+    final public String facebook = "facebook";
+    final public String instagram = "instagram";
+    final public String linkedin = "linkedin";
     final public String admin_email = "admin_email";
     final public String voucher_rate = "voucher_rate";
     final public String admin_number = "admin_number";

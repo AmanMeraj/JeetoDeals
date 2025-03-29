@@ -4,6 +4,16 @@ import java.io.Serializable;
 
 public class OrderItem implements Serializable {
     private String product_name;
+
+    public String getProduct_image() {
+        return product_image;
+    }
+
+    public void setProduct_image(String product_image) {
+        this.product_image = product_image;
+    }
+
+    private String product_image;
     private int quantity;
 
     // Getters and Setters
