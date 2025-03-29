@@ -112,7 +112,7 @@ public class SplashActivity extends Utility {
     }
 
     private void handleAppUpdate(FragmentsRepository.ApiResponse<AppVersion> response) {
-        if (response == null) {
+        if (response == null || response.data == null) {
             continueNavigation();
             return;
         }
@@ -123,11 +123,7 @@ public class SplashActivity extends Utility {
             boolean forceUpdate = response.data.isForce_update(); // API flag
 
             if (isVersionOlder(currentVersion, latestVersion)) {
-                if (forceUpdate) {
-                    showForceUpdateDialog(); // Mandatory update
-                } else {
-                    continueNavigation(); // Allow user to proceed
-                }
+                showUpdateDialog(forceUpdate);
             } else {
                 continueNavigation(); // No update needed
             }
@@ -136,6 +132,25 @@ public class SplashActivity extends Utility {
             continueNavigation();
         }
     }
+
+    private void showUpdateDialog(boolean forceUpdate) {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this)
+                .setTitle("Update Available")
+                .setMessage("A new version of the app is available. Please update for the best experience.")
+                .setCancelable(false)
+                .setPositiveButton("Update Now", (dialog, which) -> openPlayStore());
+
+        if (!forceUpdate) {
+            // If force update is false, add a skip button
+            builder.setNegativeButton("Skip", (dialog, which) -> continueNavigation());
+        } else {
+            // If force update is true, add an exit option instead of Skip
+            builder.setNegativeButton("Exit", (dialog, which) -> finish());
+        }
+
+        builder.show();
+    }
+
 
     private String getCurrentAppVersion() {
         try {
@@ -151,15 +166,6 @@ public class SplashActivity extends Utility {
         return currentVersion.compareTo(latestVersion) < 0;
     }
 
-    private void showForceUpdateDialog() {
-        new MaterialAlertDialogBuilder(this)
-                .setTitle("Update Required")
-                .setMessage("A new version of the app is available. Please update to continue.")
-                .setCancelable(false)
-                .setPositiveButton("Update Now", (dialog, which) -> openPlayStore())
-                .setNegativeButton("Exit", (dialog, which) -> finish())
-                .show();
-    }
 
     private void openPlayStore() {
         try {

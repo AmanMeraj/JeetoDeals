@@ -37,6 +37,10 @@ public class FragmentsRepository {
     private static final String TAG = FragmentsRepository.class.getSimpleName();
     private final ApiRequest apiRequest;
     private static String nonce; // Global nonce storage
+    private static volatile boolean isHandlingSessionExpiry = false;
+    private static final Object SESSION_LOCK = new Object();
+
+    public static final int ERROR_SESSION_EXPIRED = 403;
 
     public FragmentsRepository() {
         apiRequest = RetrofitRequest.getRetrofitInstance().create(ApiRequest.class);
@@ -274,6 +278,18 @@ public class FragmentsRepository {
                 if (response.isSuccessful() && response.body() != null) {
                     // Success: Return response body
                     liveData.setValue(new ApiResponse<>(response.body(), true, null));
+                } else if (response.code() == ERROR_SESSION_EXPIRED) {
+                    // Session expired, handle appropriately
+                    synchronized (SESSION_LOCK) {
+                        if (!isHandlingSessionExpiry) {
+                            isHandlingSessionExpiry = true;
+                            Log.w(TAG, "Session expired, notifying UI");
+                            liveData.setValue(new ApiResponse<>(null, false, "Session expired"));
+                        } else {
+                            // Don't notify again if already handling
+                            Log.d(TAG, "Already handling session expiry, suppressing duplicate notification");
+                        }
+                    }
                 } else {
                     handleErrorResponse2(response, liveData);
                 }
@@ -617,6 +633,19 @@ public class FragmentsRepository {
             this.data = data;
             this.isSuccess = isSuccess;
             this.message = message;
+        }
+    }
+
+    private <T> void handleSessionExpiry(MutableLiveData<HomeRepository.ApiResponse<T>> liveData) {
+        synchronized (SESSION_LOCK) {
+            if (!isHandlingSessionExpiry) {
+                isHandlingSessionExpiry = true;
+                Log.w(TAG, "Session expired, notifying UI");
+                liveData.setValue(new HomeRepository.ApiResponse<>(null, false, "Session expired", ERROR_SESSION_EXPIRED));
+            } else {
+                // Don't notify again if already handling
+                Log.d(TAG, "Already handling session expiry, suppressing duplicate notification");
+            }
         }
     }
 }

@@ -21,6 +21,7 @@ import com.deals.jeetodeals.SignInScreen.SignInActivity;
 import com.deals.jeetodeals.Utils.SharedPref;
 import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.databinding.FragmentWalletBinding;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,17 +47,23 @@ public class WalletFragment extends Fragment {
         return binding.getRoot();
     }
 
-    public void getBalance(){
-        String auth= "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
+    public void getBalance() {
+        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
         binding.loader.rlLoader.setVisibility(View.VISIBLE);
-        viewModel.getCurrentBalance(auth).observe(getViewLifecycleOwner(),apiResponse->{
+        viewModel.getCurrentBalance(auth).observe(getViewLifecycleOwner(), apiResponse -> {
             binding.loader.rlLoader.setVisibility(View.GONE);
             if (apiResponse != null) {
                 if (apiResponse.isSuccess) {
-                   binding.balance.setText("Voucher "+apiResponse.data);
+                    binding.balance.setText("Voucher " + apiResponse.data);
                 } else {
-                    // Display the error message from the API response
-                    Toast.makeText(requireActivity(), apiResponse.message, Toast.LENGTH_SHORT).show();
+                    // Check if it's a session expired error
+                    if (apiResponse.message.matches("Session expired")) {
+                        // Session expired, handle it
+                        handleSessionExpired();
+                    } else {
+                        // Display the regular error message
+                        Toast.makeText(requireActivity(), apiResponse.message, Toast.LENGTH_SHORT).show();
+                    }
                 }
             } else {
                 // Null response or network failure
@@ -104,6 +111,25 @@ public class WalletFragment extends Fragment {
             TransactionAdapter adapter = new TransactionAdapter(requireActivity(), responsee);
             binding.rcTransaction.setAdapter(adapter);
         }
+    }
+    private void handleSessionExpired() {
+        // Create a Material 3 dialog
+        MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(requireActivity(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog)
+                .setTitle("Session Expired")
+                .setMessage("Your session has expired. Please log in again to continue.")
+                .setCancelable(false)  // Prevent dismissing the dialog by tapping outside
+                .setPositiveButton("Log In", (dialog, which) -> {
+                   pref.clearAll(requireActivity());
+
+                    // Navigate to login screen
+                    Intent intent = new Intent(requireActivity(), SignInActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    requireActivity().finish();
+                });
+
+        // Show the dialog
+        dialogBuilder.show();
     }
 
 }
