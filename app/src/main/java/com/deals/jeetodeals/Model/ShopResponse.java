@@ -233,5 +233,14 @@ public class ShopResponse implements Serializable {
 //    public Object low_stock_remaining;
     public boolean sold_individually;
     public AddToCart add_to_cart;
+
+    public ExtensionsShop getExtensions() {
+        return extensions;
+    }
+
+    public void setExtensions(ExtensionsShop extensions) {
+        this.extensions = extensions;
+    }
+
     public ExtensionsShop extensions;
 }

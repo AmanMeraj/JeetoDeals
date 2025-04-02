@@ -32,9 +32,19 @@ public class AdapterPromotion1 extends RecyclerView.Adapter<AdapterPromotion1.My
     // Constructor
     public AdapterPromotion1(Context context, ArrayList<HomeResponse> itemList, OnItemClickListener listener) {
         this.context = context;
-        this.itemList = itemList;
         this.listener = listener;
+
+        // Filter items where purchasable == true
+        ArrayList<HomeResponse> filteredList = new ArrayList<>();
+        for (HomeResponse item : itemList) {
+            if (item.is_purchasable) {  // Ensure the item is purchasable
+                filteredList.add(item);
+            }
+        }
+
+        this.itemList = filteredList;
     }
+
 
     public interface OnItemClickListener {
         void onAddToCartClicked(HomeResponse item);

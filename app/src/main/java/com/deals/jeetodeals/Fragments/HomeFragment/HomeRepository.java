@@ -131,6 +131,33 @@ public class HomeRepository {
 
         return liveData;
     }
+    public LiveData<ApiResponse<List<ShopResponse>>> shopWithoutCategory(Map<String, String> params, int page, int perPage) {
+        final MutableLiveData<ApiResponse<List<ShopResponse>>> liveData = new MutableLiveData<>();
+
+        // Call the API without providing a category ID
+        Call<List<ShopResponse>> call = apiRequest.getShopWithoutCategory(params, page, perPage);
+
+        call.enqueue(new Callback<List<ShopResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<ShopResponse>> call, @NonNull Response<List<ShopResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.setValue(new ApiResponse<>(response.body(), true, null, 0));
+                } else if (response.code() == ERROR_SESSION_EXPIRED) {
+                    handleSessionExpiry(liveData);
+                } else {
+                    handleErrorResponse(response, liveData);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<List<ShopResponse>> call, @NonNull Throwable t) {
+                handleNetworkFailure(call, t, liveData);
+            }
+        });
+
+        return liveData;
+    }
+
 
     // Centralized session expiry handling
     private <T> void handleSessionExpiry(MutableLiveData<ApiResponse<T>> liveData) {

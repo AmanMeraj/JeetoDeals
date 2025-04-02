@@ -5,7 +5,9 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
+import com.deals.jeetodeals.Fragments.FragmentsRepository;
 import com.deals.jeetodeals.Model.DrawResponse;
 import com.deals.jeetodeals.Model.ShopResponse;
 import com.deals.jeetodeals.Model.Signup;
@@ -100,5 +102,27 @@ public class HomeViewModel extends AndroidViewModel {
 
         // Call the repository with the params map and other parameters
         return repository.shop(params, id, page, perPage);
+    }
+
+
+    public LiveData<HomeRepository.ApiResponse<List<ShopResponse>>> getShopWithoutCategory(
+            String type, int page, int perPage, String order, String orderBy) {
+
+        // Create a map for the filters and sort parameters
+        Map<String, String> params = new HashMap<>();
+        params.put("type", type);
+
+        // Only add sort parameters if they're provided (not null and not empty)
+        if (order != null && !order.isEmpty()) {
+            params.put("order", order);
+        }
+
+        if (orderBy != null && !orderBy.isEmpty()) {
+            params.put("orderby", orderBy);
+        }
+
+        // Call the repository without category ID (pass -1 or another invalid value)
+        // Alternatively, you could add a new repository method that doesn't use category ID
+        return repository.shopWithoutCategory(params, page, perPage);
     }
 }

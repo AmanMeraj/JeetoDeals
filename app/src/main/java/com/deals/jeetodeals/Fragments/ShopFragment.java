@@ -135,6 +135,9 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     }
 
     private void getCategory() {
+        // Show loader while fetching categories
+        binding.loader.rlLoader.setVisibility(View.VISIBLE);
+
         viewModel2.getCategory().observe(getViewLifecycleOwner(), response -> {
             if (response != null && response.isSuccess && response.data != null && !response.data.isEmpty()) {
                 // Filter out unwanted categories
@@ -149,35 +152,30 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
                 }
 
                 if (!filteredCategories.isEmpty()) {
+                    // Add "All Categories" at position 0
+                    Category allCategory = new Category();
+                    allCategory.setId(0);  // Set a unique ID
+                    allCategory.setName(" All ");
+                    filteredCategories.add(0, allCategory);
+
                     categories = (ArrayList<Category>) filteredCategories;
-                    setupCategories((ArrayList<Category>) filteredCategories);
-
-                    // Automatically select and fetch products for the first valid category
-                    Category firstCategory = categories.get(0);
-                    fetchProductsByCategory(firstCategory.getId(), true);
-
-                    // Set UI as selected
-                    binding.rcCategory.post(() -> {
-                        View firstItemView = binding.rcCategory.getLayoutManager().findViewByPosition(0);
-                        if (firstItemView != null) {
-                            ImageView firstImageView = firstItemView.findViewById(R.id.image);
-                            RelativeLayout firstRelativeLayout = firstItemView.findViewById(R.id.rel_bg);
-                            updateCategorySelection(firstRelativeLayout);
-                            animateCategorySelection(firstImageView);
-                        }
-                    });
+                    setupCategories(categories);
                 } else {
+                    binding.loader.rlLoader.setVisibility(View.GONE);
                     handleError("No valid categories found.");
                 }
             } else {
+                binding.loader.rlLoader.setVisibility(View.GONE);
                 handleError(response != null ? response.message : "Unknown error");
             }
         });
     }
 
+
+
     private void setupCategories(ArrayList<Category> data) {
         // Use the parameter data instead of referencing categories field
-        categories = data; // Assuming you have a class member variable called categories
+        categories = data;
 
         // Create adapter with the correct data
         categoryAdapter = new CategoryAdapter(categories, this, requireContext());
@@ -189,77 +187,33 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         // Pre-select the first item and update its visual state
         if (!categories.isEmpty()) {
             // Set the first category as selected in the adapter
-            categoryAdapter.setSelectedPosition(0); // This will handle the visual selection
+            categoryAdapter.setSelectedPosition(0);
 
-            // Set the selected category ID and fetch products
+            // Set the selected category ID
             selectedCategoryId = categories.get(0).getId();
-            fetchProductsByCategory(selectedCategoryId, true);
 
-            // Optional: store the adapter as a class member if you need to access it later
+            // Important: This needs to be called here AFTER setting selectedCategoryId
+            if (categories.get(0).getName().equals(" All ")) {
+                // If "All" category is selected, use the withoutCategory method
+                fetchProductsWithoutCategory();
+            } else {
+                // For other categories, use the existing method
+                fetchProductsByCategory(selectedCategoryId, true);
+            }
+
+            // Schedule UI update for after layout is complete
+            binding.rcCategory.post(() -> {
+                View firstItemView = binding.rcCategory.getLayoutManager().findViewByPosition(0);
+                if (firstItemView != null) {
+                    ImageView firstImageView = firstItemView.findViewById(R.id.image);
+                    RelativeLayout firstRelativeLayout = firstItemView.findViewById(R.id.rel_bg);
+                    updateCategorySelection(firstRelativeLayout);
+                    animateCategorySelection(firstImageView);
+                }
+            });
         }
     }
 
-//    private void fetchProductsByCategory(int id, boolean isInitialLoad) {
-//        if (isLoading || (isLastPage && !isInitialLoad)) {
-//            Log.d(TAG, "Skipping fetch - isLoading: " + isLoading + ", isLastPage: " + isLastPage);
-//            return;
-//        }
-//
-//        isLoading = true;
-//
-//        if (isInitialLoad) {
-//            binding.loader.rlLoader.setVisibility(View.VISIBLE);
-//            showBottomLoader(false);
-//            initialLoadComplete = false;
-//        } else {
-//            showBottomLoader(true);
-//        }
-//
-//        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
-//
-//        if (isInitialLoad) {
-//            currentPage = 1; // Reset to page 1 for initial load
-//            shopItems.clear();
-//            adapter.notifyDataSetChanged();
-//            isLastPage = false;
-//        }
-//
-//        viewModel.getShop( "simple|variable", id, currentPage, perPage).observe(getViewLifecycleOwner(), response -> {
-//            isLoading = false;
-//            binding.loader.rlLoader.setVisibility(View.GONE);
-//            showBottomLoader(false);
-//
-//            if (isInitialLoad) {
-//                initialLoadComplete = true;
-//                Log.d(TAG, "Initial load complete - Setting initialLoadComplete=true");
-//            }
-//
-//            if (response != null && response.isSuccess && response.data != null) {
-//                int itemsReceived = response.data.size();
-//                Log.d(TAG, "Received " + itemsReceived + " items for page " + currentPage);
-//
-//                if (itemsReceived > 0) {
-//                    int startPosition = shopItems.size();
-//                    shopItems.addAll(response.data);
-//                    adapter.notifyItemRangeInserted(startPosition, itemsReceived);
-//
-//                    if (itemsReceived < perPage) {
-//                        isLastPage = true;
-//                        Log.d(TAG, "Setting isLastPage=true - Fewer items than requested");
-//                    } else {
-//                        currentPage++;
-//                        Log.d(TAG, "Incremented currentPage to: " + currentPage);
-//                    }
-//                } else {
-//                    isLastPage = true;
-//                    Log.d(TAG, "Setting isLastPage=true - Empty response");
-//                }
-//            } else {
-//                Log.e(TAG, "API error: " + (response != null ? response.message : "Unknown error"));
-//                handleError(response != null ? response.message : "Unknown error");
-//            }
-//        });
-//    }
     private void setupScrollListener() {
         binding.rcItems.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -289,9 +243,16 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
 
                 if (!isLoading && !isLastPage && initialLoadComplete) {
                     if ((lastVisibleItemPosition + 5) >= totalItemCount) {
-                        Log.d(TAG, "PAGINATION TRIGGERED - Loading page: " + currentPage +
-                                ", selectedCategoryId: " + selectedCategoryId);
-                        fetchProductsByCategory(selectedCategoryId, false);
+                        Log.d(TAG, "PAGINATION TRIGGERED - Loading page: " + currentPage);
+
+                        // Check if we're in "All Categories" mode or a specific category
+                        if (selectedCategoryId == -1 || selectedCategoryId == 0) {
+                            // For "All Categories" mode
+                            loadMoreProductsWithoutCategory();
+                        } else {
+                            // For specific category
+                            fetchProductsByCategory(selectedCategoryId, false);
+                        }
                     }
                 }
             }
@@ -686,12 +647,130 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
             animateCategorySelection(imageView);
         }
 
+        RelativeLayout relativeLayout = null;
+        if (imageView != null && imageView.getParent() instanceof RelativeLayout) {
+            relativeLayout = (RelativeLayout) imageView.getParent();
+            updateCategorySelection(relativeLayout);
+        }
+
         selectedCategoryId = categoryId;
         isLastPage = false;
         isLoading = false;
         initialLoadComplete = false; // Reset this flag too
 
-        fetchProductsByCategory(categoryId, true);
+        if (category.getName().equals(" All ")) {
+            // If "All" category is selected, use the withoutCategory method
+            fetchProductsWithoutCategory();
+        } else {
+            // For other categories, use the existing method
+            fetchProductsByCategory(categoryId, true);
+        }
+    }
+
+    /**
+     * Fetch products without filtering by category
+     */
+    private void fetchProductsWithoutCategory() {
+        if (isLoading) {
+            Log.d(TAG, "Already loading products, skipping fetch");
+            return;
+        }
+
+        // Reset pagination state
+        currentPage = 1;
+        isLastPage = false;
+        isLoading = true;
+        initialLoadComplete = false;
+
+        // Clear existing items
+        shopItems.clear();
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
+
+        // Show loader
+        binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        showBottomLoader(false);
+
+        // Call the ViewModel method for fetching without category
+        viewModel.getShopWithoutCategory("simple", currentPage, perPage,
+                        currentOrder, currentOrderBy)
+                .observe(getViewLifecycleOwner(), response -> {
+                    isLoading = false;
+                    binding.loader.rlLoader.setVisibility(View.GONE);
+                    showBottomLoader(false);
+                    initialLoadComplete = true;
+
+                    if (response != null && response.isSuccess && response.data != null) {
+                        int itemsReceived = response.data.size();
+                        Log.d(TAG, "Received " + itemsReceived + " items for page " + currentPage + " (All Categories)");
+
+                        if (itemsReceived > 0) {
+                            shopItems.addAll(response.data);
+                            adapter.notifyDataSetChanged();
+
+                            if (itemsReceived < perPage) {
+                                isLastPage = true;
+                                Log.d(TAG, "Setting isLastPage=true - Fewer items than requested");
+                            } else {
+                                currentPage++;
+                                Log.d(TAG, "Incremented currentPage to: " + currentPage);
+                            }
+                        } else {
+                            isLastPage = true;
+                            Log.d(TAG, "Setting isLastPage=true - Empty response");
+                        }
+                    } else {
+                        Log.e(TAG, "API error: " + (response != null ? response.message : "Unknown error"));
+                        handleError(response != null ? response.message : "Unknown error");
+                    }
+                });
+    }
+
+    /**
+     * Load more products for infinite scrolling when "All" category is selected
+     */
+    private void loadMoreProductsWithoutCategory() {
+        if (isLoading || isLastPage) {
+            Log.d(TAG, "Skipping fetch - isLoading: " + isLoading + ", isLastPage: " + isLastPage);
+            return;
+        }
+
+        isLoading = true;
+        showBottomLoader(true);
+
+        // Call the ViewModel method for fetching without category
+        viewModel.getShopWithoutCategory("simple", currentPage, perPage,
+                        currentOrder, currentOrderBy)
+                .observe(getViewLifecycleOwner(), response -> {
+                    isLoading = false;
+                    showBottomLoader(false);
+
+                    if (response != null && response.isSuccess && response.data != null) {
+                        int itemsReceived = response.data.size();
+                        Log.d(TAG, "Received " + itemsReceived + " additional items for page " + currentPage + " (All Categories)");
+
+                        if (itemsReceived > 0) {
+                            int startPosition = shopItems.size();
+                            shopItems.addAll(response.data);
+                            adapter.notifyItemRangeInserted(startPosition, itemsReceived);
+
+                            if (itemsReceived < perPage) {
+                                isLastPage = true;
+                                Log.d(TAG, "Setting isLastPage=true - Fewer items than requested");
+                            } else {
+                                currentPage++;
+                                Log.d(TAG, "Incremented currentPage to: " + currentPage);
+                            }
+                        } else {
+                            isLastPage = true;
+                            Log.d(TAG, "Setting isLastPage=true - Empty response");
+                        }
+                    } else {
+                        Log.e(TAG, "API error: " + (response != null ? response.message : "Unknown error"));
+                        handleError(response != null ? response.message : "Unknown error");
+                    }
+                });
     }
 
     private void setupSortDropdown() {
@@ -754,8 +833,14 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         // Show loader
         binding.loader.rlLoader.setVisibility(View.VISIBLE);
 
-        // Fetch products with sort parameters
-        fetchProductsWithSort();
+        // Based on current category selection, fetch appropriate data
+        if (selectedCategoryId == 0) {
+            // For "All" category
+            fetchProductsWithoutCategory();
+        } else {
+            // For specific category
+            fetchProductsWithSort();
+        }
     }
 
     // Modify your fetchProductsByCategory method to use this new method

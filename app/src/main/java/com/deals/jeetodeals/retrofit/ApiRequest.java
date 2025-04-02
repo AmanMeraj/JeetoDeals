@@ -135,6 +135,14 @@ public interface ApiRequest {
     );
 
     @Headers({"Accept: application/json"})
+    @GET("wc/store/v1/products")
+    Call<List<ShopResponse>> getShopWithoutCategory(
+            @QueryMap Map<String, String> params,
+            @Query("page") int page,
+            @Query("per_page") int perPage
+    );
+
+    @Headers({"Accept: application/json"})
     @GET("wc/store/v1/products/{id}")  // Add {id} as a placeholder in the URL
     Call<ShopResponse> getShopWishList(@Path("id") int id); // Pass the ID dynamically
 

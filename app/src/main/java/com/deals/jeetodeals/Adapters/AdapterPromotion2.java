@@ -37,14 +37,24 @@ public class AdapterPromotion2 extends RecyclerView.Adapter<AdapterPromotion2.Pr
     // Constructor
     public AdapterPromotion2(Context context, ArrayList<HomeResponse> itemList, OnItemClickListener2 listener) {
         this.context = context;
-        this.itemList = itemList;
         this.listener = listener;
 
-        // Optional check to ensure context is a FragmentActivity
+        // Ensure context is a FragmentActivity for BottomSheet use
         if (!(context instanceof FragmentActivity)) {
             throw new IllegalArgumentException("Context must be a FragmentActivity.");
         }
+
+        // Filter items where purchasable == true
+        ArrayList<HomeResponse> filteredList = new ArrayList<>();
+        for (HomeResponse item : itemList) {
+            if (item.is_purchasable) {  // Ensure the item is purchasable
+                filteredList.add(item);
+            }
+        }
+
+        this.itemList = filteredList;
     }
+
     public interface OnItemClickListener2 {
         void onAddToCartClicked2(HomeResponse item);
     }
