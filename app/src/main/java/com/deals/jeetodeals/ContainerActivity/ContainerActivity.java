@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.deals.jeetodeals.ChangeAddress.ActivityChangeAddress;
@@ -32,7 +34,9 @@ import com.deals.jeetodeals.MyOrders.ActivityMyOrders;
 import com.deals.jeetodeals.Profile.ActivityProfile;
 import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.SignInScreen.SignInActivity;
+import com.deals.jeetodeals.SignupScreen.SignUpActivity;
 import com.deals.jeetodeals.Utils.Utility;
+import com.deals.jeetodeals.WebViewActivity;
 import com.deals.jeetodeals.Wishlist.ActivityWishlist;
 import com.deals.jeetodeals.databinding.ActivityContainerBinding;
 import com.google.android.material.badge.BadgeDrawable;
@@ -40,6 +44,7 @@ import com.google.android.material.badge.BadgeUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.FirebaseApp;
 
 import java.util.Arrays;
@@ -48,6 +53,12 @@ public class ContainerActivity extends Utility {
 
     ActivityContainerBinding binding;
     private Fragment currentFragment;
+
+    private NavigationBarView.OnItemSelectedListener navigationItemSelectedListener;
+
+
+    private static final String USER_AGREEMENT_URL = "https://www.jeetodeals.com/terms-condition/";
+    private static final String PRIVACY_POLICY_URL = "https://www.jeetodeals.com/privacy-policy-2/";
     private  boolean isLoggedIn;
 
     @Override
@@ -66,11 +77,30 @@ public class ContainerActivity extends Utility {
 
         setupNavigationView();
 
-        // Set the default fragment (HomeFragment) when the activity is created
-        if (savedInstanceState == null) {
-            currentFragment = new HomeFragment();
-            loadFragment(currentFragment);
+        if (getIntent().hasExtra("navigate_to")) {
+            String navigateTo = getIntent().getStringExtra("navigate_to");
+
+            if ("ticket_fragment".equals(navigateTo)) {
+                // Load the ticket fragment
+                currentFragment = new TicketFragment();
+                loadFragment(currentFragment);
+
+                // Update bottom navigation to select the ticket item
+                binding.bottomNavigation.setSelectedItemId(R.id.ticket);
+                updateSelectedIcon(R.id.ticket);
+            }
+        } else {
+            // Set the default fragment (HomeFragment) when the activity is created
+            binding.bottomNavigation.setSelectedItemId(R.id.home);
+            updateSelectedIcon(R.id.home);
+
+            // Initialize with HomeFragment
+            if (currentFragment == null) {
+                currentFragment = new HomeFragment();
+                loadFragment(currentFragment);
+            }
         }
+
         isLoggedIn = pref.getPrefBoolean(ContainerActivity.this, pref.login_status);
 
         if(isLoggedIn){
@@ -78,18 +108,6 @@ public class ContainerActivity extends Utility {
         }else {
             binding.tvUserNsame.setText("");
         }
-        // Handle profile image click
-        binding.profileImage.setOnClickListener(view -> {
-
-            if (isLoggedIn) {
-                // If logged in, open the profile activity
-                Intent intent = new Intent(ContainerActivity.this, ActivityProfile.class);
-                startActivity(intent);
-            } else {
-                // If not logged in, redirect to login activity
-                Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
-                startActivity(intent);}
-        });
 
 
         // Handle back press to navigate to HomeFragment or close the app
@@ -200,19 +218,33 @@ public class ContainerActivity extends Utility {
                 }
             }
 
-            // If not logged in, redirect to login page
-            if (!isLoggedIn) {
-                Toast.makeText(this, "Please log in to access this feature", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(ContainerActivity.this, SignInActivity.class));
-                return true;
-            }
-
             // Handle navigation item clicks
             if (itemId == R.id.nav_signIn) {
                 Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
                 startActivity(intent);
+            } else if (itemId == R.id.nav_jeeto_shop) {
+                // Allow access to JeetoShop fragment without login
+                loadFragment(new ShopFragment());
+                clearBottomNavSelection();
+                binding.bottomNavigation.setItemBackgroundResource(android.R.color.transparent);
+            } else if (itemId == R.id.draw_terms_and_conditions) {
+                // Allow access to Terms and Conditions without login
+                openWebViewActivity(USER_AGREEMENT_URL, "User Agreement");
+            } else if (itemId == R.id.draw_privacy) {
+                // Allow access to Privacy Policy without login
+                openWebViewActivity(PRIVACY_POLICY_URL, "Privacy Policy");
+            } else if (!isLoggedIn) {
+                // For all other protected pages, redirect to login if not logged in
+                Toast.makeText(this, "Please log in to access this feature", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(ContainerActivity.this, SignInActivity.class));
+                return true;
             } else if (itemId == R.id.nav_ticket) {
                 loadFragment(new TicketFragment());
+
+                // Update bottom navigation to select ticket
+                binding.bottomNavigation.setOnItemSelectedListener(null); // Temporarily remove listener
+                binding.bottomNavigation.setSelectedItemId(R.id.ticket);  // Select ticket in bottom nav
+                updateSelectedIcon(R.id.ticket);
             } else if (itemId == R.id.nav_order) {
                 startActivity(new Intent(ContainerActivity.this, ActivityMyOrders.class));
             } else if (itemId == R.id.nav_wishlist) {
@@ -263,7 +295,8 @@ public class ContainerActivity extends Utility {
         // Remove tint to use custom colors for icons
         binding.bottomNavigation.setItemIconTintList(null);
 
-        binding.bottomNavigation.setOnItemSelectedListener(item -> {
+        // Create and store the listener
+        navigationItemSelectedListener = item -> {
             Fragment fragment = null;
 
             // Change icon for selected item
@@ -271,10 +304,20 @@ public class ContainerActivity extends Utility {
 
             if (item.getItemId() == R.id.home) {
                 fragment = new HomeFragment();
-            } else if (item.getItemId() == R.id.shop) {
-                fragment = new ShopFragment();
+                binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
+            } else if (item.getItemId() == R.id.profile) {
+                binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
+                if (isLoggedIn) {
+                    // If logged in, open the profile activity
+                    Intent intent = new Intent(ContainerActivity.this, ActivityProfile.class);
+                    startActivity(intent);
+                } else {
+                    // If not logged in, redirect to login activity
+                    Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
+                    startActivity(intent);} // Keep selection state
             } else if (item.getItemId() == R.id.ticket) {
                 isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
+                binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
 
                 if (!isLoggedIn) {
                     // User is not logged in, redirect to login screen
@@ -286,7 +329,7 @@ public class ContainerActivity extends Utility {
                 }
             } else if (item.getItemId() == R.id.wallet) {
                 isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
-
+                binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
                 if (!isLoggedIn) {
                     // User is not logged in, redirect to login screen
                     Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
@@ -297,7 +340,7 @@ public class ContainerActivity extends Utility {
                 }
             } else if (item.getItemId() == R.id.cart) {
                 isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
-
+                binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
                 if (!isLoggedIn) {
                     // User is not logged in, redirect to login screen
                     Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
@@ -314,7 +357,10 @@ public class ContainerActivity extends Utility {
                 loadFragment(fragment);
             }
             return true;
-        });
+        };
+
+        // Set the listener
+        binding.bottomNavigation.setOnItemSelectedListener(navigationItemSelectedListener);
     }
 
     // Method to update the selected icon
@@ -323,7 +369,7 @@ public class ContainerActivity extends Utility {
 
         // Reset all icons to default
         menu.findItem(R.id.home).setIcon(R.drawable.home_jd);
-        menu.findItem(R.id.shop).setIcon(R.drawable.mascort);
+        menu.findItem(R.id.profile).setIcon(R.drawable.user);
         menu.findItem(R.id.ticket).setIcon(R.drawable.tickect_jd);
         menu.findItem(R.id.wallet).setIcon(R.drawable.wallet_jd);
         menu.findItem(R.id.cart).setIcon(R.drawable.shop_jd);
@@ -337,7 +383,16 @@ public class ContainerActivity extends Utility {
             menu.findItem(R.id.wallet).setIcon(R.drawable.white_wallet);
         } else if (selectedItemId == R.id.cart) {
             menu.findItem(R.id.cart).setIcon(R.drawable.white_cart);
+        }else if (selectedItemId == R.id.profile) {
+            Drawable icon = ContextCompat.getDrawable(this, R.drawable.user);
+            if (icon != null) {
+                icon = icon.mutate(); // Ensure it doesn’t affect other uses of this drawable
+                icon.setTint(ContextCompat.getColor(this, android.R.color.white));
+                menu.findItem(R.id.profile).setIcon(icon);
+            }
         }
+
+
     }
 
     public void sendEmailSingleRecipient(String recipient, String subject, String body) {
@@ -460,6 +515,30 @@ public class ContainerActivity extends Utility {
     protected void onResume() {
         super.onResume();
 
+        if (currentFragment != null) {
+            int selectedItemId = R.id.home; // Default to home
+
+            if (currentFragment instanceof HomeFragment) {
+                selectedItemId = R.id.home;
+            } else if (currentFragment instanceof TicketFragment) {
+                selectedItemId = R.id.ticket;
+            } else if (currentFragment instanceof WalletFragment) {
+                selectedItemId = R.id.wallet;
+            } else if (currentFragment instanceof CartFragment) {
+                selectedItemId = R.id.cart;
+            }
+
+            // Temporarily remove the listener
+            binding.bottomNavigation.setOnItemSelectedListener(null);
+
+            // Update selection
+            binding.bottomNavigation.setSelectedItemId(selectedItemId);
+            updateSelectedIcon(selectedItemId);
+
+            // Reattach the listener using the stored reference
+            binding.bottomNavigation.setOnItemSelectedListener(navigationItemSelectedListener);
+        }
+
         isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
         setupNavigationView();
         setupCartBadge();
@@ -468,6 +547,31 @@ public class ContainerActivity extends Utility {
         }else {
             binding.tvUserNsame.setText("");
         }
+    }
+
+    private void openWebViewActivity(String url, String title) {
+        Intent intent = new Intent(ContainerActivity.this, WebViewActivity.class);
+        intent.putExtra("url", url);
+        intent.putExtra("title", title);
+        startActivity(intent);
+    }
+    private void clearBottomNavSelection() {
+        // Temporarily remove the listener to prevent callback
+        binding.bottomNavigation.setOnItemSelectedListener(null);
+
+        // Reset all icons to default
+        Menu menu = binding.bottomNavigation.getMenu();
+        menu.findItem(R.id.home).setIcon(R.drawable.home_jd);
+        menu.findItem(R.id.profile).setIcon(R.drawable.user);
+        menu.findItem(R.id.ticket).setIcon(R.drawable.tickect_jd);
+        menu.findItem(R.id.wallet).setIcon(R.drawable.wallet_jd);
+        menu.findItem(R.id.cart).setIcon(R.drawable.shop_jd);
+
+        // Clear current selection
+        binding.bottomNavigation.setSelectedItemId(0); // 0 is an invalid ID that won't match any menu item
+
+        // Reattach the listener
+        binding.bottomNavigation.setOnItemSelectedListener(navigationItemSelectedListener);
     }
 
 

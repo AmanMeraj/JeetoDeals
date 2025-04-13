@@ -482,7 +482,6 @@
                     app:useMaterialThemeColors="false"
                     android:shadowColor="@color/black"
                     android:id="@+id/checkbox"
-                    app:checkedState="unchecked"
                     android:textColorHint="@color/orange"
                     android:layout_marginStart="-7dp"
                     android:textSize="13sp"

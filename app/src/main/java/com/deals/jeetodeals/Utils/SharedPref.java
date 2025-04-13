@@ -16,6 +16,7 @@ public class SharedPref {
     final public String first_name = "first_name";
     final public String last_name = "last_name";
     final public String mobile = "mobile";
+    final public String last_selected_item = "last_selected_item";
     final public String user_id = "user_id";
     final public String user_name = "user_name";
     final public String payment_key = "payment_key";

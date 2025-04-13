@@ -13,6 +13,10 @@
         android:id="@+id/nav_ticket"
         android:icon="@drawable/ticket_jd"/>
     <item
+        android:title="Jeeto Shop"
+        android:id="@+id/nav_jeeto_shop"
+        android:icon="@drawable/mascort"/>
+    <item
         android:title="@string/order"
         android:id="@+id/nav_order"
         android:icon="@drawable/order_jd"/>
@@ -55,6 +59,16 @@
             android:title=""
             app:actionLayout="@layout/nav_social_media_layout"
             android:enabled="false"/>
+    </group>
+    <group android:id="@+id/nav_terms_and_conditions">
+        <item android:id="@+id/draw_terms_and_conditions"
+            android:title="Draw Terms and Conditions">
+        </item>
+
+        <item android:id="@+id/draw_privacy"
+            android:title="Privacy policy">
+        </item>
+
     </group>
     <group
         android:id="@+id/bottom_group"

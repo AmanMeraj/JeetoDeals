@@ -20,6 +20,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.deals.jeetodeals.ContainerActivity.ContainerActivity;
 import com.deals.jeetodeals.Fragments.FragmentsRepository;
 import com.deals.jeetodeals.Fragments.FragmentsViewModel;
 import com.deals.jeetodeals.Model.BillingAddress;
@@ -622,9 +623,16 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
     @Override
     public void onPaymentSuccess(String razorpayPaymentId, PaymentData paymentData) {
         Toast.makeText(this, "Payment Successful", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(ActivityCheckout.this, ActivityMyOrders.class);
-                        startActivity(intent);
-                        finish();
+
+        // Create intent to return to ContainerActivity
+        Intent intent = new Intent(ActivityCheckout.this, ContainerActivity.class);
+
+        // Add extra to indicate we should show the TicketFragment
+        intent.putExtra("navigate_to", "ticket_fragment");
+
+        // Start activity and finish current one
+        startActivity(intent);
+        finish();
     }
 
     @Override

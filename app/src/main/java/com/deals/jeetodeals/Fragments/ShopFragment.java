@@ -793,12 +793,12 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         sortDropdown.setAdapter(sortAdapter);
 
         // Default selection (Default Sorting - position 4)
-        SortOption defaultOption = sortAdapter.getItem(4);
+        SortOption defaultOption = sortAdapter.getItem(0);
         if (defaultOption != null) {
             sortDropdown.setText(defaultOption.getDisplayName(), false);
 
             // Also set the initial sort parameters
-            SortOptionsAdapter.Pair<String, String> params = sortAdapter.getSelectedOptionParams(4);
+            SortOptionsAdapter.Pair<String, String> params = sortAdapter.getSelectedOptionParams(0);
             currentOrder = params.getFirst();
             currentOrderBy = params.getSecond();
         }

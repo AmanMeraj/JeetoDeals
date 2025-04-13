@@ -64,4 +64,5 @@
     <string name="last_name">Last Name</string>
     <string name="minus_button">Minus button</string>
     <string name="dream_shop_win"><![CDATA[Dream Shop & Win!]]></string>
+    <string name="profile">Profile</string>
 </resources>

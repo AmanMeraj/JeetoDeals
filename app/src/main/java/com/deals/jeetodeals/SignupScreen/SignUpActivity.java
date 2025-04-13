@@ -10,6 +10,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -34,6 +36,7 @@ import java.util.Locale;
 public class SignUpActivity extends Utility {
     ActivitySignUpBinding binding;
     SignupViewModel viewModel;
+    private ActivityResultLauncher<Intent> otpActivityLauncher;
 
     String OTP = "sms"; // Default OTP method
 
@@ -55,6 +58,7 @@ public class SignUpActivity extends Utility {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        initActivityResultLauncher();
 
         // Set up clickable terms and privacy policy text
         setupClickableLinks();
@@ -110,6 +114,79 @@ public class SignUpActivity extends Utility {
 
         // Hide loader initially
         binding.loader.rlLoader.setVisibility(View.GONE);
+        checkForPrefillData();
+    }
+
+    private void initActivityResultLauncher() {
+        otpActivityLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        // We got data back from OTP activity
+                        // The data will be automatically loaded in checkForPrefillData()
+                        // which is called in onCreate
+                    }
+                }
+        );
+    }
+
+    /**
+     * Check if we have data to prefill from intent extras
+     */
+    private void checkForPrefillData() {
+        Intent intent = getIntent();
+        if (intent != null) {
+            // Retrieve all the data fields
+            String firstName = intent.getStringExtra("firstName");
+            String lastName = intent.getStringExtra("lastName");
+            String email = intent.getStringExtra("email");
+            String dob = intent.getStringExtra("dob");
+            String password = intent.getStringExtra("password");
+            String phone = intent.getStringExtra("phone");
+            String gender = intent.getStringExtra("gender");
+            String otpMethod = intent.getStringExtra("otpMethod");
+
+            // Prefill the form if data exists
+            if (firstName != null) binding.edtFirstName.setText(firstName);
+            if (lastName != null) binding.edtLastName.setText(lastName);
+            if (email != null) binding.edtEmail.setText(email);
+            if (dob != null) binding.edtDob.setText(dob);
+            if (password != null) binding.edtPass.setText(password);
+            if (phone != null) binding.edtPhone.setText(phone);
+
+            // Set gender selection
+            if (gender != null) {
+                if (gender.equals("Male")) {
+                    binding.male.setChecked(true);
+                    binding.female.setChecked(false);
+                } else if (gender.equals("Female")) {
+                    binding.female.setChecked(true);
+                    binding.male.setChecked(false);
+                }
+            }
+
+            // Set OTP method
+            if (otpMethod != null) {
+                OTP = otpMethod;
+                switch (otpMethod) {
+                    case "email":
+                        binding.mailRelative.setBackgroundResource(R.drawable.selected_otp_bg);
+                        binding.smsRelative.setBackgroundResource(R.drawable.otp_bg);
+                        binding.whatsappRelative.setBackgroundResource(R.drawable.otp_bg);
+                        break;
+                    case "sms":
+                        binding.mailRelative.setBackgroundResource(R.drawable.otp_bg);
+                        binding.smsRelative.setBackgroundResource(R.drawable.selected_otp_bg);
+                        binding.whatsappRelative.setBackgroundResource(R.drawable.otp_bg);
+                        break;
+                    case "whatsapp":
+                        binding.mailRelative.setBackgroundResource(R.drawable.otp_bg);
+                        binding.smsRelative.setBackgroundResource(R.drawable.otp_bg);
+                        binding.whatsappRelative.setBackgroundResource(R.drawable.selected_otp_bg);
+                        break;
+                }
+            }
+        }
     }
 
     /**
@@ -285,6 +362,13 @@ public class SignUpActivity extends Utility {
                     showToast(message);
                     Intent intent = new Intent(SignUpActivity.this, ActivityOTP.class);
                     intent.putExtra("email", signup.getEmail());
+                    intent.putExtra("firstName", firstName);
+                    intent.putExtra("lastName", lastName);
+                    intent.putExtra("dob", dob);
+                    intent.putExtra("password", password);
+                    intent.putExtra("phone", phone);
+                    intent.putExtra("gender", gender);
+                    intent.putExtra("otpMethod", otpMethod);
                     startActivity(intent);
                     finish();
                 } else {
