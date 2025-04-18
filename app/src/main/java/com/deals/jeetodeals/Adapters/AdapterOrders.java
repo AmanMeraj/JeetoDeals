@@ -1,5 +1,6 @@
 package com.deals.jeetodeals.Adapters;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.deals.jeetodeals.Model.OrderItem;
 import com.deals.jeetodeals.Model.Orders;
+import com.deals.jeetodeals.MyOrders.ActivityMyOrderDetails;
 import com.deals.jeetodeals.MyOrders.MyOrdersResponse;
 import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.Utils.SharedPref;
@@ -49,17 +51,20 @@ public class AdapterOrders extends RecyclerView.Adapter<AdapterOrders.ViewHolder
         MyOrdersResponse order = itemList.get(position);
 
         // Format date
+        String formattedDate = "";
         try {
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault());
 
             Date date = inputFormat.parse(order.getDate_created());
             if (date != null) {
-                holder.binding.tvDate.setText(outputFormat.format(date));
+                formattedDate = outputFormat.format(date);
+                holder.binding.tvDate.setText(formattedDate);
             }
         } catch (ParseException e) {
             e.printStackTrace();
-            holder.binding.tvDate.setText(order.getDate_created());
+            formattedDate = order.getDate_created();
+            holder.binding.tvDate.setText(formattedDate);
         }
 
         // Set order status
@@ -87,9 +92,20 @@ public class AdapterOrders extends RecyclerView.Adapter<AdapterOrders.ViewHolder
             int quantity = item.getQuantity();
             String itemPrice = order.getTotal();
             holder.binding.tvVoucher.setText("Vouchers: " + order.getTotal() + " for " + item.getQuantity() + " Items");
+        }
+
+        // Store the final formatted date for the onClick handler
+        final String finalFormattedDate = formattedDate;
+
+        holder.binding.arrowImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, ActivityMyOrderDetails.class);
+                intent.putExtra("order_id", order.getOrder_id());
+                intent.putExtra("formatted_date", finalFormattedDate);
+                context.startActivity(intent);
             }
-
-
+        });
     }
 
     private void setStatusColor(TextView textView, String status) {

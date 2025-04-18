@@ -18,9 +18,11 @@ import com.deals.jeetodeals.Model.DrawResponse;
 import com.deals.jeetodeals.Model.FcmResponse;
 import com.deals.jeetodeals.Model.GetCheckout;
 import com.deals.jeetodeals.Model.Login;
+import com.deals.jeetodeals.Model.OrderDetailsResponse;
 import com.deals.jeetodeals.Model.ShopResponse;
 import com.deals.jeetodeals.Model.Signup;
 import com.deals.jeetodeals.Model.TicketResponse;
+import com.deals.jeetodeals.Model.TrackingResponse;
 import com.deals.jeetodeals.Model.UpdateAddress;
 import com.deals.jeetodeals.Model.UpdateAddressResponse;
 import com.deals.jeetodeals.Model.User;
@@ -90,6 +92,13 @@ public interface ApiRequest {
     Call<WishlistDeleteResponse> deleteWishlist(
             @Header("Authorization") String authorization,
             @Body Wishlist wishlist
+    );
+
+    @Headers({"Accept: application/json"})
+    @HTTP(method = "DELETE", path = "wc/store/v1/cart/items", hasBody = false)
+    Call<Void> deleteItemInCart(
+            @Header("Authorization") String authorization,
+            @Header("nonce") String nonce
     );
 
     @Headers({"Accept: application/json"})
@@ -180,6 +189,20 @@ public interface ApiRequest {
     @GET("custom/v1/address")
     Call<ChangeAddressResponse> GetAddress(
             @Header("Authorization") String authorization
+    );
+
+    @Headers({"Accept: application/json"})
+    @GET("wc/store/v1/order/{order-id}")
+    Call<OrderDetailsResponse> getOrderDetails(
+            @Header("Authorization") String authorization,
+            @Path("order-id") int orderId
+    );
+
+    @Headers({"Accept: application/json"})
+    @GET("custom-api/v1/order-notes/{order-id}")
+    Call<TrackingResponse> getTracking(
+            @Header("Authorization") String authorization,
+            @Path("order-id") int orderId
     );
     @Headers({"Accept: application/json"})
     @GET("wc/store/v1/checkout")

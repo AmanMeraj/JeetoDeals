@@ -30,8 +30,8 @@ import com.deals.jeetodeals.Fragments.HomeFragment.HomeFragment;
 import com.deals.jeetodeals.Fragments.ShopFragment;
 import com.deals.jeetodeals.Fragments.TicketFragment;
 import com.deals.jeetodeals.Fragments.WalletFragment;
-import com.deals.jeetodeals.MyOrders.ActivityMyOrders;
-import com.deals.jeetodeals.Profile.ActivityProfile;
+import com.deals.jeetodeals.MyOrders.FragmentMyOrders;
+import com.deals.jeetodeals.Profile.FragmentProfile;
 import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.SignInScreen.SignInActivity;
 import com.deals.jeetodeals.SignupScreen.SignUpActivity;
@@ -57,8 +57,9 @@ public class ContainerActivity extends Utility {
     private NavigationBarView.OnItemSelectedListener navigationItemSelectedListener;
 
 
-    private static final String USER_AGREEMENT_URL = "https://www.jeetodeals.com/terms-condition/";
-    private static final String PRIVACY_POLICY_URL = "https://www.jeetodeals.com/privacy-policy-2/";
+    private static final String USER_AGREEMENT_URL = "https://www.jeetodeals.com/draw-terms-conditions/";
+    private static final String PRIVACY_POLICY_URL = "https://www.jeetodeals.com/privacy-policy-3/";
+    private static final String HOW_IT_WORKS_URL = "https://www.jeetodeals.com/how-it-works-mobile/";
     private  boolean isLoggedIn;
 
     @Override
@@ -233,6 +234,9 @@ public class ContainerActivity extends Utility {
             } else if (itemId == R.id.draw_privacy) {
                 // Allow access to Privacy Policy without login
                 openWebViewActivity(PRIVACY_POLICY_URL, "Privacy Policy");
+            }else if (itemId == R.id.how_it_works) {
+                // Allow access to Privacy Policy without login
+                openWebViewActivity(HOW_IT_WORKS_URL, "How it Works");
             } else if (!isLoggedIn) {
                 // For all other protected pages, redirect to login if not logged in
                 Toast.makeText(this, "Please log in to access this feature", Toast.LENGTH_SHORT).show();
@@ -241,18 +245,46 @@ public class ContainerActivity extends Utility {
             } else if (itemId == R.id.nav_ticket) {
                 loadFragment(new TicketFragment());
 
-                // Update bottom navigation to select ticket
+
+                // Then properly set the new selection with full styling
                 binding.bottomNavigation.setOnItemSelectedListener(null); // Temporarily remove listener
                 binding.bottomNavigation.setSelectedItemId(R.id.ticket);  // Select ticket in bottom nav
                 updateSelectedIcon(R.id.ticket);
+                binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
+                binding.bottomNavigation.setOnItemSelectedListener(navigationItemSelectedListener);
+
+                currentFragment = new TicketFragment();
             } else if (itemId == R.id.nav_order) {
-                startActivity(new Intent(ContainerActivity.this, ActivityMyOrders.class));
+                loadFragment(new FragmentMyOrders());
+
+
+                // Then properly set the new selection with full styling
+                binding.bottomNavigation.setOnItemSelectedListener(null); // Temporarily remove listener
+                binding.bottomNavigation.setSelectedItemId(R.id.order);  // Select order in bottom nav
+                updateSelectedIcon(R.id.order);
+                binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
+                binding.bottomNavigation.setOnItemSelectedListener(navigationItemSelectedListener);
+
+                currentFragment = new FragmentMyOrders();
+            } else if (itemId == R.id.nav_wallet) {
+                loadFragment(new WalletFragment());
+
+                // Then clear all bottom navigation selection styling
+                clearBottomNavSelection();
+
+                // Store current fragment reference
+                currentFragment = new WalletFragment();
             } else if (itemId == R.id.nav_wishlist) {
                 startActivity(new Intent(ContainerActivity.this, ActivityWishlist.class));
             } else if (itemId == R.id.nav_address) {
                 startActivity(new Intent(ContainerActivity.this, ActivityChangeAddress.class));
             } else if (itemId == R.id.nav_details) {
-                startActivity(new Intent(ContainerActivity.this, ActivityProfile.class));
+                binding.bottomNavigation.setOnItemSelectedListener(null); // Temporarily remove listener
+                binding.bottomNavigation.setSelectedItemId(R.id.profile);  // Select ticket in bottom nav
+                updateSelectedIcon(R.id.profile);
+                binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
+                binding.bottomNavigation.setOnItemSelectedListener(navigationItemSelectedListener);
+                loadFragment(new FragmentProfile());
             } else if (itemId == R.id.nav_contact) {
                 String adminNumber = pref.getPrefString(this, pref.admin_whatsapp);
                 openWhatsApp(adminNumber, "Hello");
@@ -309,8 +341,12 @@ public class ContainerActivity extends Utility {
                 binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
                 if (isLoggedIn) {
                     // If logged in, open the profile activity
-                    Intent intent = new Intent(ContainerActivity.this, ActivityProfile.class);
-                    startActivity(intent);
+                    binding.bottomNavigation.setOnItemSelectedListener(null); // Temporarily remove listener
+                    binding.bottomNavigation.setSelectedItemId(R.id.profile);  // Select ticket in bottom nav
+                    updateSelectedIcon(R.id.profile);
+                    binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
+                    binding.bottomNavigation.setOnItemSelectedListener(navigationItemSelectedListener);
+                    loadFragment(new FragmentProfile());
                 } else {
                     // If not logged in, redirect to login activity
                     Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
@@ -327,7 +363,7 @@ public class ContainerActivity extends Utility {
                 } else {
                     fragment = new TicketFragment();
                 }
-            } else if (item.getItemId() == R.id.wallet) {
+            } else if (item.getItemId() == R.id.order) {
                 isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
                 binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
                 if (!isLoggedIn) {
@@ -336,7 +372,7 @@ public class ContainerActivity extends Utility {
                     startActivity(intent);
                     return false; // Don't select this item if redirecting
                 } else {
-                    fragment = new WalletFragment();
+                    fragment = new FragmentMyOrders();
                 }
             } else if (item.getItemId() == R.id.cart) {
                 isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
@@ -371,28 +407,32 @@ public class ContainerActivity extends Utility {
         menu.findItem(R.id.home).setIcon(R.drawable.home_jd);
         menu.findItem(R.id.profile).setIcon(R.drawable.user);
         menu.findItem(R.id.ticket).setIcon(R.drawable.tickect_jd);
-        menu.findItem(R.id.wallet).setIcon(R.drawable.wallet_jd);
+        menu.findItem(R.id.order).setIcon(R.drawable.clipboard_black);
         menu.findItem(R.id.cart).setIcon(R.drawable.shop_jd);
+
+        // Restore color state list for text (add this)
+        restoreBottomNavTextColors();
+
+        // Restore icon tint list (add this)
+        binding.bottomNavigation.setItemIconTintList(null);
 
         // Set selected icon
         if (selectedItemId == R.id.home) {
             menu.findItem(R.id.home).setIcon(R.drawable.white_home);
-        }  else if (selectedItemId == R.id.ticket) {
+        } else if (selectedItemId == R.id.ticket) {
             menu.findItem(R.id.ticket).setIcon(R.drawable.white_ticket);
-        } else if (selectedItemId == R.id.wallet) {
-            menu.findItem(R.id.wallet).setIcon(R.drawable.white_wallet);
+        } else if (selectedItemId == R.id.order) {
+            menu.findItem(R.id.order).setIcon(R.drawable.clipboard);
         } else if (selectedItemId == R.id.cart) {
             menu.findItem(R.id.cart).setIcon(R.drawable.white_cart);
-        }else if (selectedItemId == R.id.profile) {
+        } else if (selectedItemId == R.id.profile) {
             Drawable icon = ContextCompat.getDrawable(this, R.drawable.user);
             if (icon != null) {
-                icon = icon.mutate(); // Ensure it doesn’t affect other uses of this drawable
+                icon = icon.mutate(); // Ensure it doesn't affect other uses of this drawable
                 icon.setTint(ContextCompat.getColor(this, android.R.color.white));
                 menu.findItem(R.id.profile).setIcon(icon);
             }
         }
-
-
     }
 
     public void sendEmailSingleRecipient(String recipient, String subject, String body) {
@@ -564,14 +604,50 @@ public class ContainerActivity extends Utility {
         menu.findItem(R.id.home).setIcon(R.drawable.home_jd);
         menu.findItem(R.id.profile).setIcon(R.drawable.user);
         menu.findItem(R.id.ticket).setIcon(R.drawable.tickect_jd);
-        menu.findItem(R.id.wallet).setIcon(R.drawable.wallet_jd);
+        menu.findItem(R.id.order).setIcon(R.drawable.clipboard_black);
         menu.findItem(R.id.cart).setIcon(R.drawable.shop_jd);
 
-        // Clear current selection
-        binding.bottomNavigation.setSelectedItemId(0); // 0 is an invalid ID that won't match any menu item
+        // Reset the background to transparent
+        binding.bottomNavigation.setItemBackgroundResource(android.R.color.transparent);
+
+        // Set all text to black
+        ColorStateList blackColor = ColorStateList.valueOf(Color.BLACK);
+        binding.bottomNavigation.setItemTextColor(blackColor);
+        binding.bottomNavigation.setItemIconTintList(blackColor);
+
+        // Clear current selection - by setting an invalid ID
+        binding.bottomNavigation.setSelectedItemId(0); // 0 is an invalid ID that won't be recognized
+
+        // Remove any badge if necessary
+        for (int i = 0; i < binding.bottomNavigation.getMenu().size(); i++) {
+            int itemId = binding.bottomNavigation.getMenu().getItem(i).getItemId();
+            BadgeDrawable badge = binding.bottomNavigation.getBadge(itemId);
+            if (badge != null) {
+                badge.setVisible(false);
+            }
+        }
+        updateCartBadge(getCartItemCount());
+
+        // Store that no fragment is currently selected in the bottom nav
+        currentFragment = new WalletFragment(); // This will help with back navigation logic
 
         // Reattach the listener
         binding.bottomNavigation.setOnItemSelectedListener(navigationItemSelectedListener);
+    }
+    private void restoreBottomNavTextColors() {
+        // Create a ColorStateList for normal behavior where selected item is white
+        int[][] states = new int[][] {
+                new int[] {android.R.attr.state_checked},  // checked state
+                new int[] {-android.R.attr.state_checked}  // unchecked state
+        };
+        int[] colors = new int[] {
+                Color.WHITE,  // selected item is white
+                Color.BLACK   // unselected items are black
+        };
+        ColorStateList colorStateList = new ColorStateList(states, colors);
+
+        // Restore normal text color behavior
+        binding.bottomNavigation.setItemTextColor(colorStateList);
     }
 
 

@@ -11,7 +11,10 @@ import com.deals.jeetodeals.Model.Transaction;
 import com.deals.jeetodeals.Model.WalletResponse;
 import com.deals.jeetodeals.databinding.RowTransactionBinding;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder> {
     private final Context context;
@@ -48,8 +51,24 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         }
 
         holder.binding.status.setText(transaction.getType());
-//        holder.binding.imageCard.setBackgroundResource(transaction.getImageBackground());
-//        holder.binding.imageCardLogo.setImageResource(transaction.getImageResource());
+        // Format date string to "28 Mar, 2025"
+        String apiDate = transaction.getDate();  // e.g., "2025-04-16 15:34:06"
+
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd MMM, yyyy", Locale.getDefault());
+
+            // Parse the date from the API
+            Date date = inputFormat.parse(apiDate);
+
+            // Format the parsed date to your required format
+            if (date != null) {
+                String formattedDate = outputFormat.format(date);
+                holder.binding.date.setText(formattedDate);  // Assuming you have a TextView with this ID to display the date
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

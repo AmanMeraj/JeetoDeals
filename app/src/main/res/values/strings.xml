@@ -34,7 +34,7 @@
     <string name="home">Home</string>
     <string name="shop">Shop</string>
     <string name="cart">Cart</string>
-    <string name="wallet">Wallet</string>
+    <string name="wallet">My Wallet</string>
     <string name="my_ticket">My Ticket</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -48,7 +48,7 @@
     <string name="this_will_be_how_your_name_will_be_displayed_in_the_account_section_and_in_reviews">This will be how your name will be displayed in the account section and in reviews</string>
     <string name="address">Net Guru Building, 5th Floor, E2-4 GP Block, Sector V, Salt Lake Kolkata, Kolkata 700091 West Bengal</string>
     <string name="login_register">Login/Register</string>
-    <string name="order">Order</string>
+    <string name="order">My Order</string>
     <string name="my_wishlist">My Wishlist</string>
     <string name="address2">Address</string>
     <string name="account_details">Account Details</string>

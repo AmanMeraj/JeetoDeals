@@ -519,7 +519,7 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
 
         new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.MaterialAlertDialog_Material3)
                 .setTitle("Session Expired")
-                .setMessage("Your session has expired. Please log in again.")
+                .setMessage("Your login has expired. Please log in again.")
                 .setCancelable(false)
                 .setPositiveButton("OK", (dialog, which) -> {
                     pref.setPrefBoolean(requireActivity(), pref.login_status, false);

@@ -18,8 +18,10 @@ import com.deals.jeetodeals.Model.Category;
 import com.deals.jeetodeals.Model.Checkout;
 import com.deals.jeetodeals.Model.FcmResponse;
 import com.deals.jeetodeals.Model.GetCheckout;
+import com.deals.jeetodeals.Model.OrderDetailsResponse;
 import com.deals.jeetodeals.Model.ShopResponse;
 import com.deals.jeetodeals.Model.TicketResponse;
+import com.deals.jeetodeals.Model.TrackingResponse;
 import com.deals.jeetodeals.Model.User;
 import com.deals.jeetodeals.Model.WalletResponse;
 import com.deals.jeetodeals.Model.WishlistCreationResponse;
@@ -39,8 +41,12 @@ public class FragmentsViewModel extends AndroidViewModel {
     LiveData<FragmentsRepository.ApiResponse<ArrayList<Category>>>responseLiveDataCategory;
      LiveData<FragmentsRepository.ApiResponse<TicketResponse>> responseLiveDataTickets;
      LiveData<FragmentsRepository.ApiResponse<BannerResponse>> responseLiveDataBanner;
+     LiveData<FragmentsRepository.ApiResponse<OrderDetailsResponse>> responseLiveDataOderDeatils;
+     LiveData<FragmentsRepository.ApiResponse<TrackingResponse>> responseLiveDataTrackingDetails;
      LiveData<FragmentsRepository.ApiResponse<FcmResponse>> responseLiveDataFcm;
-     LiveData<FragmentsRepository.ApiResponse<WishlistCreationResponse>> responseLiveDataCreateWishList;
+    private LiveData<FragmentsRepository.ApiResponse<Void>> responseLiveDataDeleteCart;
+
+    LiveData<FragmentsRepository.ApiResponse<WishlistCreationResponse>> responseLiveDataCreateWishList;
      LiveData<FragmentsRepository.ApiResponse<CheckoutResponse>> responseLiveDataCheckout;
     private LiveData<FragmentsRepository.ApiResponse<ArrayList<ShopResponse>>> responseLiveDataShop;
     public FragmentsViewModel(@NonNull Application application) {
@@ -52,6 +58,10 @@ public class FragmentsViewModel extends AndroidViewModel {
         responseLiveData=repository.cart(auth);
         return responseLiveData;
     }
+    public LiveData<FragmentsRepository.ApiResponse<Void>> deleteItemInCart(String auth, String nonce) {
+        responseLiveDataDeleteCart = repository.deleteCart(auth, nonce);
+        return responseLiveDataDeleteCart;
+    }
     public LiveData<FragmentsRepository.ApiResponse<AppVersion>> getAppVersion(){
         responseLiveDataAppVersion=repository.version();
         return responseLiveDataAppVersion;
@@ -59,6 +69,15 @@ public class FragmentsViewModel extends AndroidViewModel {
     public LiveData<FragmentsRepository.ApiResponse<GetCheckout>> getCheckout(String auth,String nonce){
         responseLiveDataGetCheckout=repository.checkout(auth,nonce);
         return responseLiveDataGetCheckout;
+    }
+
+    public LiveData<FragmentsRepository.ApiResponse<OrderDetailsResponse>> getOrderDetails(String auth, int orderId){
+        responseLiveDataOderDeatils=repository.orderDetails(auth,orderId);
+        return responseLiveDataOderDeatils;
+    }
+    public LiveData<FragmentsRepository.ApiResponse<TrackingResponse>> getTrackingDetails(String auth, int orderId){
+        responseLiveDataTrackingDetails=repository.trackingDetails(auth,orderId);
+        return responseLiveDataTrackingDetails;
     }
     public LiveData<FragmentsRepository.ApiResponse<CartResponse>> AddToCart(String auth, String nonce, AddItems addItems){
         responseLiveDataAdd=repository.addItem(auth,nonce,addItems);

@@ -164,8 +164,7 @@ public class HomeRepository {
         synchronized (SESSION_LOCK) {
             if (!isHandlingSessionExpiry) {
                 isHandlingSessionExpiry = true;
-                Log.w(TAG, "Session expired, notifying UI");
-                liveData.setValue(new ApiResponse<>(null, false, "Session expired", ERROR_SESSION_EXPIRED));
+                liveData.setValue(new ApiResponse<>(null, false, "Your Login has expired, please login again.", ERROR_SESSION_EXPIRED));
             } else {
                 // Don't notify again if already handling
                 Log.d(TAG, "Already handling session expiry, suppressing duplicate notification");

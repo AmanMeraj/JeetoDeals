@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:layout_marginVertical="4dp"
+    android:padding="4dp">
+
+    <View
+        android:id="@+id/verticalIndicator"
+        android:layout_width="4dp"
+        android:layout_height="36dp"
+        android:background="#00A65A"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_toEndOf="@id/verticalIndicator"
+        android:layout_marginStart="8dp"
+        android:layout_centerVertical="true">
+
+        <TextView
+            android:fontFamily="@font/inter_bold"
+            android:id="@+id/tvOrderId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="#1746910144815"
+            android:textColor="#333333"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:fontFamily="@font/inter"
+            android:id="@+id/tvOrderDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date : 31 Mar,2025"
+            android:textColor="#666666"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnView"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:text="View"
+        android:textColor="#FFFFFF"
+        android:textAllCaps="false"
+        android:background="@drawable/rounded_orange_button"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true" />
+
+</RelativeLayout>

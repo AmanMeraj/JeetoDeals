@@ -11,6 +11,8 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -18,23 +20,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.deals.jeetodeals.ContainerActivity.ContainerActivity;
 import com.deals.jeetodeals.Fragments.FragmentsRepository;
 import com.deals.jeetodeals.Fragments.FragmentsViewModel;
-import com.deals.jeetodeals.Model.BillingAddress;
-import com.deals.jeetodeals.Model.BillingAddressCheckout;
 import com.deals.jeetodeals.Model.CartResponse;
 import com.deals.jeetodeals.Model.Checkout;
 import com.deals.jeetodeals.Model.GetCheckout;
-import com.deals.jeetodeals.Model.ShippingAddress;
-import com.deals.jeetodeals.Model.ShippingAddressCheckout;
-import com.deals.jeetodeals.MyOrders.ActivityMyOrders;
+import com.deals.jeetodeals.MyOrders.FragmentMyOrders;
 import com.deals.jeetodeals.R;
 import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.databinding.ActivityCheckoutBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.razorpay.PaymentData;
 import com.razorpay.PaymentResultWithDataListener;
@@ -42,6 +44,7 @@ import com.razorpay.PaymentResultWithDataListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -86,8 +89,49 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
         } else {
             Toast.makeText(this, "No Internet Connection!", Toast.LENGTH_SHORT).show();
         }
-    }
 
+        TextInputLayout billingInputLayout = findViewById(R.id.billing_address_Input_text);
+        RelativeLayout billingContentLayout = findViewById(R.id.billing_address_rel);
+
+// Create a custom click listener for the entire field
+        View.OnClickListener billingToggleListener = v -> {
+            // Toggle visibility of content
+            boolean isExpanding = billingContentLayout.getVisibility() != View.VISIBLE;
+            billingContentLayout.setVisibility(isExpanding ? View.VISIBLE : View.GONE);
+
+            // We need to use a different approach to change the dropdown icon
+            // since we don't have direct access to it
+            try {
+                // Try to access the end icon via reflection
+                Field endIconField = TextInputLayout.class.getDeclaredField("endIconView");
+                endIconField.setAccessible(true);
+                ImageView endIconView = (ImageView) endIconField.get(billingInputLayout);
+
+                if (endIconView != null) {
+                    // Animate the rotation of the icon
+                    endIconView.animate()
+                            .rotation(isExpanding ? 180f : 0f)
+                            .setDuration(200)
+                            .start();
+                }
+            } catch (Exception e) {
+                Log.e("AddressActivity", "Failed to access end icon", e);
+            }
+        };
+
+// Set the click listener on the TextInputLayout
+        billingInputLayout.setOnClickListener(billingToggleListener);
+
+// Also set it on the EditText inside
+        MaterialAutoCompleteTextView billingAutoComplete =
+                (MaterialAutoCompleteTextView) billingInputLayout.getEditText();
+        if (billingAutoComplete != null) {
+            billingAutoComplete.setOnClickListener(billingToggleListener);
+        }
+
+// Most importantly, set a click listener on the end icon itself
+        billingInputLayout.setEndIconOnClickListener(billingToggleListener);
+    }
     private void initializeStateMappings() {
         stateCodeMap = new HashMap<>();
         stateNameMap = new HashMap<>();
@@ -622,17 +666,40 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
 
     @Override
     public void onPaymentSuccess(String razorpayPaymentId, PaymentData paymentData) {
-        Toast.makeText(this, "Payment Successful", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Payment Successful", Toast.LENGTH_SHORT).show();
+//
+//        // Create intent to return to ContainerActivity
+//        Intent intent = new Intent(ActivityCheckout.this, ContainerActivity.class);
+//
+//        // Add extra to indicate we should show the TicketFragment
+//        intent.putExtra("navigate_to", "ticket_fragment");
+//
+//        // Start activity and finish current one
+//        startActivity(intent);
+//        finish();
 
-        // Create intent to return to ContainerActivity
-        Intent intent = new Intent(ActivityCheckout.this, ContainerActivity.class);
+        String auth = "Bearer " + pref.getPrefString(this, pref.user_token);
+        String cartId = pref.getPrefString(this,pref.nonce); // Make sure you pass the correct cart ID
 
-        // Add extra to indicate we should show the TicketFragment
-        intent.putExtra("navigate_to", "ticket_fragment");
+        viewModel.deleteItemInCart(auth, cartId).observe(this, deleteResponse -> {
+            if (deleteResponse != null && deleteResponse.isSuccess) {
+                // Step 2: If cart item is successfully deleted, proceed with payment success logic
+                Toast.makeText(this, "Payment Successful", Toast.LENGTH_SHORT).show();
 
-        // Start activity and finish current one
-        startActivity(intent);
-        finish();
+                // Create intent to return to ContainerActivity
+                Intent intent = new Intent(ActivityCheckout.this, ContainerActivity.class);
+
+                // Add extra to indicate we should show the TicketFragment
+                intent.putExtra("navigate_to", "ticket_fragment");
+
+                // Start activity and finish current one
+                startActivity(intent);
+                finish();
+            } else {
+                // If deletion fails, show an error message
+                Toast.makeText(this, "Failed to delete cart item: " + (deleteResponse != null ? deleteResponse.message : "Unknown error"), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -659,9 +726,17 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
                         if(responsee.payment_method.matches("razorpay")){
                             startRazorpayPayment();
                         }else{
-                            Intent intent = new Intent(ActivityCheckout.this, ActivityMyOrders.class);
-                            startActivity(intent);
-                            finish();
+                            Fragment fragment = new FragmentMyOrders();
+                            FragmentTransaction transaction =
+                                    getSupportFragmentManager()
+                                    .beginTransaction();
+                            transaction.replace(R.id.frame_layout, fragment); // Replace with your actual container ID
+                            transaction.commit(); // Do NOT add to back stack
+
+                            // Update bottom navigation selection
+                            BottomNavigationView navView = findViewById(R.id.bottom_navigation);
+                            navView.setSelectedItemId(R.id.order);
+
                         }
                     } else {
                         binding.loader.rlLoader.setVisibility(View.GONE);

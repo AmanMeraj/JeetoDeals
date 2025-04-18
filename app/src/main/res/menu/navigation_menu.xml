@@ -21,6 +21,10 @@
         android:id="@+id/nav_order"
         android:icon="@drawable/order_jd"/>
     <item
+        android:title="@string/wallet"
+        android:id="@+id/nav_wallet"
+        android:icon="@drawable/purse"/>
+    <item
         android:title="@string/my_wishlist"
         android:id="@+id/nav_wishlist"
         android:icon="@drawable/heart_jd"/>
@@ -61,6 +65,9 @@
             android:enabled="false"/>
     </group>
     <group android:id="@+id/nav_terms_and_conditions">
+        <item android:id="@+id/how_it_works"
+            android:title="How it Works">
+        </item>
         <item android:id="@+id/draw_terms_and_conditions"
             android:title="Draw Terms and Conditions">
         </item>

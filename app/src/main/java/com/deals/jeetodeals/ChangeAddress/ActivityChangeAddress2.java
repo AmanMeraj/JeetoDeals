@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +16,8 @@ import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.databinding.ActivityChangeAddress2Binding;
 import com.deals.jeetodeals.Model.BillingAddress;
 import com.deals.jeetodeals.Model.ShippingAddress;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,6 +62,7 @@ public class ActivityChangeAddress2 extends Utility {
             Log.d("Selected Billing State", "State: " + selectedState + ", Code: " + selectedBillingStateCode);
         });
 
+
         binding.edtStateShipping.setOnItemClickListener((parent, view, position, id) -> {
             String selectedState = parent.getItemAtPosition(position).toString();
             selectedShippingStateCode = stateCodeMap.get(selectedState);
@@ -69,6 +73,78 @@ public class ActivityChangeAddress2 extends Utility {
 
         binding.edtState.setAdapter(stateAdapter);
         binding.edtStateShipping.setAdapter(stateAdapter);
+        binding.billingAddressInputText.setOnClickListener(view -> {
+            if (binding.billingAddressRel.getVisibility() == View.VISIBLE) {
+                binding.billingAddressRel.setVisibility(View.GONE);
+            } else {
+                binding.billingAddressRel.setVisibility(View.VISIBLE);
+            }
+        });
+
+// Make sure to set this click listener on the EditText inside as well
+        MaterialAutoCompleteTextView billingAutoComplete =
+                (MaterialAutoCompleteTextView) binding.billingAddressInputText.getEditText();
+        if (billingAutoComplete != null) {
+            billingAutoComplete.setOnClickListener(view -> {
+                if (binding.billingAddressRel.getVisibility() == View.VISIBLE) {
+                    binding.billingAddressRel.setVisibility(View.GONE);
+                } else {
+                    binding.billingAddressRel.setVisibility(View.VISIBLE);
+                }
+            });
+        }
+
+// And for shipping address
+        binding.shippingAddressInputText.setOnClickListener(view -> {
+            if (binding.shippingRel.getVisibility() == View.VISIBLE) {
+                binding.shippingRel.setVisibility(View.GONE);
+            } else {
+                binding.shippingRel.setVisibility(View.VISIBLE);
+            }
+        });
+
+        MaterialAutoCompleteTextView shippingAutoComplete =
+                (MaterialAutoCompleteTextView) binding.shippingAddressInputText.getEditText();
+        if (shippingAutoComplete != null) {
+            shippingAutoComplete.setOnClickListener(view -> {
+                if (binding.shippingRel.getVisibility() == View.VISIBLE) {
+                    binding.shippingRel.setVisibility(View.GONE);
+                } else {
+                    binding.shippingRel.setVisibility(View.VISIBLE);
+                }
+            });
+        }
+
+        // Set up billing address dropdown toggle
+        setupAddressToggle(binding.billingAddressInputText, binding.billingAddressRel);
+
+        // Set up shipping address dropdown toggle
+        setupAddressToggle(binding.shippingAddressInputText, binding.shippingRel);
+
+
+    }
+
+    private void setupAddressToggle(TextInputLayout inputLayout, RelativeLayout contentLayout) {
+        // 1. Set click listener on the entire TextInputLayout
+        inputLayout.setOnClickListener(v -> toggleVisibility(contentLayout));
+
+        // 2. Also set click listener on the EditText inside
+        MaterialAutoCompleteTextView autoCompleteTextView =
+                (MaterialAutoCompleteTextView) inputLayout.getEditText();
+        if (autoCompleteTextView != null) {
+            autoCompleteTextView.setOnClickListener(v -> toggleVisibility(contentLayout));
+        }
+
+        // 3. Add click listener for the dropdown end icon specifically
+        inputLayout.setEndIconOnClickListener(v -> toggleVisibility(contentLayout));
+    }
+
+    private void toggleVisibility(RelativeLayout layout) {
+        if (layout.getVisibility() == View.VISIBLE) {
+            layout.setVisibility(View.GONE);
+        } else {
+            layout.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initializeStateMappings() {

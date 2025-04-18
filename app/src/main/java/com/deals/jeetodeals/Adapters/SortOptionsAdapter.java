@@ -25,8 +25,7 @@ public class SortOptionsAdapter extends ArrayAdapter<SortOption> {
                 new SortOption("Sort by Popularity", "asc", "popularity"),
                 new SortOption("Sort by Latest", "asc", "date"),
                 new SortOption("Sort by Price: Low to High", "asc", "price"),
-                new SortOption("Sort by Price: High to Low", "desc", "price"),
-                new SortOption("Default Sorting", null, null)
+                new SortOption("Sort by Price: High to Low", "desc", "price")
         );
 
         // Add all options to the adapter

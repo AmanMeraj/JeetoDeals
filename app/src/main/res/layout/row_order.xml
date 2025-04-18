@@ -107,7 +107,6 @@
             android:textSize="11sp" />
 
         <TextView
-            android:layout_gravity="end"
             android:layout_marginTop="5dp"
             android:fontFamily="@font/inter"
             android:paddingVertical="2dp"
@@ -120,7 +119,7 @@
 
     <!-- Arrow Button -->
     <ImageView
-        android:visibility="gone"
+        android:id="@+id/arrow_img"
         android:padding="10dp"
         android:layout_gravity="bottom"
         android:background="@drawable/orange_sphere"

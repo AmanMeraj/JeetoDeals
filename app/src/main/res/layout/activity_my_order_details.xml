@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:background="#F5F5F5"
+    android:layout_height="match_parent"
+    tools:context=".MyOrders.ActivityMyOrderDetails">
+    <RelativeLayout
+        android:elevation="5dp"
+        android:id="@+id/toolbar"
+        android:background="@drawable/toolbar_rounded_corners"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:padding="5dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="10dp"
+            android:src="@drawable/arrowleft"
+            android:id="@+id/back_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp">
+
+        </ImageView>
+
+    </RelativeLayout>
+    <androidx.core.widget.NestedScrollView
+        android:layout_below="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:scrollbars="none"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:paddingHorizontal="5dp"
+                android:text="Order Details"
+                android:fontFamily="@font/inter_bold"
+                android:layout_marginVertical="20dp"
+                android:layout_marginHorizontal="10dp"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:id="@+id/tv_order_details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <RelativeLayout
+                android:id="@+id/overview_rel"
+                android:layout_below="@+id/tv_order_details"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="16dp"
+                android:paddingBottom="20dp"
+                android:background="#F5F5F5">
+
+                <TextView
+                    android:fontFamily="@font/inter"
+                    android:id="@+id/tvOrderStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="#333333"
+                    android:layout_marginBottom="16dp"/>
+
+                <LinearLayout
+                    android:id="@+id/layoutOrderItem"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp"
+                    android:layout_below="@id/tvOrderStatus"
+                    android:background="#FFFFFF">
+
+                    <ImageView
+                        android:scaleType="fitCenter"
+                        android:id="@+id/ivProductImage"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/promotion_image"
+                        android:contentDescription="Product image"/>
+
+                    <TextView
+                        android:fontFamily="@font/inter"
+                        android:id="@+id/tvProductName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="11sp"
+                        android:layout_marginStart="8dp"/>
+
+                    <TextView
+                        android:id="@+id/tvProductPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layoutOrderSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_below="@id/layoutOrderItem"
+                    android:layout_marginTop="16dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:fontFamily="@font/inter_extrabold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Subtotal:"
+                            android:textSize="14sp"
+                            android:layout_alignParentStart="true"/>
+
+                        <TextView
+                            android:id="@+id/tv_sub_total"
+                            android:fontFamily="@font/inter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:layout_alignParentEnd="true"/>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:fontFamily="@font/inter_extrabold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Shipping:"
+                            android:textSize="14sp"
+                            android:layout_alignParentStart="true"/>
+
+                        <TextView
+                            android:fontFamily="@font/inter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Free shipping"
+                            android:textSize="14sp"
+                            android:layout_alignParentEnd="true"/>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:fontFamily="@font/inter_extrabold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Payment method:"
+                            android:textSize="14sp"
+                            android:layout_alignParentStart="true"/>
+
+                        <TextView
+                            android:fontFamily="@font/inter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Wallet payment"
+                            android:textSize="14sp"
+                            android:layout_alignParentEnd="true"/>
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#CCCCCC"/>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp">
+
+                        <TextView
+                            android:fontFamily="@font/inter_bold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total:"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:layout_alignParentStart="true"/>
+
+                        <TextView
+                            android:id="@+id/tv_total"
+                            android:fontFamily="@font/inter_bold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:layout_alignParentEnd="true"/>
+                    </RelativeLayout>
+                </LinearLayout>
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/billing_address_rel"
+                android:layout_marginHorizontal="10dp"
+                android:layout_below="@+id/overview_rel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:layout_marginHorizontal="2dp"
+                    android:background="@drawable/green_btn"
+                    android:layout_width="match_parent"
+                    android:id="@+id/green_rel"
+                    android:layout_height="60dp">
+                    <TextView
+                        android:textSize="15sp"
+                        android:layout_marginTop="7dp"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="Billing Address"
+                        android:id="@+id/time_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                    </TextView>
+                </RelativeLayout>
+                <LinearLayout
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginHorizontal="1dp"
+                    android:layout_below="@+id/green_rel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/white_card_bg"
+                    android:padding="8dp"
+                    android:elevation="4dp"
+                    android:layout_marginTop="-30dp"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:minHeight="90dp"
+                        android:layout_marginHorizontal="10dp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+
+                        <TextView
+                            android:layout_marginEnd="40dp"
+                            android:fontFamily="@font/inter"
+                            android:paddingVertical="10dp"
+                            android:id="@+id/text_billing_address"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            android:textSize="13sp"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </RelativeLayout>
+
+
+
+            <RelativeLayout
+                android:layout_marginTop="20dp"
+                android:layout_marginHorizontal="10dp"
+                android:layout_below="@+id/billing_address_rel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:layout_marginHorizontal="2dp"
+                    android:background="@drawable/orange_card_top"
+                    android:layout_width="match_parent"
+                    android:id="@+id/orange_rel"
+                    android:layout_height="60dp">
+                    <TextView
+                        android:textSize="15sp"
+                        android:layout_marginTop="7dp"
+                        android:layout_centerHorizontal="true"
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/inter_bold"
+                        android:text="Shipping Address"
+                        android:id="@+id/shipping_address"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                    </TextView>
+                </RelativeLayout>
+                <LinearLayout
+                    android:id="@+id/linear_shipping"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginHorizontal="1dp"
+                    android:layout_below="@+id/orange_rel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/white_card_bg"
+                    android:padding="8dp"
+                    android:elevation="4dp"
+                    android:layout_marginTop="-30dp"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:minHeight="90dp"
+                        android:layout_marginHorizontal="10dp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+
+                        <TextView
+                            android:layout_marginEnd="40dp"
+                            android:fontFamily="@font/inter"
+                            android:paddingVertical="10dp"
+                            android:id="@+id/text_shipping_address"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            android:textSize="13sp"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+                <RelativeLayout
+                    android:layout_below="@+id/linear_shipping"
+                    android:id="@+id/rel_tracking"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_marginVertical="10dp"
+                        android:layout_width="wrap_content"
+                        android:text="Tracking History :"
+                        android:textSize="18sp"
+                        android:id="@+id/tv_tracking_head"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/inter_bold"
+
+                        android:layout_height="wrap_content"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:id="@+id/rc_tracking"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="30dp"
+                        android:layout_below="@+id/tv_tracking_head"
+                        android:layout_height="wrap_content"/>
+                </RelativeLayout>
+
+
+            </RelativeLayout>
+
+
+        </RelativeLayout>
+    </androidx.core.widget.NestedScrollView>
+    <include android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/view_loader"
+        android:id="@+id/loader"/>
+
+</RelativeLayout>

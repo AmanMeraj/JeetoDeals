@@ -41,8 +41,8 @@ public class SignUpActivity extends Utility {
     String OTP = "sms"; // Default OTP method
 
     // URLs for User Agreement and Privacy Policy
-    private static final String USER_AGREEMENT_URL = "https://www.jeetodeals.com/terms-condition/";
-    private static final String PRIVACY_POLICY_URL = "https://www.jeetodeals.com/privacy-policy-2/";
+    private static final String USER_AGREEMENT_URL = "https://www.jeetodeals.com/draw-terms-conditions/";
+    private static final String PRIVACY_POLICY_URL = "https://www.jeetodeals.com/privacy-policy-3/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

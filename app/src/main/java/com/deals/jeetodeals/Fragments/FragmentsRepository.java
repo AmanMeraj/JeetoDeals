@@ -16,8 +16,10 @@ import com.deals.jeetodeals.Model.Category;
 import com.deals.jeetodeals.Model.Checkout;
 import com.deals.jeetodeals.Model.FcmResponse;
 import com.deals.jeetodeals.Model.GetCheckout;
+import com.deals.jeetodeals.Model.OrderDetailsResponse;
 import com.deals.jeetodeals.Model.ShopResponse;
 import com.deals.jeetodeals.Model.TicketResponse;
+import com.deals.jeetodeals.Model.TrackingResponse;
 import com.deals.jeetodeals.Model.User;
 import com.deals.jeetodeals.Model.WalletResponse;
 import com.deals.jeetodeals.Model.WishlistCreationResponse;
@@ -163,6 +165,52 @@ public class FragmentsRepository {
 
         return liveData;
     }
+
+    public LiveData<ApiResponse<OrderDetailsResponse>> orderDetails(String auth, int orderId) {
+        final MutableLiveData<ApiResponse<OrderDetailsResponse>> liveData = new MutableLiveData<>();
+
+        apiRequest.getOrderDetails(auth, orderId).enqueue(new Callback<OrderDetailsResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<OrderDetailsResponse> call, @NonNull Response<OrderDetailsResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.setValue(new ApiResponse<>(response.body(), true, null));
+                } else {
+                    handleOrderDetailsErrorResponse(response, liveData); // Your standard error handler
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<OrderDetailsResponse> call, @NonNull Throwable t) {
+                Log.e(TAG, "Error fetching order details: " + t.getMessage());
+                liveData.setValue(new ApiResponse<>(null, false, "Something went wrong. Please try again."));
+            }
+        });
+
+        return liveData;
+    }
+    public LiveData<ApiResponse<TrackingResponse>> trackingDetails(String auth, int orderId) {
+        final MutableLiveData<ApiResponse<TrackingResponse>> liveData = new MutableLiveData<>();
+
+        apiRequest.getTracking(auth, orderId).enqueue(new Callback<TrackingResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<TrackingResponse> call, @NonNull Response<TrackingResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.setValue(new ApiResponse<>(response.body(), true, null));
+                } else {
+                    handleOrderDetailsErrorResponse2(response, liveData); // Your standard error handler
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<TrackingResponse> call, @NonNull Throwable t) {
+                Log.e(TAG, "Error fetching order details: " + t.getMessage());
+                liveData.setValue(new ApiResponse<>(null, false, "Something went wrong. Please try again."));
+            }
+        });
+
+        return liveData;
+    }
+
     public LiveData<ApiResponse<CheckoutResponse>> checkoutPost(String auth,String nonce, Checkout checkout) {
         final MutableLiveData<ApiResponse<CheckoutResponse>> liveData = new MutableLiveData<>();
 
@@ -188,6 +236,47 @@ public class FragmentsRepository {
 
         return liveData;
     }
+
+    public LiveData<ApiResponse<Void>> deleteCart(String auth, String nonce) {
+        final MutableLiveData<ApiResponse<Void>> liveData = new MutableLiveData<>();
+
+        apiRequest.deleteItemInCart(auth, nonce).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                ApiResponse<Void> apiResponse;
+
+                if (response.code() == 200) {
+                    apiResponse = new ApiResponse<>(null, true, "successful");
+                } else if (response.code() == ERROR_SESSION_EXPIRED) {
+                    // Session expired, handle appropriately
+                    synchronized (SESSION_LOCK) {
+                        if (!isHandlingSessionExpiry) {
+                            isHandlingSessionExpiry = true;
+                            liveData.setValue(new ApiResponse<>(null, false, "Your Login has expired, please login again."));
+                        } else {
+                            // Don't notify again if already handling
+                            Log.d(TAG, "Already handling session expiry, suppressing duplicate notification");
+                        }
+                    }
+                    return; // Exit early as we already handled session expiry
+                } else {
+                    apiResponse = new ApiResponse<>(null, false, "Error code: " + response.code());
+                }
+
+                liveData.setValue(apiResponse);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                ApiResponse<Void> errorResponse = new ApiResponse<>(null, false, "Network error: " + t.getMessage());
+                liveData.setValue(errorResponse);
+            }
+        });
+
+        return liveData;
+    }
+
+
 
 
 
@@ -283,8 +372,7 @@ public class FragmentsRepository {
                     synchronized (SESSION_LOCK) {
                         if (!isHandlingSessionExpiry) {
                             isHandlingSessionExpiry = true;
-                            Log.w(TAG, "Session expired, notifying UI");
-                            liveData.setValue(new ApiResponse<>(null, false, "Session expired"));
+                            liveData.setValue(new ApiResponse<>(null, false, "Your Login has expired, please login again."));
                         } else {
                             // Don't notify again if already handling
                             Log.d(TAG, "Already handling session expiry, suppressing duplicate notification");
@@ -451,6 +539,35 @@ public class FragmentsRepository {
             liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
         }
     }
+    private void handleOrderDetailsErrorResponse(Response<?> response, MutableLiveData<ApiResponse<OrderDetailsResponse>> liveData) {
+        try {
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                String errorMessage = extractDynamicErrorMessage(errorBody);
+                liveData.setValue(new ApiResponse<>(null, false, errorMessage));
+            } else {
+                liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing error response: " + e.getMessage());
+            liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+        }
+    }
+    private void handleOrderDetailsErrorResponse2(Response<?> response, MutableLiveData<ApiResponse<TrackingResponse>> liveData) {
+        try {
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                String errorMessage = extractDynamicErrorMessage(errorBody);
+                liveData.setValue(new ApiResponse<>(null, false, errorMessage));
+            } else {
+                liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing error response: " + e.getMessage());
+            liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+        }
+    }
+
     private void handleErrorResponse7(Response<?> response, MutableLiveData<ApiResponse<AppVersion>> liveData) {
         try {
             if (response.errorBody() != null) {
@@ -640,8 +757,7 @@ public class FragmentsRepository {
         synchronized (SESSION_LOCK) {
             if (!isHandlingSessionExpiry) {
                 isHandlingSessionExpiry = true;
-                Log.w(TAG, "Session expired, notifying UI");
-                liveData.setValue(new HomeRepository.ApiResponse<>(null, false, "Session expired", ERROR_SESSION_EXPIRED));
+                liveData.setValue(new HomeRepository.ApiResponse<>(null, false, "Your Login has expired, please login again.", ERROR_SESSION_EXPIRED));
             } else {
                 // Don't notify again if already handling
                 Log.d(TAG, "Already handling session expiry, suppressing duplicate notification");

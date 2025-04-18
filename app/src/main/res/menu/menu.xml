@@ -14,9 +14,9 @@
         android:title="@string/home"
         android:icon="@drawable/white_home"/>
 
-    <item android:id="@+id/wallet"
-    android:title="@string/wallet"
-    android:icon="@drawable/wallet_jd"/>
+    <item android:id="@+id/order"
+    android:title="@string/order"
+    android:icon="@drawable/clipboard_black"/>
 
     <item android:id="@+id/cart"
     android:title="@string/cart"
