@@ -88,7 +88,48 @@ public class ActivityMyOrderDetails extends Utility {
                 finish();
             }
         });
+
+        binding.invoiceBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isInternetConnected(ActivityMyOrderDetails.this)){
+                    getInvoice();
+                }else {
+                    Toast.makeText(ActivityMyOrderDetails.this, "No Internet Connection!", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
     }
+
+    private void getInvoice() {
+        binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        String authToken;
+        try {
+            authToken = getAuthorizationToken();
+            Log.d("OrderDetails", "Auth token retrieved successfully");
+        } catch (Exception e) {
+            Log.e("OrderDetails", "Failed to get auth token", e);
+            showLoader(false);
+            Toast.makeText(this, "Authentication error", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        viewModel.getInvoice(authToken, orderId).observe(this, response -> {
+            binding.loader.rlLoader.setVisibility(View.GONE);
+
+            if (response.isSuccess && response.data != null && response.data.pdf_url != null) {
+                String pdfUrl = response.data.pdf_url;
+                Log.d("OrderDetails", "Opening PDF URL: " + pdfUrl);
+
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(pdfUrl));
+                startActivity(browserIntent);
+            } else {
+                Toast.makeText(this, "Failed to load invoice", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     private void getOrderDetails() {
         Log.d("OrderDetails", "Starting to fetch order details");

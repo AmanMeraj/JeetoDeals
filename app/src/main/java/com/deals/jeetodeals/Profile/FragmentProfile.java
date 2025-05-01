@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.deals.jeetodeals.ChangePassword.ActivityChangePassword;
 import com.deals.jeetodeals.SignInScreen.SignInActivity;
 import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.databinding.ActivityProfileBinding;
@@ -67,6 +68,13 @@ public class FragmentProfile extends Fragment {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
             requireActivity().finish();
+        });
+        binding.resetPassBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent= new Intent(requireContext(), ActivityChangePassword.class);
+                startActivity(intent);
+            }
         });
     }
 

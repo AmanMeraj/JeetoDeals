@@ -24,62 +24,97 @@
                     android:id="@+id/jeeto_shop"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/sort_option_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginTop="-5dp"
-                    android:layout_toEndOf="@+id/jeeto_shop"
-                    android:layout_alignTop="@+id/jeeto_shop"
-                   android:layout_marginStart="40dp"
-                    app:boxStrokeWidth=".5dp"
-                    app:boxStrokeWidthFocused="1dp"
-                    android:textColorHint="@color/black"
-                    app:startIconScaleType="centerInside"
-                    app:hintTextColor="@color/black"
-                    android:hint="Sort"
-                    app:boxStrokeColor="@color/black"
-                    app:startIconTint="@color/black"
-                    app:endIconMode="dropdown_menu">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/sort_dropdown"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="none"
-                        android:padding="12dp"
-                        android:textColor="@color/black"
-                        android:textSize="11sp"/>
-                </com.google.android.material.textfield.TextInputLayout>
-
-
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rc_category"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginHorizontal="10dp"
-                    android:orientation="horizontal"
-                    android:layout_below="@+id/sort_option_layout"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                </androidx.recyclerview.widget.RecyclerView>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rc_items"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="80dp"
+
+                    android:layout_above="@+id/filterSortBar"
                     android:layout_marginHorizontal="10dp"
                     app:spanCount="2"
                     android:orientation="vertical"
-                    android:layout_below="@+id/rc_category"
+                    android:layout_below="@+id/jeeto_shop"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                 </androidx.recyclerview.widget.RecyclerView>
+                    <LinearLayout
+                        android:weightSum="2"
+                        android:layout_alignParentBottom="true"
+                        android:id="@+id/filterSortBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginHorizontal="10dp"
+                        android:padding="8dp"
+                        android:background="@drawable/bg_filter_sort_bar"
+                        android:gravity="center">
+
+                        <!-- Category -->
+                        <LinearLayout
+                            android:layout_weight="1"
+                            android:id="@+id/categoryLayout"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="6dp">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/filter"
+                                app:tint="#000000" />
+
+                            <TextView
+                                android:id="@+id/category"
+                                android:layout_marginStart="6dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Category"
+                                android:textColor="#000000"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <!-- Divider -->
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="#CCCCCC" />
+
+                        <!-- Sort By -->
+                        <LinearLayout
+                            android:layout_weight="1"
+                            android:id="@+id/sortByLayout"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="6dp">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/sorting"
+                                app:tint="#000000" />
+
+                            <TextView
+                                android:id="@+id/sort"
+                                android:layout_marginStart="6dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Sort By"
+                                android:textColor="#000000"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
 
 
 

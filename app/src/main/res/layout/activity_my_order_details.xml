@@ -44,6 +44,18 @@
                 android:id="@+id/tv_order_details"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="wrap_content"
+                android:id="@+id/invoice_btn"
+                android:layout_marginHorizontal="10dp"
+                android:text="Invoice"
+                android:layout_alignTop="@+id/tv_order_details"
+                android:layout_alignParentEnd="true"
+                android:textSize="12sp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/inter_bold"
+                android:background="@color/grey"
+                android:layout_height="30dp"/>
 
             <RelativeLayout
                 android:id="@+id/overview_rel"

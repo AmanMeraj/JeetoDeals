@@ -349,7 +349,7 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
 //        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
         String type = "lottery";
 
-        viewModel.getHome( type, 20).observe(getViewLifecycleOwner(), response -> {
+        viewModel.getHome( type, 52).observe(getViewLifecycleOwner(), response -> {
             isLoadingHomeData.set(false);
 
             if (!isAdded() || binding == null) return;

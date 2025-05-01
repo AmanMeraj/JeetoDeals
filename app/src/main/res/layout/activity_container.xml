@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ContainerActivity.ContainerActivity">
@@ -76,6 +77,7 @@
             android:layout_marginTop="-20dp"
             android:layout_below="@+id/tool_bar_card"
             android:layout_width="match_parent"
+            android:layout_above="@+id/tool_bar_card2"
             android:layout_height="match_parent">
 
         </FrameLayout>
@@ -86,7 +88,10 @@
             android:elevation="5dp"
             android:backgroundTint="@color/white"
             app:cardBackgroundColor="@color/white"
-            android:layout_margin="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="5dp"
+           android:layout_marginHorizontal="10dp"
+            android:id="@+id/tool_bar_card2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 

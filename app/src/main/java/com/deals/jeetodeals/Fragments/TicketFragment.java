@@ -174,7 +174,7 @@ public class TicketFragment extends Fragment {
     private void updateRecyclerView(List<TicketGroupedByProduct> tickets) {
         if (tickets != null && !tickets.isEmpty()) {
             binding.rcTicket.setVisibility(View.VISIBLE);
-            binding.cardNoData.setVisibility(View.GONE);
+            binding.noItem.setVisibility(View.GONE);
 
             if (isActiveLayout) {
                 activeAdapter.updateTickets(tickets);

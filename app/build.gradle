@@ -42,7 +42,6 @@ dependencies {
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
-    implementation libs.circleimageview
     implementation libs.glide
     implementation libs.otpview
     implementation libs.pinview
@@ -50,6 +49,7 @@ dependencies {
     implementation libs.converter.gson
     implementation libs.gson
     implementation libs.circleindicator
+    implementation libs.circleimageview
     implementation 'org.jsoup:jsoup:1.15.4'
     implementation("androidx.compose.material3:material3-android:1.2.0-alpha10")
     implementation platform('com.google.firebase:firebase-bom:32.7.0')
@@ -63,5 +63,6 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-auth:20.6.0'
     implementation 'com.google.android.gms:play-services-auth-api-phone:18.0.1'
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
 }

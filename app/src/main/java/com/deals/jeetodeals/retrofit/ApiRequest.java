@@ -1,10 +1,6 @@
 package com.deals.jeetodeals.retrofit;
 
 
-import android.util.Log;
-
-import androidx.annotation.Nullable;
-
 import com.deals.jeetodeals.ChangeAddress.ChangeAddressResponse;
 import com.deals.jeetodeals.Checkout.CheckoutResponse;
 import com.deals.jeetodeals.Fragments.HomeFragment.HomeResponse;
@@ -13,10 +9,13 @@ import com.deals.jeetodeals.Model.AppVersion;
 import com.deals.jeetodeals.Model.BannerResponse;
 import com.deals.jeetodeals.Model.CartResponse;
 import com.deals.jeetodeals.Model.Category;
+import com.deals.jeetodeals.Model.ChangePassword;
+import com.deals.jeetodeals.Model.ChangePasswordResponse;
 import com.deals.jeetodeals.Model.Checkout;
 import com.deals.jeetodeals.Model.DrawResponse;
 import com.deals.jeetodeals.Model.FcmResponse;
 import com.deals.jeetodeals.Model.GetCheckout;
+import com.deals.jeetodeals.Model.InvoiceResponse;
 import com.deals.jeetodeals.Model.Login;
 import com.deals.jeetodeals.Model.OrderDetailsResponse;
 import com.deals.jeetodeals.Model.ShopResponse;
@@ -37,7 +36,6 @@ import com.deals.jeetodeals.Profile.ProfileResponse;
 import com.deals.jeetodeals.SignInScreen.ForgotPassResponse;
 import com.deals.jeetodeals.SignInScreen.SigninResponse;
 import com.deals.jeetodeals.SignupScreen.ExistsResponse;
-import com.deals.jeetodeals.SignupScreen.SignupResponse;
 import com.deals.jeetodeals.Wishlist.WishlistAddResponse;
 import com.deals.jeetodeals.Wishlist.WishlistDeleteResponse;
 import com.deals.jeetodeals.Wishlist.WishlistResponse;
@@ -48,7 +46,6 @@ import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
 import retrofit2.http.Header;
@@ -107,6 +104,7 @@ public interface ApiRequest {
             @Query("type") String type,
             @Query("category") int category
     );
+
 
     @Headers({"Accept: application/json"})
     @GET("custom/v1/wishlist")
@@ -243,6 +241,12 @@ public interface ApiRequest {
             @Header("nonce") String nonce,
             @Body AddItems addItems
             );
+    @Headers({"Accept: application/json"})
+    @POST("custom/v1/change-password")
+    Call<ChangePasswordResponse> changePassword(
+            @Header("Authorization") String authorization,
+            @Body ChangePassword changePassword
+            );
 
     @Headers({"Accept: application/json"})
     @POST("wc/store/v1/cart/update-item")
@@ -277,6 +281,14 @@ public interface ApiRequest {
             @Header("nonce") String nonce,
             @Body Checkout checkout
             );
+
+    @Headers({"Accept: application/json"})
+    @GET("custom/v1/get-invoice-link/{id}")
+    Call<InvoiceResponse> getInvoice(
+            @Header("Authorization") String authorization,
+            @Path("id") String id
+    );
+
 
 //    @Headers({"Accept: application/json"})
 //    @POST("customer")

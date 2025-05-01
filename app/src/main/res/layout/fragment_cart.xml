@@ -11,7 +11,7 @@
         android:layout_height="match_parent">
         <RelativeLayout
             android:id="@+id/layoutCart"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="10dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -293,7 +293,7 @@
                 android:textColor="@color/white"
                 android:fontFamily="@font/inter_bold"
                 android:layout_marginHorizontal="10dp"
-                android:layout_marginBottom="50dp"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/orange_btn"
                 android:layout_below="@+id/tv_notice"
                 android:layout_height="wrap_content">
@@ -308,7 +308,7 @@
                 android:textColor="@color/black"
                 android:layout_marginHorizontal="10dp"
                 android:fontFamily="@font/inter_extrabold"
-               android:layout_marginBottom="40dp"
+               android:layout_marginBottom="20dp"
                 android:layout_below="@+id/card_total"
                 android:layout_height="wrap_content"/>
 

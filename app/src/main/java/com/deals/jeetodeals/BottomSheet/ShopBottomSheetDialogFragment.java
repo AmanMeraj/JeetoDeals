@@ -1,5 +1,6 @@
 package com.deals.jeetodeals.BottomSheet;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
@@ -14,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.deals.jeetodeals.ActivityZoomableImageView;
 import com.deals.jeetodeals.Adapters.BottomImagePagerAdapter;
 import com.deals.jeetodeals.Adapters.SizeSelectorAdapter;
 import com.deals.jeetodeals.Model.Attribute;
@@ -96,7 +98,6 @@ public class ShopBottomSheetDialogFragment extends BottomSheetDialogFragment {
         setupQuantityControls();
         setupAddToCart();
         SetupCloseButton();
-
     }
 
     private void initViews(View view) {
@@ -112,7 +113,6 @@ public class ShopBottomSheetDialogFragment extends BottomSheetDialogFragment {
         drawDateTextView = view.findViewById(R.id.tv_desc);
         closeButton=view.findViewById(R.id.close_img);
         cointxt=view.findViewById(R.id.coins_tv);
-
     }
 
     private void setupData() {
@@ -120,7 +120,6 @@ public class ShopBottomSheetDialogFragment extends BottomSheetDialogFragment {
             productNameTextView.setText(shopItem.getName());
             cointxt.setText(shopItem.getPrices().getPrice()+" "+shopItem.getPrices().getCurrency_prefix());
             drawDateTextView.setText(Html.fromHtml(shopItem.getDescription(), Html.FROM_HTML_MODE_LEGACY).toString());
-
         }
     }
 
@@ -134,18 +133,37 @@ public class ShopBottomSheetDialogFragment extends BottomSheetDialogFragment {
         List<String> imageUrls = new ArrayList<>();
 
         // Extract the image URLs from your Image objects
-        for (Image image : imageList) {
-            // Assuming your Image class has a getSrc() method to get the URL
-            String imageUrl = image.getSrc();
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-                imageUrls.add(imageUrl);
+        if (imageList != null && !imageList.isEmpty()) {
+            for (Image image : imageList) {
+                if (image != null) {
+                    // Assuming your Image class has a getSrc() method to get the URL
+                    String imageUrl = image.getSrc();
+                    if (imageUrl != null && !imageUrl.isEmpty()) {
+                        imageUrls.add(imageUrl);
+                    }
+                }
             }
+        }
+
+        // If no valid images were found, add a placeholder to prevent crashes
+        if (imageUrls.isEmpty()) {
+            // You might want to add a placeholder URL or leave it empty
+            // imageUrls.add("placeholder_url");
         }
 
         // Initialize the adapter with the list of image URLs
         imageAdapter = new BottomImagePagerAdapter(requireContext(), imageUrls);
+
+        // Set the full image list to the adapter so it can be passed to the zoomable activity
+        imageAdapter.setFullImageList(imageList);
+
+        // Set the adapter to the ViewPager2
         viewPager.setAdapter(imageAdapter);
-        circleIndicator.setViewPager(viewPager);
+
+        // Set up the CircleIndicator only if we have images
+        if (!imageUrls.isEmpty()) {
+            circleIndicator.setViewPager(viewPager);
+        }
     }
 
     private void setupSizeSelector() {
@@ -188,7 +206,6 @@ public class ShopBottomSheetDialogFragment extends BottomSheetDialogFragment {
         }
     }
 
-
     private void setupQuantityControls() {
         minusButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -208,6 +225,7 @@ public class ShopBottomSheetDialogFragment extends BottomSheetDialogFragment {
             }
         });
     }
+
     public void SetupCloseButton(){
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -250,7 +268,4 @@ public class ShopBottomSheetDialogFragment extends BottomSheetDialogFragment {
         }
         return true;
     }
-
 }
-
-// Size Selector Adapter (updated for ShopResponse)

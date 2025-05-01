@@ -24,7 +24,7 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:layout_marginHorizontal="10dp"
         android:orientation="vertical"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="5dp"
         android:id="@+id/rc_orders"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

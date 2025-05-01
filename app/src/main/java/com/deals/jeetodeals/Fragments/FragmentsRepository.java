@@ -13,9 +13,12 @@ import com.deals.jeetodeals.Model.AppVersion;
 import com.deals.jeetodeals.Model.BannerResponse;
 import com.deals.jeetodeals.Model.CartResponse;
 import com.deals.jeetodeals.Model.Category;
+import com.deals.jeetodeals.Model.ChangePassword;
+import com.deals.jeetodeals.Model.ChangePasswordResponse;
 import com.deals.jeetodeals.Model.Checkout;
 import com.deals.jeetodeals.Model.FcmResponse;
 import com.deals.jeetodeals.Model.GetCheckout;
+import com.deals.jeetodeals.Model.InvoiceResponse;
 import com.deals.jeetodeals.Model.OrderDetailsResponse;
 import com.deals.jeetodeals.Model.ShopResponse;
 import com.deals.jeetodeals.Model.TicketResponse;
@@ -158,6 +161,31 @@ public class FragmentsRepository {
 
             @Override
             public void onFailure(@NonNull Call<WishlistCreationResponse> call, @NonNull Throwable t) {
+                Log.e(TAG, "API call failed: " + t.getMessage());
+                liveData.setValue(new ApiResponse<>(null, false, "Failed to connect. Please check your network."));
+            }
+        });
+
+        return liveData;
+    }
+    public LiveData<ApiResponse<ChangePasswordResponse>> changePass(String auth, ChangePassword changePassword) {
+        final MutableLiveData<ApiResponse<ChangePasswordResponse>> liveData = new MutableLiveData<>();
+
+        apiRequest.changePassword(auth,changePassword).enqueue(new Callback<ChangePasswordResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ChangePasswordResponse> call, @NonNull Response<ChangePasswordResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Extract nonce from headers and store it globally
+
+                    // Success: Return response body
+                    liveData.setValue(new ApiResponse<>(response.body(), true, null));
+                } else {
+                    handleErrorResponse13(response, liveData);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ChangePasswordResponse> call, @NonNull Throwable t) {
                 Log.e(TAG, "API call failed: " + t.getMessage());
                 liveData.setValue(new ApiResponse<>(null, false, "Failed to connect. Please check your network."));
             }
@@ -349,6 +377,29 @@ public class FragmentsRepository {
 
             @Override
             public void onFailure(@NonNull Call<FcmResponse> call, @NonNull Throwable t) {
+                Log.e(TAG, "API call failed: " + t.getMessage());
+                liveData.setValue(new ApiResponse<>(null, false, "Failed to connect. Please check your network."));
+            }
+        });
+
+        return liveData;
+    }
+    public LiveData<ApiResponse<InvoiceResponse>> Invoice(String auth, int id) {
+        final MutableLiveData<ApiResponse<InvoiceResponse>> liveData = new MutableLiveData<>();
+
+        apiRequest.getInvoice(auth, String.valueOf(id)).enqueue(new Callback<InvoiceResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<InvoiceResponse> call, @NonNull Response<InvoiceResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Success: Return response body
+                    liveData.setValue(new ApiResponse<>(response.body(), true, response.message()));
+                } else {
+                    handleErrorResponse14(response, liveData);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<InvoiceResponse> call, @NonNull Throwable t) {
                 Log.e(TAG, "API call failed: " + t.getMessage());
                 liveData.setValue(new ApiResponse<>(null, false, "Failed to connect. Please check your network."));
             }
@@ -610,6 +661,20 @@ public class FragmentsRepository {
             liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
         }
     }
+    private void handleErrorResponse13(Response<?> response, MutableLiveData<ApiResponse<ChangePasswordResponse>> liveData) {
+        try {
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                String errorMessage = extractDynamicErrorMessage(errorBody);
+                liveData.setValue(new ApiResponse<>(null, false, errorMessage));
+            } else {
+                liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing error response: " + e.getMessage());
+            liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+        }
+    }
     private void handleErrorResponse11(Response<?> response, MutableLiveData<ApiResponse<CheckoutResponse>> liveData) {
         try {
             if (response.errorBody() != null) {
@@ -653,6 +718,20 @@ public class FragmentsRepository {
         }
     }
     private void handleErrorResponse9(Response<?> response, MutableLiveData<ApiResponse<FcmResponse>> liveData) {
+        try {
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                String errorMessage = extractDynamicErrorMessage(errorBody);
+                liveData.setValue(new ApiResponse<>(null, false, errorMessage));
+            } else {
+                liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing error response: " + e.getMessage());
+            liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+        }
+    }
+    private void handleErrorResponse14(Response<?> response, MutableLiveData<ApiResponse<InvoiceResponse>> liveData) {
         try {
             if (response.errorBody() != null) {
                 String errorBody = response.errorBody().string();

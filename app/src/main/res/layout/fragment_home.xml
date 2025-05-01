@@ -70,7 +70,7 @@
 
 
                 <TextView
-                    android:text="Ongoing Campaigns"
+                    android:text="Future Campaigns"
                     android:textSize="18sp"
                     android:textColor="@color/black"
                     android:fontFamily="@font/inter_bold"
@@ -107,7 +107,7 @@
                 </RelativeLayout>
                 <TextView
                     android:textSize="18sp"
-                    android:text="Campaigns"
+                    android:text="Ongoing Campaigns"
                     android:textColor="@color/black"
                     android:fontFamily="@font/inter_bold"
                     android:layout_marginVertical="10dp"

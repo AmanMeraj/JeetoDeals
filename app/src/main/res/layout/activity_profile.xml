@@ -316,6 +316,18 @@
                         android:layout_height="45dp">
 
                     </androidx.appcompat.widget.AppCompatButton>
+                    <androidx.appcompat.widget.AppCompatButton
+
+                        android:layout_marginBottom="10dp"
+                        android:text="Reset Password"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        android:id="@+id/reset_pass_btn"
+                        android:background="@drawable/log_out_bg"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp">
+
+                    </androidx.appcompat.widget.AppCompatButton>
 
                 </LinearLayout>
             </RelativeLayout>

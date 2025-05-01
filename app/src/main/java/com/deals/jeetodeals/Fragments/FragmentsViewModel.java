@@ -15,9 +15,12 @@ import com.deals.jeetodeals.Model.AppVersion;
 import com.deals.jeetodeals.Model.BannerResponse;
 import com.deals.jeetodeals.Model.CartResponse;
 import com.deals.jeetodeals.Model.Category;
+import com.deals.jeetodeals.Model.ChangePassword;
+import com.deals.jeetodeals.Model.ChangePasswordResponse;
 import com.deals.jeetodeals.Model.Checkout;
 import com.deals.jeetodeals.Model.FcmResponse;
 import com.deals.jeetodeals.Model.GetCheckout;
+import com.deals.jeetodeals.Model.InvoiceResponse;
 import com.deals.jeetodeals.Model.OrderDetailsResponse;
 import com.deals.jeetodeals.Model.ShopResponse;
 import com.deals.jeetodeals.Model.TicketResponse;
@@ -37,10 +40,12 @@ public class FragmentsViewModel extends AndroidViewModel {
     public LiveData<FragmentsRepository.ApiResponse<CartResponse>>responseLiveDataAdd;
     LiveData<FragmentsRepository.ApiResponse<CartResponse>>responseLiveDataRemove;
     LiveData<FragmentsRepository.ApiResponse<CartResponse>>responseLiveDataUpdate;
+    LiveData<FragmentsRepository.ApiResponse<ChangePasswordResponse>>changePasswordLiveData;
     LiveData<FragmentsRepository.ApiResponse<ArrayList<WalletResponse>>>responseLiveDataWallet;
     LiveData<FragmentsRepository.ApiResponse<ArrayList<Category>>>responseLiveDataCategory;
      LiveData<FragmentsRepository.ApiResponse<TicketResponse>> responseLiveDataTickets;
      LiveData<FragmentsRepository.ApiResponse<BannerResponse>> responseLiveDataBanner;
+     LiveData<FragmentsRepository.ApiResponse<InvoiceResponse>> responseLiveDataInvoice;
      LiveData<FragmentsRepository.ApiResponse<OrderDetailsResponse>> responseLiveDataOderDeatils;
      LiveData<FragmentsRepository.ApiResponse<TrackingResponse>> responseLiveDataTrackingDetails;
      LiveData<FragmentsRepository.ApiResponse<FcmResponse>> responseLiveDataFcm;
@@ -57,6 +62,10 @@ public class FragmentsViewModel extends AndroidViewModel {
     public LiveData<FragmentsRepository.ApiResponse<CartResponse>> getCart(String auth){
         responseLiveData=repository.cart(auth);
         return responseLiveData;
+    }
+    public LiveData<FragmentsRepository.ApiResponse<ChangePasswordResponse>> changePassword(String auth, ChangePassword changePassword){
+        changePasswordLiveData=repository.changePass(auth,changePassword);
+        return changePasswordLiveData;
     }
     public LiveData<FragmentsRepository.ApiResponse<Void>> deleteItemInCart(String auth, String nonce) {
         responseLiveDataDeleteCart = repository.deleteCart(auth, nonce);
@@ -113,6 +122,10 @@ public class FragmentsViewModel extends AndroidViewModel {
     public LiveData<FragmentsRepository.ApiResponse<BannerResponse>> getBanner() {
         responseLiveDataBanner = repository.banner();
         return responseLiveDataBanner;
+    }
+    public LiveData<FragmentsRepository.ApiResponse<InvoiceResponse>> getInvoice(String auth,int id) {
+        responseLiveDataInvoice = repository.Invoice(auth,id);
+        return responseLiveDataInvoice;
     }
     public LiveData<FragmentsRepository.ApiResponse<FcmResponse>> postFcm(String auth, User user) {
         responseLiveDataFcm = repository.fcm(auth,user);

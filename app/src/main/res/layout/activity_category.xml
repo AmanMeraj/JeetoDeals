@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="match_parent"
+    tools:context=".ActivityCategory">
+    <RelativeLayout
+        android:elevation="5dp"
+        android:id="@+id/toolbar"
+        android:background="@drawable/toolbar_rounded_corners"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:padding="5dp"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="10dp"
+            android:src="@drawable/arrowleft"
+            android:id="@+id/back_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp">
+
+        </ImageView>
+
+    </RelativeLayout>
+    <TextView
+        android:text="Select Category"
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/inter_extrabold"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="20dp"
+        android:id="@+id/tv_category"
+        android:layout_below="@+id/toolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:id="@+id/rc_category"
+        android:orientation="vertical"
+        android:layout_marginBottom="20dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:layout_below="@+id/tv_category"
+        android:layout_height="wrap_content">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <include layout="@layout/view_loader"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:id="@+id/loader"/>
+</RelativeLayout>

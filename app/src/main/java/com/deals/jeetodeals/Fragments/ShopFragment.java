@@ -29,15 +29,21 @@ import android.view.ViewTreeObserver;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
+import com.deals.jeetodeals.ActivityCategory;
 import com.deals.jeetodeals.Adapters.AdapterCard2;
 import com.deals.jeetodeals.Adapters.CategoryAdapter;
+import com.deals.jeetodeals.Adapters.HierarchicalCategoryAdapter;
 import com.deals.jeetodeals.Adapters.SortOption;
 import com.deals.jeetodeals.Adapters.SortOptionsAdapter;
+import com.deals.jeetodeals.BottomSheet.BottomSheetPromotion;
 import com.deals.jeetodeals.BottomSheet.ShopBottomSheetDialogFragment;
+import com.deals.jeetodeals.BottomSheet.SortBottomSheetFragment;
+import com.deals.jeetodeals.CategoryTreeHelper;
 import com.deals.jeetodeals.ContainerActivity.ContainerActivity;
 import com.deals.jeetodeals.Fragments.HomeFragment.HomeViewModel;
 import com.deals.jeetodeals.Model.AddItems;
@@ -45,6 +51,7 @@ import com.deals.jeetodeals.Model.Attribute;
 import com.deals.jeetodeals.Model.BannerResponse;
 import com.deals.jeetodeals.Model.CartResponse;
 import com.deals.jeetodeals.Model.Category;
+import com.deals.jeetodeals.Model.CategoryTree;
 import com.deals.jeetodeals.Model.Items;
 import com.deals.jeetodeals.Model.ShopResponse;
 import com.deals.jeetodeals.Model.Variations;
@@ -67,9 +74,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.Attributes;
 
-public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickListener,CategoryAdapter.OnCategoryClickListener {
+public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickListener,CategoryAdapter.OnCategoryClickListener{
     private static final String TAG = "ShopFragment";
-
+    private static final int REQUEST_CATEGORY_SELECTION = 1001;
     private FragmentShopBinding binding;
     private SortOptionsAdapter sortAdapter;
     private String currentOrder = null;
@@ -117,6 +124,7 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         viewModel2 = new ViewModelProvider(this).get(FragmentsViewModel.class);
         wishlistViewModel = new ViewModelProvider(this).get(WishlistViewModel.class);
         setupSort();
+        setupCategory();
     }
 
     private void initializeRecyclerView() {
@@ -134,85 +142,85 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         }
     }
 
-    private void getCategory() {
-        // Show loader while fetching categories
-        binding.loader.rlLoader.setVisibility(View.VISIBLE);
+//    private void getCategory() {
+//        // Show loader while fetching categories
+//        binding.loader.rlLoader.setVisibility(View.VISIBLE);
+//
+//        viewModel2.getCategory().observe(getViewLifecycleOwner(), response -> {
+//            if (response != null && response.isSuccess && response.data != null && !response.data.isEmpty()) {
+//                // Filter out unwanted categories
+//                List<Category> filteredCategories = new ArrayList<>();
+//                for (Category category : response.data) {
+//                    String categoryName = category.getName();
+//                    if (!categoryName.equalsIgnoreCase("Ongoing Promotion") &&
+//                            !categoryName.equalsIgnoreCase("Promotion") &&
+//                            !categoryName.equalsIgnoreCase("Uncategorized")) {
+//                        filteredCategories.add(category);
+//                    }
+//                }
+//
+//                if (!filteredCategories.isEmpty()) {
+//                    // Add "All Categories" at position 0
+//                    Category allCategory = new Category();
+//                    allCategory.setId(0);  // Set a unique ID
+//                    allCategory.setName(" All ");
+//                    filteredCategories.add(0, allCategory);
+//
+//                    categories = (ArrayList<Category>) filteredCategories;
+//                    setupCategories(categories);
+//                } else {
+//                    binding.loader.rlLoader.setVisibility(View.GONE);
+//                    handleError("No valid categories found.");
+//                }
+//            } else {
+//                binding.loader.rlLoader.setVisibility(View.GONE);
+//                handleError(response != null ? response.message : "Unknown error");
+//            }
+//        });
+//    }
 
-        viewModel2.getCategory().observe(getViewLifecycleOwner(), response -> {
-            if (response != null && response.isSuccess && response.data != null && !response.data.isEmpty()) {
-                // Filter out unwanted categories
-                List<Category> filteredCategories = new ArrayList<>();
-                for (Category category : response.data) {
-                    String categoryName = category.getName();
-                    if (!categoryName.equalsIgnoreCase("Ongoing Promotion") &&
-                            !categoryName.equalsIgnoreCase("Promotion") &&
-                            !categoryName.equalsIgnoreCase("Uncategorized")) {
-                        filteredCategories.add(category);
-                    }
-                }
 
-                if (!filteredCategories.isEmpty()) {
-                    // Add "All Categories" at position 0
-                    Category allCategory = new Category();
-                    allCategory.setId(0);  // Set a unique ID
-                    allCategory.setName(" All ");
-                    filteredCategories.add(0, allCategory);
-
-                    categories = (ArrayList<Category>) filteredCategories;
-                    setupCategories(categories);
-                } else {
-                    binding.loader.rlLoader.setVisibility(View.GONE);
-                    handleError("No valid categories found.");
-                }
-            } else {
-                binding.loader.rlLoader.setVisibility(View.GONE);
-                handleError(response != null ? response.message : "Unknown error");
-            }
-        });
-    }
-
-
-
-    private void setupCategories(ArrayList<Category> data) {
-        // Use the parameter data instead of referencing categories field
-        categories = data;
-
-        // Create adapter with the correct data
-        categoryAdapter = new CategoryAdapter(categories, this, requireContext());
-        binding.rcCategory.setAdapter(categoryAdapter);
-        binding.rcCategory.setLayoutManager(
-                new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        );
-
-        // Pre-select the first item and update its visual state
-        if (!categories.isEmpty()) {
-            // Set the first category as selected in the adapter
-            categoryAdapter.setSelectedPosition(0);
-
-            // Set the selected category ID
-            selectedCategoryId = categories.get(0).getId();
-
-            // Important: This needs to be called here AFTER setting selectedCategoryId
-            if (categories.get(0).getName().equals(" All ")) {
-                // If "All" category is selected, use the withoutCategory method
-                fetchProductsWithoutCategory();
-            } else {
-                // For other categories, use the existing method
-                fetchProductsByCategory(selectedCategoryId, true);
-            }
-
-            // Schedule UI update for after layout is complete
-            binding.rcCategory.post(() -> {
-                View firstItemView = binding.rcCategory.getLayoutManager().findViewByPosition(0);
-                if (firstItemView != null) {
-                    ImageView firstImageView = firstItemView.findViewById(R.id.image);
-                    RelativeLayout firstRelativeLayout = firstItemView.findViewById(R.id.rel_bg);
-                    updateCategorySelection(firstRelativeLayout);
-                    animateCategorySelection(firstImageView);
-                }
-            });
-        }
-    }
+//
+//    private void setupCategories(ArrayList<Category> data) {
+//        // Use the parameter data instead of referencing categories field
+//        categories = data;
+//
+//        // Create adapter with the correct data
+//        categoryAdapter = new CategoryAdapter(categories, this, requireContext());
+//        binding.rcCategory.setAdapter(categoryAdapter);
+//        binding.rcCategory.setLayoutManager(
+//                new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+//        );
+//
+//        // Pre-select the first item and update its visual state
+//        if (!categories.isEmpty()) {
+//            // Set the first category as selected in the adapter
+//            categoryAdapter.setSelectedPosition(0);
+//
+//            // Set the selected category ID
+//            selectedCategoryId = categories.get(0).getId();
+//
+//            // Important: This needs to be called here AFTER setting selectedCategoryId
+//            if (categories.get(0).getName().equals(" All ")) {
+//                // If "All" category is selected, use the withoutCategory method
+//                fetchProductsWithoutCategory();
+//            } else {
+//                // For other categories, use the existing method
+//                fetchProductsByCategory(selectedCategoryId, true);
+//            }
+//
+//            // Schedule UI update for after layout is complete
+//            binding.rcCategory.post(() -> {
+//                View firstItemView = binding.rcCategory.getLayoutManager().findViewByPosition(0);
+//                if (firstItemView != null) {
+//                    ImageView firstImageView = firstItemView.findViewById(R.id.image);
+//                    RelativeLayout firstRelativeLayout = firstItemView.findViewById(R.id.rel_bg);
+//                    updateCategorySelection(firstRelativeLayout);
+//                    animateCategorySelection(firstImageView);
+//                }
+//            });
+//        }
+//    }
 
     private void setupScrollListener() {
         binding.rcItems.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -773,51 +781,6 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
                 });
     }
 
-    private void setupSortDropdown() {
-        // Initialize the adapter
-        sortAdapter = new SortOptionsAdapter(
-                requireContext(),
-                android.R.layout.simple_dropdown_item_1line
-        );
-
-        // Set up the dropdown
-        TextInputLayout sortOptionLayout = binding.sortOptionLayout;
-        AutoCompleteTextView sortDropdown = binding.sortDropdown;
-
-        // Important: Set threshold to 0 so it shows all options immediately
-        sortDropdown.setThreshold(0);
-
-        // Important: This allows the dropdown to show on click without typing
-        sortDropdown.setOnClickListener(v -> sortDropdown.showDropDown());
-
-        sortDropdown.setAdapter(sortAdapter);
-
-        // Default selection (Default Sorting - position 4)
-        SortOption defaultOption = sortAdapter.getItem(0);
-        if (defaultOption != null) {
-            sortDropdown.setText(defaultOption.getDisplayName(), false);
-
-            // Also set the initial sort parameters
-            SortOptionsAdapter.Pair<String, String> params = sortAdapter.getSelectedOptionParams(0);
-            currentOrder = params.getFirst();
-            currentOrderBy = params.getSecond();
-        }
-
-        // Listen for selection changes
-        sortDropdown.setOnItemClickListener((parent, view, position, id) -> {
-            SortOption otherOption = sortAdapter.getItem(position);
-            if (otherOption != null) {
-                sortDropdown.setText(otherOption.getDisplayName(), false);
-                SortOptionsAdapter.Pair<String, String> params = sortAdapter.getSelectedOptionParams(position);
-                currentOrder = params.getFirst();
-                currentOrderBy = params.getSecond();
-
-                // Reset pagination and reload products with new sort parameters
-                resetAndRefetchProducts();
-            }
-        });
-    }
-
     // Add this method to handle resetting and refetching products
     private void resetAndRefetchProducts() {
         // Reset pagination state
@@ -917,8 +880,139 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
                 });
     }
 
-    // Add this to initializeViewModels() or setupInitialData()
-    private void setupSort() {
-        setupSortDropdown();
+    // Add these constants at the top of your ShopFragment class
+
+
+    // Update your setupCategory method to launch the ActivityCategory
+    private void setupCategory() {
+        // Set up click listener for the category layout
+        binding.categoryLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(requireActivity(), ActivityCategory.class);
+            startActivityForResult(intent, REQUEST_CATEGORY_SELECTION);
+        });
     }
+
+    // Add this method to handle the result from ActivityCategory
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CATEGORY_SELECTION && resultCode == ActivityCategory.RESULT_CATEGORY_SELECTED && data != null) {
+            int categoryId = data.getIntExtra(ActivityCategory.EXTRA_CATEGORY_ID, -1);
+            String categoryName = data.getStringExtra(ActivityCategory.EXTRA_CATEGORY_NAME);
+
+            // Update the UI to show the selected category
+            binding.category.setText(categoryName);
+
+            // Update the selected category and fetch products
+            selectedCategoryId = categoryId;
+            isLastPage = false;
+            isLoading = false;
+            initialLoadComplete = false;
+
+            if (categoryId == 0) {
+                // If "All" category is selected
+                fetchProductsWithoutCategory();
+            } else {
+                // For other categories
+                fetchProductsByCategory(categoryId, true);
+            }
+        }
+    }
+
+    // Replace the getCategory method with this simpler version that just sets up the category button
+    private void getCategory() {
+        // Just set up the UI for the category selection button
+        // The actual category list will be shown in ActivityCategory
+        if (binding.category != null) {
+            // Set default text if no category is selected
+            if (selectedCategoryId == -1 || selectedCategoryId == 0) {
+                binding.category.setText("All Categories");
+            }
+        }
+
+        // Fetch products based on current category selection
+        if (selectedCategoryId == -1 || selectedCategoryId == 0) {
+            fetchProductsWithoutCategory();
+        } else {
+            fetchProductsByCategory(selectedCategoryId, true);
+        }
+    }
+    private void setupSort() {
+        // Set up click listener for the sort button
+        binding.sortByLayout.setOnClickListener(v -> {
+            showSortBottomSheet();
+        });
+    }
+
+    // 2. Add this new method to show the bottom sheet
+    private void showSortBottomSheet() {
+        SortBottomSheetFragment bottomSheet = SortBottomSheetFragment.newInstance();
+
+        // If you're tracking the current sort option position
+        int currentSortPosition = getCurrentSortPosition();
+        bottomSheet.setSelectedPosition(currentSortPosition);
+
+        bottomSheet.setSortOptionListener(new SortBottomSheetFragment.SortOptionListener() {
+            @Override
+            public void onSortOptionSelected(String orderBy, String order, String displayName, int position) {
+                // Update sort parameters
+                currentOrderBy = orderBy;
+                currentOrder = order;
+
+                // Store the selected position if needed
+                saveSortPosition(position);
+
+                // Update UI to show current sort option
+                updateSortIndicator(displayName);
+
+                // Reset and reload products with new sort
+                resetAndRefetchProducts();
+            }
+        });
+
+        bottomSheet.show(requireActivity().getSupportFragmentManager(), "SortBottomSheet");
+    }
+
+    // 3. Add these helper methods for managing sort state
+    private int getCurrentSortPosition() {
+        // Default to 0 (Default sorting)
+        if (currentOrderBy == null || currentOrder == null) {
+            return 0;
+        }
+
+        // Map current orderBy and order values to position
+        if (currentOrderBy.equals("menu_order") && currentOrder.equals("asc")) {
+            return 0; // Default sorting
+        } else if (currentOrderBy.equals("popularity") && currentOrder.equals("desc")) {
+            return 1; // Sort by popularity
+        } else if (currentOrderBy.equals("rating") && currentOrder.equals("desc")) {
+            return 2; // Sort by average rating
+        } else if (currentOrderBy.equals("date") && currentOrder.equals("desc")) {
+            return 3; // Sort by latest
+        } else if (currentOrderBy.equals("price") && currentOrder.equals("asc")) {
+            return 4; // Sort by price: low to high
+        } else if (currentOrderBy.equals("price") && currentOrder.equals("desc")) {
+            return 5; // Sort by price: high to low
+        }
+
+        return 0; // Default
+    }
+
+    private void saveSortPosition(int position) {
+        // You could store this in SharedPreferences if needed
+        // This is optional - just keeps track of current position
+    }
+
+    private void updateSortIndicator(String displayName) {
+        // Update the sort text in the toolbar if needed
+        TextView sortText = binding.sort;
+        if (sortText != null) {
+            sortText.setText("Sort: " + displayName);
+        }
+    }
+
+
+    // Add this method to handle the back button in the activity
+
 }

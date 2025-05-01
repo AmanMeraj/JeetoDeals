@@ -89,6 +89,13 @@ public class ContainerActivity extends Utility {
                 // Update bottom navigation to select the ticket item
                 binding.bottomNavigation.setSelectedItemId(R.id.ticket);
                 updateSelectedIcon(R.id.ticket);
+            } else if("profile".equals(navigateTo)) {
+                currentFragment = new FragmentProfile();
+                loadFragment(currentFragment);
+
+                // Update bottom navigation to select the ticket item
+                binding.bottomNavigation.setSelectedItemId(R.id.profile);
+                updateSelectedIcon(R.id.profile);
             }
         } else {
             // Set the default fragment (HomeFragment) when the activity is created
