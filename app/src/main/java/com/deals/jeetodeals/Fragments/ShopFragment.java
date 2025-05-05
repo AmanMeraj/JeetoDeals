@@ -142,86 +142,6 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         }
     }
 
-//    private void getCategory() {
-//        // Show loader while fetching categories
-//        binding.loader.rlLoader.setVisibility(View.VISIBLE);
-//
-//        viewModel2.getCategory().observe(getViewLifecycleOwner(), response -> {
-//            if (response != null && response.isSuccess && response.data != null && !response.data.isEmpty()) {
-//                // Filter out unwanted categories
-//                List<Category> filteredCategories = new ArrayList<>();
-//                for (Category category : response.data) {
-//                    String categoryName = category.getName();
-//                    if (!categoryName.equalsIgnoreCase("Ongoing Promotion") &&
-//                            !categoryName.equalsIgnoreCase("Promotion") &&
-//                            !categoryName.equalsIgnoreCase("Uncategorized")) {
-//                        filteredCategories.add(category);
-//                    }
-//                }
-//
-//                if (!filteredCategories.isEmpty()) {
-//                    // Add "All Categories" at position 0
-//                    Category allCategory = new Category();
-//                    allCategory.setId(0);  // Set a unique ID
-//                    allCategory.setName(" All ");
-//                    filteredCategories.add(0, allCategory);
-//
-//                    categories = (ArrayList<Category>) filteredCategories;
-//                    setupCategories(categories);
-//                } else {
-//                    binding.loader.rlLoader.setVisibility(View.GONE);
-//                    handleError("No valid categories found.");
-//                }
-//            } else {
-//                binding.loader.rlLoader.setVisibility(View.GONE);
-//                handleError(response != null ? response.message : "Unknown error");
-//            }
-//        });
-//    }
-
-
-//
-//    private void setupCategories(ArrayList<Category> data) {
-//        // Use the parameter data instead of referencing categories field
-//        categories = data;
-//
-//        // Create adapter with the correct data
-//        categoryAdapter = new CategoryAdapter(categories, this, requireContext());
-//        binding.rcCategory.setAdapter(categoryAdapter);
-//        binding.rcCategory.setLayoutManager(
-//                new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-//        );
-//
-//        // Pre-select the first item and update its visual state
-//        if (!categories.isEmpty()) {
-//            // Set the first category as selected in the adapter
-//            categoryAdapter.setSelectedPosition(0);
-//
-//            // Set the selected category ID
-//            selectedCategoryId = categories.get(0).getId();
-//
-//            // Important: This needs to be called here AFTER setting selectedCategoryId
-//            if (categories.get(0).getName().equals(" All ")) {
-//                // If "All" category is selected, use the withoutCategory method
-//                fetchProductsWithoutCategory();
-//            } else {
-//                // For other categories, use the existing method
-//                fetchProductsByCategory(selectedCategoryId, true);
-//            }
-//
-//            // Schedule UI update for after layout is complete
-//            binding.rcCategory.post(() -> {
-//                View firstItemView = binding.rcCategory.getLayoutManager().findViewByPosition(0);
-//                if (firstItemView != null) {
-//                    ImageView firstImageView = firstItemView.findViewById(R.id.image);
-//                    RelativeLayout firstRelativeLayout = firstItemView.findViewById(R.id.rel_bg);
-//                    updateCategorySelection(firstRelativeLayout);
-//                    animateCategorySelection(firstImageView);
-//                }
-//            });
-//        }
-//    }
-
     private void setupScrollListener() {
         binding.rcItems.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -267,12 +187,19 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         });
     }
     // Add a method to show/hide a loader at the bottom of the list
+    private boolean isBindingValid() {
+        return binding != null && binding.loader != null && binding.loader.rlLoader != null;
+    }
+
+    // 6. Improve the showBottomLoader method to handle null bindings
     private void showBottomLoader(boolean show) {
-        if (show) {
-            Log.d(TAG, "Showing bottom loader for pagination");
-            binding.loaderBottom.setVisibility(View.VISIBLE);
-        } else {
-            binding.loaderBottom.setVisibility(View.GONE);
+        if (binding != null && binding.loaderBottom != null) {
+            if (show) {
+                Log.d(TAG, "Showing bottom loader for pagination");
+                binding.loaderBottom.setVisibility(View.VISIBLE);
+            } else {
+                binding.loaderBottom.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -650,7 +577,11 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
 
     @Override
     public void onCategoryClick(Category category, ImageView imageView, int categoryId) {
-        // Your click handling logic here
+        // Log the selection
+        Log.d(TAG, "onCategoryClick: Category=" + (category != null ? category.getName() : "null") +
+                ", ID=" + categoryId);
+
+        // Handle UI animations
         if (imageView != null) {
             animateCategorySelection(imageView);
         }
@@ -661,17 +592,40 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
             updateCategorySelection(relativeLayout);
         }
 
+        // Update selected category ID
         selectedCategoryId = categoryId;
         isLastPage = false;
         isLoading = false;
-        initialLoadComplete = false; // Reset this flag too
+        initialLoadComplete = false;
+        currentPage = 1; // Reset pagination
 
-        if (category.getName().equals(" All ")) {
-            // If "All" category is selected, use the withoutCategory method
+        // Clear existing items
+        if (shopItems != null) {
+            shopItems.clear();
+            if (adapter != null) {
+                adapter.notifyDataSetChanged();
+            }
+        }
+
+        // Show loading indicator
+        if (binding != null && binding.loader != null && binding.loader.rlLoader != null) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        }
+
+        // Fetch appropriate products
+        if (category != null && category.getName() != null && category.getName().equals(" All ")) {
+            // "All" category selected
             fetchProductsWithoutCategory();
-        } else {
-            // For other categories, use the existing method
+        } else if (categoryId > 0) {
+            // Specific category selected
             fetchProductsByCategory(categoryId, true);
+        } else {
+            // Handle invalid category
+            Log.e(TAG, "Invalid category selection");
+            if (binding != null && binding.loader != null && binding.loader.rlLoader != null) {
+                binding.loader.rlLoader.setVisibility(View.GONE);
+            }
+            Toast.makeText(requireActivity(), "Unable to load category", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -806,138 +760,7 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         }
     }
 
-    // Modify your fetchProductsByCategory method to use this new method
-    private void fetchProductsByCategory(int id, boolean isInitialLoad) {
-        selectedCategoryId = id;
-
-        if (isInitialLoad) {
-            currentPage = 1;
-            isLastPage = false;
-            isLoading = false;
-            initialLoadComplete = false;
-            shopItems.clear();
-            adapter.notifyDataSetChanged();
-        }
-
-        fetchProductsWithSort();
-    }
-
-    // Create a new method to fetch products with sort parameters
-    private void fetchProductsWithSort() {
-        if (isLoading || (isLastPage && currentPage > 1)) {
-            Log.d(TAG, "Skipping fetch - isLoading: " + isLoading + ", isLastPage: " + isLastPage);
-            return;
-        }
-
-        isLoading = true;
-
-        if (currentPage == 1) {
-            binding.loader.rlLoader.setVisibility(View.VISIBLE);
-            showBottomLoader(false);
-            initialLoadComplete = false;
-        } else {
-            showBottomLoader(true);
-        }
-
-        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
-
-        // Use the ViewModel's method but modify to pass sort parameters
-        viewModel.getShop("simple|variable", selectedCategoryId, currentPage, perPage,
-                        currentOrder, currentOrderBy)
-                .observe(getViewLifecycleOwner(), response -> {
-                    isLoading = false;
-                    binding.loader.rlLoader.setVisibility(View.GONE);
-                    showBottomLoader(false);
-
-                    if (currentPage == 1) {
-                        initialLoadComplete = true;
-                    }
-
-                    if (response != null && response.isSuccess && response.data != null) {
-                        int itemsReceived = response.data.size();
-                        Log.d(TAG, "Received " + itemsReceived + " items for page " + currentPage);
-
-                        if (itemsReceived > 0) {
-                            int startPosition = shopItems.size();
-                            shopItems.addAll(response.data);
-                            adapter.notifyItemRangeInserted(startPosition, itemsReceived);
-
-                            if (itemsReceived < perPage) {
-                                isLastPage = true;
-                                Log.d(TAG, "Setting isLastPage=true - Fewer items than requested");
-                            } else {
-                                currentPage++;
-                                Log.d(TAG, "Incremented currentPage to: " + currentPage);
-                            }
-                        } else {
-                            isLastPage = true;
-                            Log.d(TAG, "Setting isLastPage=true - Empty response");
-                        }
-                    } else {
-                        Log.e(TAG, "API error: " + (response != null ? response.message : "Unknown error"));
-                        handleError(response != null ? response.message : "Unknown error");
-                    }
-                });
-    }
-
-    // Add these constants at the top of your ShopFragment class
-
-
-    // Update your setupCategory method to launch the ActivityCategory
-    private void setupCategory() {
-        // Set up click listener for the category layout
-        binding.categoryLayout.setOnClickListener(v -> {
-            Intent intent = new Intent(requireActivity(), ActivityCategory.class);
-            startActivityForResult(intent, REQUEST_CATEGORY_SELECTION);
-        });
-    }
-
-    // Add this method to handle the result from ActivityCategory
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CATEGORY_SELECTION && resultCode == ActivityCategory.RESULT_CATEGORY_SELECTED && data != null) {
-            int categoryId = data.getIntExtra(ActivityCategory.EXTRA_CATEGORY_ID, -1);
-            String categoryName = data.getStringExtra(ActivityCategory.EXTRA_CATEGORY_NAME);
-
-            // Update the UI to show the selected category
-            binding.category.setText(categoryName);
-
-            // Update the selected category and fetch products
-            selectedCategoryId = categoryId;
-            isLastPage = false;
-            isLoading = false;
-            initialLoadComplete = false;
-
-            if (categoryId == 0) {
-                // If "All" category is selected
-                fetchProductsWithoutCategory();
-            } else {
-                // For other categories
-                fetchProductsByCategory(categoryId, true);
-            }
-        }
-    }
-
-    // Replace the getCategory method with this simpler version that just sets up the category button
-    private void getCategory() {
-        // Just set up the UI for the category selection button
-        // The actual category list will be shown in ActivityCategory
-        if (binding.category != null) {
-            // Set default text if no category is selected
-            if (selectedCategoryId == -1 || selectedCategoryId == 0) {
-                binding.category.setText("All Categories");
-            }
-        }
-
-        // Fetch products based on current category selection
-        if (selectedCategoryId == -1 || selectedCategoryId == 0) {
-            fetchProductsWithoutCategory();
-        } else {
-            fetchProductsByCategory(selectedCategoryId, true);
-        }
-    }
+    // Modify your fetchProductsByCategory method to use this new metho
     private void setupSort() {
         // Set up click listener for the sort button
         binding.sortByLayout.setOnClickListener(v -> {
@@ -1013,6 +836,207 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     }
 
 
-    // Add this method to handle the back button in the activity
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.d(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
+
+        if (requestCode == REQUEST_CATEGORY_SELECTION && resultCode == ActivityCategory.RESULT_CATEGORY_SELECTED && data != null) {
+            int categoryId = data.getIntExtra(ActivityCategory.EXTRA_CATEGORY_ID, -1);
+            String categoryName = data.getStringExtra(ActivityCategory.EXTRA_CATEGORY_NAME);
+
+            Log.d(TAG, "Category selected from ActivityCategory: " + categoryName + ", ID: " + categoryId);
+
+            // Update the UI to show the selected category
+            if (binding != null && binding.category != null) {
+                binding.category.setText(categoryName != null ? categoryName : "All Categories");
+            }
+
+            // Update the selected category and reset pagination
+            selectedCategoryId = categoryId;
+            isLastPage = false;
+            isLoading = false;
+            initialLoadComplete = false;
+            currentPage = 1; // Reset page to 1
+
+            // Clear existing items to prepare for new data
+            shopItems.clear();
+            if (adapter != null) {
+                adapter.notifyDataSetChanged();
+            }
+
+            // Show loader before fetch
+            if (binding != null && binding.loader != null && binding.loader.rlLoader != null) {
+                binding.loader.rlLoader.setVisibility(View.VISIBLE);
+            }
+
+            // Use different fetch methods based on category selection
+            if (categoryId <= 0) {
+                // If "All" category is selected or invalid category
+                fetchProductsWithoutCategory();
+            } else {
+                // For other categories
+                fetchProductsByCategory(categoryId, true);
+            }
+        }
+    }
+
+    // Enhanced fetchProductsByCategory method with better error handling
+    private void fetchProductsByCategory(int id, boolean isInitialLoad) {
+        if (id <= 0) {
+            Log.e(TAG, "Invalid category ID: " + id);
+            if (binding != null && binding.loader != null && binding.loader.rlLoader != null) {
+                binding.loader.rlLoader.setVisibility(View.GONE);
+            }
+            return;
+        }
+
+        selectedCategoryId = id;
+        Log.d(TAG, "fetchProductsByCategory: ID=" + id + ", isInitialLoad=" + isInitialLoad);
+
+        if (isInitialLoad) {
+            currentPage = 1;
+            isLastPage = false;
+            isLoading = true; // Set to true to prevent duplicate calls
+            initialLoadComplete = false;
+
+            if (shopItems != null) {
+                shopItems.clear();
+                if (adapter != null) {
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        }
+
+        if (utility != null && utility.isInternetConnected(requireActivity())) {
+            fetchProductsWithSort();
+        } else {
+            isLoading = false;
+            if (binding != null && binding.loader != null && binding.loader.rlLoader != null) {
+                binding.loader.rlLoader.setVisibility(View.GONE);
+            }
+            Toast.makeText(requireActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Modified fetchProductsWithSort with improved error handling and logging
+    private void fetchProductsWithSort() {
+        if (!isAdded()) {
+            Log.d(TAG, "Fragment not attached, skipping fetch");
+            isLoading = false;
+            return;
+        }
+
+        if (isLoading && currentPage > 1 && isLastPage) {
+            Log.d(TAG, "Skipping fetch - isLoading: " + isLoading + ", isLastPage: " + isLastPage);
+            return;
+        }
+
+        isLoading = true;
+        Log.d(TAG, "Starting fetch for category ID: " + selectedCategoryId + ", page: " + currentPage);
+
+        if (currentPage == 1) {
+            if (binding != null && binding.loader != null && binding.loader.rlLoader != null) {
+                binding.loader.rlLoader.setVisibility(View.VISIBLE);
+            }
+            showBottomLoader(false);
+            initialLoadComplete = false;
+        } else {
+            showBottomLoader(true);
+        }
+
+        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
+
+        // Use the ViewModel's method with sort parameters
+        viewModel.getShop("simple|variable", selectedCategoryId, currentPage, perPage,
+                        currentOrder, currentOrderBy)
+                .observe(getViewLifecycleOwner(), response -> {
+                    if (!isAdded()) return; // Check if fragment is still attached
+
+                    isLoading = false;
+                    if (binding != null && binding.loader != null && binding.loader.rlLoader != null) {
+                        binding.loader.rlLoader.setVisibility(View.GONE);
+                    }
+                    showBottomLoader(false);
+
+                    if (currentPage == 1) {
+                        initialLoadComplete = true;
+                    }
+
+                    if (response != null && response.isSuccess && response.data != null) {
+                        int itemsReceived = response.data.size();
+                        Log.d(TAG, "Received " + itemsReceived + " items for categoryID: " + selectedCategoryId + ", page: " + currentPage);
+
+                        if (itemsReceived > 0) {
+                            if (shopItems != null) {
+                                int startPosition = shopItems.size();
+                                shopItems.addAll(response.data);
+
+                                if (adapter != null) {
+                                    if (currentPage == 1) {
+                                        adapter.notifyDataSetChanged();
+                                    } else {
+                                        adapter.notifyItemRangeInserted(startPosition, itemsReceived);
+                                    }
+                                }
+                            }
+
+                            if (itemsReceived < perPage) {
+                                isLastPage = true;
+                                Log.d(TAG, "Setting isLastPage=true - Fewer items than requested");
+                            } else {
+                                currentPage++;
+                                Log.d(TAG, "Incremented currentPage to: " + currentPage);
+                            }
+                        } else {
+                            isLastPage = true;
+                            Log.d(TAG, "Setting isLastPage=true - Empty response");
+
+                            // Show a message if no products are found in this category
+                            if (currentPage == 1 && (shopItems == null || shopItems.isEmpty())) {
+                                Toast.makeText(requireActivity(), "No products found in this category", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    } else {
+                        String errorMsg = (response != null ? response.message : "Unknown error");
+                        Log.e(TAG, "API error: " + errorMsg);
+                        handleError(errorMsg);
+                    }
+                });
+    }
+
+    // Add a null check in setupCategory to avoid potential NPE
+    private void setupCategory() {
+        // Set up click listener for the category layout
+        if (binding != null && binding.categoryLayout != null) {
+            binding.categoryLayout.setOnClickListener(v -> {
+                Intent intent = new Intent(requireActivity(), ActivityCategory.class);
+                startActivityForResult(intent, REQUEST_CATEGORY_SELECTION);
+            });
+        }
+    }
+
+    // Fix the getCategory method to handle null binding
+    private void getCategory() {
+        if (binding == null) {
+            Log.e(TAG, "getCategory: binding is null");
+            return;
+        }
+
+        // Set default text if no category is selected
+        if (binding.category != null) {
+            if (selectedCategoryId == -1 || selectedCategoryId == 0) {
+                binding.category.setText("All Categories");
+            }
+        }
+
+        // Fetch products based on current category selection
+        if (selectedCategoryId == -1 || selectedCategoryId == 0) {
+            fetchProductsWithoutCategory();
+        } else {
+            fetchProductsByCategory(selectedCategoryId, true);
+        }
+    }
 
 }

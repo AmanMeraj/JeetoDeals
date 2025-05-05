@@ -92,10 +92,9 @@ public class ContainerActivity extends Utility {
             } else if("profile".equals(navigateTo)) {
                 currentFragment = new FragmentProfile();
                 loadFragment(currentFragment);
-
-                // Update bottom navigation to select the ticket item
                 binding.bottomNavigation.setSelectedItemId(R.id.profile);
                 updateSelectedIcon(R.id.profile);
+
             }
         } else {
             // Set the default fragment (HomeFragment) when the activity is created
@@ -562,39 +561,48 @@ public class ContainerActivity extends Utility {
     protected void onResume() {
         super.onResume();
 
-        if (currentFragment != null) {
-            int selectedItemId = R.id.home; // Default to home
+        // Get the fragment that's currently displayed on screen
+        Fragment displayedFragment = getSupportFragmentManager().findFragmentById(R.id.frame_layout);
 
-            if (currentFragment instanceof HomeFragment) {
-                selectedItemId = R.id.home;
-            } else if (currentFragment instanceof TicketFragment) {
-                selectedItemId = R.id.ticket;
-            } else if (currentFragment instanceof WalletFragment) {
-                selectedItemId = R.id.wallet;
-            } else if (currentFragment instanceof CartFragment) {
-                selectedItemId = R.id.cart;
-            }
-
-            // Temporarily remove the listener
-            binding.bottomNavigation.setOnItemSelectedListener(null);
-
-            // Update selection
-            binding.bottomNavigation.setSelectedItemId(selectedItemId);
-            updateSelectedIcon(selectedItemId);
-
-            // Reattach the listener using the stored reference
+        // Update the bottom navigation to match what's actually displayed
+        if (displayedFragment instanceof FragmentProfile) {
+            // If Profile fragment is shown, select Profile tab
+            binding.bottomNavigation.setOnItemSelectedListener(null); // Temporarily remove listener
+            binding.bottomNavigation.setSelectedItemId(R.id.profile);
+            updateSelectedIcon(R.id.profile);
+            binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
             binding.bottomNavigation.setOnItemSelectedListener(navigationItemSelectedListener);
+            currentFragment = displayedFragment;
+        } else if (displayedFragment instanceof HomeFragment) {
+            binding.bottomNavigation.setSelectedItemId(R.id.home);
+            updateSelectedIcon(R.id.home);
+            currentFragment = displayedFragment;
+        } else if (displayedFragment instanceof TicketFragment) {
+            binding.bottomNavigation.setSelectedItemId(R.id.ticket);
+            updateSelectedIcon(R.id.ticket);
+            currentFragment = displayedFragment;
+        } else if (displayedFragment instanceof FragmentMyOrders) {
+            binding.bottomNavigation.setSelectedItemId(R.id.order);
+            updateSelectedIcon(R.id.order);
+            currentFragment = displayedFragment;
+        } else if (displayedFragment instanceof CartFragment) {
+            binding.bottomNavigation.setSelectedItemId(R.id.cart);
+            updateSelectedIcon(R.id.cart);
+            currentFragment = displayedFragment;
         }
 
+        // Other onResume code stays the same
         isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
         setupNavigationView();
         setupCartBadge();
-        if(isLoggedIn){
-            binding.tvUserNsame.setText("Hi ! "+pref.getPrefString(this,pref.first_name)+" "+pref.getPrefString(this,pref.last_name));
-        }else {
+
+        if (isLoggedIn) {
+            binding.tvUserNsame.setText("Hi ! " + pref.getPrefString(this, pref.first_name) + " " + pref.getPrefString(this, pref.last_name));
+        } else {
             binding.tvUserNsame.setText("");
         }
     }
+
 
     private void openWebViewActivity(String url, String title) {
         Intent intent = new Intent(ContainerActivity.this, WebViewActivity.class);

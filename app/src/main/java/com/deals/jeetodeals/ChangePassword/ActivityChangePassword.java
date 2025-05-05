@@ -25,12 +25,14 @@ FragmentsViewModel viewModel;
         setContentView(binding.getRoot());
         viewModel= new ViewModelProvider(this).get(FragmentsViewModel.class);
 
-        binding.backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
+        binding.backBtn.setOnClickListener(view -> {
+            Intent intent = new Intent(ActivityChangePassword.this, ContainerActivity.class);
+            intent.putExtra("navigate_to", "profile");
+            intent.putExtra("from_change_password", true); // this is optional, but helps if you want to know the exact source
+            startActivity(intent);
+            finish();
         });
+
 
         binding.updateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,5 +102,15 @@ FragmentsViewModel viewModel;
         });
 
     }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(ActivityChangePassword.this, ContainerActivity.class);
+        intent.putExtra("navigate_to", "profile");
+        intent.putExtra("from_change_password", true);
+        startActivity(intent);
+        finish();
+    }
+
 
 }

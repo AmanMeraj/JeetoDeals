@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -561,9 +562,31 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
                     List<String> imageUrlList = new ArrayList<>();
 
                     if (bannerResponse.getVideo_banner_url() != null && !bannerResponse.getVideo_banner_url().isEmpty()) {
-                        Uri videoUri = Uri.parse(bannerResponse.getVideo_banner_url());
-                        binding.videoView.setVideoURI(videoUri);
-                        binding.videoView.start();
+                        try {
+                            // Properly handle HTTP URLs for VideoView - without controller
+                            binding.videoView.setMediaController(null); // No media controls
+                            binding.videoView.setVideoPath(bannerResponse.getVideo_banner_url());
+
+                            // Add error listener
+                            binding.videoView.setOnErrorListener((mp, what, extra) -> {
+                                Log.e(TAG, "VideoView error: what=" + what + ", extra=" + extra);
+                                return false; // Let the VideoView display its own error message
+                            });
+
+                            binding.videoView.setOnPreparedListener(mp -> {
+                                // When video is ready to play
+                                mp.setLooping(true); // Optional: loop the video
+                                binding.videoView.start();
+                            });
+
+                            binding.videoView.requestFocus();
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error setting video URL: " + e.getMessage(), e);
+                            // Handle the error gracefully - perhaps show an image instead
+                            if (bannerResponse.getImage_banner_url() != null && !bannerResponse.getImage_banner_url().isEmpty()) {
+                                imageUrlList.add(bannerResponse.getImage_banner_url());
+                            }
+                        }
                     }
 
                     if (bannerResponse.getImage_banner_url() != null && !bannerResponse.getImage_banner_url().isEmpty()) {

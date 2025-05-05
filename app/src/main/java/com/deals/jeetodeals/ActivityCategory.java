@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ActivityCategory extends AppCompatActivity implements HierarchicalCategoryAdapter.OnCategoryClickListener {
+    private static final String TAG = "ActivityCategory";
     public static final String EXTRA_CATEGORY_ID = "category_id";
     public static final String EXTRA_CATEGORY_NAME = "category_name";
     public static final int RESULT_CATEGORY_SELECTED = 101;
@@ -80,11 +81,16 @@ public class ActivityCategory extends AppCompatActivity implements HierarchicalC
         binding.loader.rlLoader.setVisibility(View.VISIBLE);
 
         viewModel2.getCategory().observe(this, response -> {
+            binding.loader.rlLoader.setVisibility(View.GONE);
+
             if (response != null && response.isSuccess && response.data != null && !response.data.isEmpty()) {
                 // Filter out unwanted categories
                 List<Category> filteredCategories = new ArrayList<>();
                 for (Category category : response.data) {
                     String categoryName = category.getName();
+                    // Debug log to check category IDs being received
+                    Log.d(TAG, "Category from API: " + categoryName + ", ID: " + category.getId());
+
                     if (!categoryName.equalsIgnoreCase("Ongoing Promotion") &&
                             !categoryName.equalsIgnoreCase("Promotion") &&
                             !categoryName.equalsIgnoreCase("Uncategorized") &&
@@ -98,11 +104,9 @@ public class ActivityCategory extends AppCompatActivity implements HierarchicalC
                     rootCategories = CategoryTreeHelper.buildCategoryTree(filteredCategories);
                     setupCategoryAdapter();
                 } else {
-                    binding.loader.rlLoader.setVisibility(View.GONE);
                     handleError("No valid categories found.");
                 }
             } else {
-                binding.loader.rlLoader.setVisibility(View.GONE);
                 handleError(response != null ? response.message : "Unknown error");
             }
         });
@@ -113,12 +117,27 @@ public class ActivityCategory extends AppCompatActivity implements HierarchicalC
         // Create adapter with the root categories
         categoryAdapter = new HierarchicalCategoryAdapter(rootCategories, this, this);
         binding.rcCategory.setAdapter(categoryAdapter);
-        binding.loader.rlLoader.setVisibility(View.GONE);
     }
 
     // Handle category click
     @Override
     public void onCategoryClick(CategoryTree category, ImageView imageView, int categoryId, int navigationLevel) {
+        // Add debug logging
+        Log.d(TAG, "onCategoryClick - Category: " + (category != null ? category.getName() : "null") +
+                ", ID: " + categoryId + ", Level: " + navigationLevel);
+
+        // Safety check - don't proceed if category is null
+        if (category == null) {
+            Log.e(TAG, "Category is null in onCategoryClick");
+            return;
+        }
+
+        // If categoryId is -1, try to get it directly from the category object
+        if (categoryId == -1) {
+            categoryId = category.getId();
+            Log.d(TAG, "Retrieved category ID from object: " + categoryId);
+        }
+
         // Highlight the selected category visually if needed
         if (imageView != null) {
             animateCategorySelection(imageView);
@@ -138,6 +157,15 @@ public class ActivityCategory extends AppCompatActivity implements HierarchicalC
     }
 
     private void returnCategoryResult(CategoryTree category, int categoryId) {
+        // Add debug logging
+        Log.d(TAG, "returnCategoryResult - Category: " + category.getName() + ", ID: " + categoryId);
+
+        // Make sure we're not returning -1 as the category ID
+        if (categoryId < 0) {
+            Log.w(TAG, "Invalid category ID: " + categoryId + ", using 0 instead");
+            categoryId = 0; // Use 0 as a fallback
+        }
+
         // Return the selected category to ShopFragment
         Intent resultIntent = new Intent();
         resultIntent.putExtra(EXTRA_CATEGORY_ID, categoryId);
@@ -155,7 +183,7 @@ public class ActivityCategory extends AppCompatActivity implements HierarchicalC
     }
 
     private void animateCategorySelection(ImageView imageView) {
-        // You can keep your existing animation code here if needed
+        // You can implement animation if needed
     }
 
     @Override
