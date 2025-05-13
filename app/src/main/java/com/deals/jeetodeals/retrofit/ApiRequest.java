@@ -12,6 +12,7 @@ import com.deals.jeetodeals.Model.Category;
 import com.deals.jeetodeals.Model.ChangePassword;
 import com.deals.jeetodeals.Model.ChangePasswordResponse;
 import com.deals.jeetodeals.Model.Checkout;
+import com.deals.jeetodeals.Model.CouponResponse;
 import com.deals.jeetodeals.Model.DrawResponse;
 import com.deals.jeetodeals.Model.FcmResponse;
 import com.deals.jeetodeals.Model.GetCheckout;
@@ -44,8 +45,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
 import retrofit2.http.Header;
@@ -83,6 +86,21 @@ public interface ApiRequest {
             @Header("Authorization") String authorization,
             @Body Wishlist wishlist
     );
+
+    @POST("wc/store/v1/cart/coupons")
+    Call<CouponResponse> applyCoupon(
+            @Header("Authorization") String authToken,
+            @Header("nonce") String nonce,
+            @Query("code") String couponCode
+    );
+
+    @DELETE("wc/store/v1/cart/coupons")
+    Call<ResponseBody> removeCoupon(
+            @Header("Authorization") String auth,
+            @Header("nonce") String nonce
+    );
+
+
 
     @Headers({"Accept: application/json"})
     @HTTP(method = "DELETE", path = "custom/v1/wishlist/delete", hasBody = true)

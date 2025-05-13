@@ -67,6 +67,11 @@ public class ContainerActivity extends Utility {
         super.onCreate(savedInstanceState);
         binding = ActivityContainerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        Log.d("ContainerActivity", "onCreate called");
+        Log.d("ContainerActivity", "onCreate");
+
+        // Initial load (first time)
+        handleIntentNavigation(getIntent());
 
 
 
@@ -78,35 +83,8 @@ public class ContainerActivity extends Utility {
 
         setupNavigationView();
 
-        if (getIntent().hasExtra("navigate_to")) {
-            String navigateTo = getIntent().getStringExtra("navigate_to");
 
-            if ("ticket_fragment".equals(navigateTo)) {
-                // Load the ticket fragment
-                currentFragment = new TicketFragment();
-                loadFragment(currentFragment);
 
-                // Update bottom navigation to select the ticket item
-                binding.bottomNavigation.setSelectedItemId(R.id.ticket);
-                updateSelectedIcon(R.id.ticket);
-            } else if("profile".equals(navigateTo)) {
-                currentFragment = new FragmentProfile();
-                loadFragment(currentFragment);
-                binding.bottomNavigation.setSelectedItemId(R.id.profile);
-                updateSelectedIcon(R.id.profile);
-
-            }
-        } else {
-            // Set the default fragment (HomeFragment) when the activity is created
-            binding.bottomNavigation.setSelectedItemId(R.id.home);
-            updateSelectedIcon(R.id.home);
-
-            // Initialize with HomeFragment
-            if (currentFragment == null) {
-                currentFragment = new HomeFragment();
-                loadFragment(currentFragment);
-            }
-        }
 
         isLoggedIn = pref.getPrefBoolean(ContainerActivity.this, pref.login_status);
 
@@ -121,6 +99,16 @@ public class ContainerActivity extends Utility {
         handleBackPress();
         setupCartBadge();
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.d("ContainerActivity", "onNewIntent triggered");
+
+        setIntent(intent); // Important: Update the internal intent reference
+        handleIntentNavigation(intent);
+    }
+
 
     private void setupToolbar() {
         setSupportActionBar(binding.toolbar);
@@ -494,7 +482,9 @@ public class ContainerActivity extends Utility {
 
 
     private void loadFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
+        Log.d("NAVIGATION", "Loading fragment: " + fragment.getClass().getSimpleName());
+        getSupportFragmentManager()
+                .beginTransaction()
                 .replace(R.id.frame_layout, fragment)
                 .commit();
     }
@@ -560,6 +550,40 @@ public class ContainerActivity extends Utility {
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (getIntent().hasExtra("navigate_to")) {
+            String navigateTo = getIntent().getStringExtra("navigate_to");
+            Log.d("ContainerActivity2", "navigate_to = " + navigateTo);
+
+            if ("ticket_fragment".equals(navigateTo)) {
+                currentFragment = new TicketFragment();
+                binding.bottomNavigation.setSelectedItemId(R.id.ticket);
+                updateSelectedIcon(R.id.ticket);
+
+            } else if ("profile".equals(navigateTo)) {
+                currentFragment = new FragmentProfile();
+                binding.bottomNavigation.setSelectedItemId(R.id.profile);
+                updateSelectedIcon(R.id.profile);
+
+            } else if ("Order".equals(navigateTo)) {
+                Log.d("ContainerActivity2", "Navigating to FragmentMyOrders");
+                currentFragment = new FragmentMyOrders();
+                binding.bottomNavigation.setSelectedItemId(R.id.order);
+                updateSelectedIcon(R.id.order);
+            }
+
+            loadFragment(currentFragment);
+
+        } else {
+            Log.d("ContainerActivity2", "No navigate_to extra. Loading default HomeFragment.");
+            binding.bottomNavigation.setSelectedItemId(R.id.home);
+            updateSelectedIcon(R.id.home);
+
+            if (currentFragment == null) {
+                currentFragment = new HomeFragment();
+                loadFragment(currentFragment);
+            }
+        }
 
         // Get the fragment that's currently displayed on screen
         Fragment displayedFragment = getSupportFragmentManager().findFragmentById(R.id.frame_layout);
@@ -664,6 +688,41 @@ public class ContainerActivity extends Utility {
         // Restore normal text color behavior
         binding.bottomNavigation.setItemTextColor(colorStateList);
     }
+
+    private void handleIntentNavigation(Intent intent) {
+        if (intent != null && intent.hasExtra("navigate_to")) {
+            String navigateTo = intent.getStringExtra("navigate_to");
+            Log.d("ContainerActivity", "handleIntentNavigation: navigate_to = " + navigateTo);
+
+            switch (navigateTo) {
+                case "ticket_fragment":
+                    currentFragment = new TicketFragment();
+                    binding.bottomNavigation.setSelectedItemId(R.id.ticket);
+                    updateSelectedIcon(R.id.ticket);
+                    break;
+
+                case "profile":
+                    currentFragment = new FragmentProfile();
+                    binding.bottomNavigation.setSelectedItemId(R.id.profile);
+                    updateSelectedIcon(R.id.profile);
+                    break;
+
+                case "Order":
+                    currentFragment = new FragmentMyOrders();
+                    binding.bottomNavigation.setSelectedItemId(R.id.order);
+                    updateSelectedIcon(R.id.order);
+                    break;
+
+                default:
+                    currentFragment = new HomeFragment();
+                    binding.bottomNavigation.setSelectedItemId(R.id.home);
+                    updateSelectedIcon(R.id.home);
+            }
+
+            loadFragment(currentFragment);
+        }
+    }
+
 
 
 }

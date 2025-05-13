@@ -1,5 +1,6 @@
 package com.deals.jeetodeals.MyOrders;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,15 +17,23 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.deals.jeetodeals.Adapters.AdapterOrders;
+import com.deals.jeetodeals.Fragments.HomeFragment.HomeRepository;
+import com.deals.jeetodeals.SignInScreen.SignInActivity;
+import com.deals.jeetodeals.Utils.SharedPref;
 import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.databinding.FargmentMyOrdersBinding;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FragmentMyOrders extends Fragment {
 
     private FargmentMyOrdersBinding binding;
     private MyOrderViewModel viewModel;
+
+    SharedPref pref = new SharedPref();
+    private static AtomicBoolean isSessionDialogShowing = new AtomicBoolean(false);
 
     Utility utility = new Utility();
     private ArrayList<MyOrdersResponse> responsee;
@@ -65,6 +74,8 @@ public class FragmentMyOrders extends Fragment {
             if (response != null && response.isSuccess && response.data != null) {
                 responsee = response.data;
                 setUpRecyclerView(responsee);
+            } else if ("Expired token".equals(response.message)) {
+                handleSessionExpiry();
             } else {
                 Toast.makeText(requireContext(), "" + (response != null ? response.message : "Error fetching orders"), Toast.LENGTH_SHORT).show();
             }
@@ -87,5 +98,38 @@ public class FragmentMyOrders extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+
+    private void handleSessionExpiry() {
+        // Only show dialog if not already showing
+        if (!isSessionDialogShowing.getAndSet(true)) {
+            showSessionExpiredDialog();
+        }
+    }
+
+    private void showSessionExpiredDialog() {
+        if (!isAdded()) return;
+
+        // Reset session handling flag in HomeRepository first
+        HomeRepository.resetSessionExpiryFlag();
+
+        new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.MaterialAlertDialog_Material3)
+                .setTitle("Session Expired")
+                .setMessage("Your login has expired. Please log in again.")
+                .setCancelable(false)
+                .setPositiveButton("OK", (dialog, which) -> {
+                    pref.setPrefBoolean(requireActivity(), pref.login_status, false);
+
+                    Intent intent = new Intent(requireActivity(), SignInActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    requireActivity().finish();
+
+                    // Reset the flag when dialog is dismissed
+                    isSessionDialogShowing.set(false);
+                })
+                .setOnDismissListener(dialog -> isSessionDialogShowing.set(false))
+                .show();
     }
 }

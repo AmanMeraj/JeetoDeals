@@ -18,6 +18,7 @@ import com.deals.jeetodeals.Model.Category;
 import com.deals.jeetodeals.Model.ChangePassword;
 import com.deals.jeetodeals.Model.ChangePasswordResponse;
 import com.deals.jeetodeals.Model.Checkout;
+import com.deals.jeetodeals.Model.CouponResponse;
 import com.deals.jeetodeals.Model.FcmResponse;
 import com.deals.jeetodeals.Model.GetCheckout;
 import com.deals.jeetodeals.Model.InvoiceResponse;
@@ -30,6 +31,9 @@ import com.deals.jeetodeals.Model.WalletResponse;
 import com.deals.jeetodeals.Model.WishlistCreationResponse;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import okhttp3.ResponseBody;
 
 public class FragmentsViewModel extends AndroidViewModel {
     FragmentsRepository repository;
@@ -141,5 +145,14 @@ public class FragmentsViewModel extends AndroidViewModel {
         responseLiveDataCheckout = repository.checkoutPost(auth,nonce,checkout);
         return responseLiveDataCheckout;
     }
+
+    public LiveData<FragmentsRepository.ApiResponse<CouponResponse>> applyCoupon(String authToken, String nonce, String couponCode) {
+        return repository.applyCoupon(authToken, nonce, couponCode);
+    }
+
+    public LiveData<FragmentsRepository.ApiResponse<ResponseBody>> removeCoupon(String authToken, String nonce) {
+        return repository.removeCoupon(authToken, nonce);
+    }
+
 
 }

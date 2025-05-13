@@ -55,6 +55,7 @@
                 android:layout_below="@+id/tv_checkout"
                 android:layout_height="wrap_content">
                 <RelativeLayout
+                    android:id="@+id/coupon_box"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
@@ -70,7 +71,8 @@
                         android:layout_marginBottom="20dp"
                         android:layout_height="wrap_content"/>
                     <RelativeLayout
-                        android:layout_marginBottom="20dp"
+                        android:id="@+id/rel_box"
+                        android:layout_marginBottom="10dp"
                         android:layout_marginHorizontal="10dp"
                         android:layout_below="@+id/tv_enter_coupon"
                         android:background="@drawable/cupon_bg"
@@ -105,6 +107,18 @@
                             android:layout_height="wrap_content"/>
 
                     </RelativeLayout>
+                    <TextView
+                        android:id="@+id/remove_coupon_btn"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_below="@+id/rel_box"
+                        android:layout_width="wrap_content"
+                        android:text="Remove Coupon"
+                        android:textColor="@color/orange"
+                        android:fontFamily="@font/inter_extrabold"
+                        android:textSize="13dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_height="wrap_content"/>
 
                 </RelativeLayout>
 

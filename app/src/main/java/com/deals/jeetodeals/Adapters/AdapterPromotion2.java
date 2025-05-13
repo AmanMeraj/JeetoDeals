@@ -83,7 +83,8 @@ public class AdapterPromotion2 extends RecyclerView.Adapter<AdapterPromotion2.Pr
         } else {
             holder.binding.image.setImageResource(R.drawable.no_image);
         }
-
+        int totalSales = promotion.getExtensions().getCustom_lottery_data().getTotal_sales();
+        holder.binding.totalTicketTv.setText(totalSales+" Sold out of");
         holder.binding.textItemLeft.setText(promotion.getExtensions().getCustom_lottery_data().getMax_tickets());
         holder.binding.heading.setText(promotion.getName());
         holder.binding.heading2.setText(promotion.getName());

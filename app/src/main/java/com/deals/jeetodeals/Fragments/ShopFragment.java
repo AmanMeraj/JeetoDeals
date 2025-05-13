@@ -86,7 +86,7 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     boolean isLoggedIn=false;
     private final SharedPref pref = new SharedPref();
     private final Utility utility = new Utility();
-    private int selectedCategoryId = -1; // Default value, indicating no category selected
+    private int selectedCategoryId = 0; // Default value, indicating no category selected
     private List<ShopResponse> shopItems = new ArrayList<>();
     private Handler handler = new Handler();
     CategoryAdapter categoryAdapter;
@@ -654,6 +654,9 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         binding.loader.rlLoader.setVisibility(View.VISIBLE);
         showBottomLoader(false);
 
+        // Additional debugging
+        Log.d(TAG, "Fetching All Categories with order: " + currentOrder + ", orderBy: " + currentOrderBy);
+
         // Call the ViewModel method for fetching without category
         viewModel.getShopWithoutCategory("simple", currentPage, perPage,
                         currentOrder, currentOrderBy)
@@ -663,30 +666,60 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
                     showBottomLoader(false);
                     initialLoadComplete = true;
 
-                    if (response != null && response.isSuccess && response.data != null) {
-                        int itemsReceived = response.data.size();
-                        Log.d(TAG, "Received " + itemsReceived + " items for page " + currentPage + " (All Categories)");
+                    if (response != null) {
+                        // Log full response for debugging
+                        Log.d(TAG, "API Response: " + response);
 
-                        if (itemsReceived > 0) {
-                            shopItems.addAll(response.data);
-                            adapter.notifyDataSetChanged();
+                        if (response.isSuccess && response.data != null) {
+                            int itemsReceived = response.data.size();
+                            Log.d(TAG, "Received " + itemsReceived + " items for page " + currentPage + " (All Categories)");
 
-                            if (itemsReceived < perPage) {
-                                isLastPage = true;
-                                Log.d(TAG, "Setting isLastPage=true - Fewer items than requested");
+                            if (itemsReceived > 0) {
+                                shopItems.addAll(response.data);
+                                adapter.notifyDataSetChanged();
+
+                                // Check if RecyclerView is empty after update
+                                if (adapter.getItemCount() == 0) {
+                                    Log.e(TAG, "Adapter item count is 0 after adding data");
+                                    // Show empty state
+                                    showEmptyState(true);
+                                } else {
+                                    showEmptyState(false);
+                                }
+
+                                if (itemsReceived < perPage) {
+                                    isLastPage = true;
+                                    Log.d(TAG, "Setting isLastPage=true - Fewer items than requested");
+                                } else {
+                                    currentPage++;
+                                    Log.d(TAG, "Incremented currentPage to: " + currentPage);
+                                }
                             } else {
-                                currentPage++;
-                                Log.d(TAG, "Incremented currentPage to: " + currentPage);
+                                isLastPage = true;
+                                Log.d(TAG, "Setting isLastPage=true - Empty response");
+                                // Show empty state
+                                showEmptyState(true);
                             }
                         } else {
-                            isLastPage = true;
-                            Log.d(TAG, "Setting isLastPage=true - Empty response");
+                            Log.e(TAG, "API error: " + (response != null ? response.message : "Unknown error"));
+                            handleError(response != null ? response.message : "Unknown error");
+                            // Show empty state
+                            showEmptyState(true);
                         }
                     } else {
-                        Log.e(TAG, "API error: " + (response != null ? response.message : "Unknown error"));
-                        handleError(response != null ? response.message : "Unknown error");
+                        Log.e(TAG, "Null response received");
+                        handleError("Network error. Please try again.");
+                        showEmptyState(true);
                     }
                 });
+    }
+
+    // Add this helper method if it doesn't exist already
+    private void showEmptyState(boolean show) {
+        if (binding.noItem != null) {
+            binding.noItem.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+        binding.rcItems.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
     /**

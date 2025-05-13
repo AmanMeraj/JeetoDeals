@@ -16,6 +16,7 @@ import com.deals.jeetodeals.Model.Category;
 import com.deals.jeetodeals.Model.ChangePassword;
 import com.deals.jeetodeals.Model.ChangePasswordResponse;
 import com.deals.jeetodeals.Model.Checkout;
+import com.deals.jeetodeals.Model.CouponResponse;
 import com.deals.jeetodeals.Model.FcmResponse;
 import com.deals.jeetodeals.Model.GetCheckout;
 import com.deals.jeetodeals.Model.InvoiceResponse;
@@ -33,7 +34,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -168,6 +171,31 @@ public class FragmentsRepository {
 
         return liveData;
     }
+
+    public LiveData<ApiResponse<CouponResponse>> applyCoupon(String authToken, String nonce, String couponCode) {
+        MutableLiveData<ApiResponse<CouponResponse>> liveData = new MutableLiveData<>();
+
+        apiRequest.applyCoupon(authToken, nonce, couponCode).enqueue(new Callback<CouponResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<CouponResponse> call, @NonNull Response<CouponResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.setValue(new ApiResponse<>(response.body(), true, null));
+                } else {
+                    String errorMsg = "Coupon failed: " + response.code() + " " + response.message();
+                    Log.e(TAG, errorMsg);
+                    liveData.setValue(new ApiResponse<>(null, false, errorMsg));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<CouponResponse> call, @NonNull Throwable t) {
+                Log.e(TAG, "Coupon API failed: " + t.getMessage());
+                liveData.setValue(new ApiResponse<>(null, false, "Network failure: " + t.getMessage()));
+            }
+        });
+
+        return liveData;
+    }
     public LiveData<ApiResponse<ChangePasswordResponse>> changePass(String auth, ChangePassword changePassword) {
         final MutableLiveData<ApiResponse<ChangePasswordResponse>> liveData = new MutableLiveData<>();
 
@@ -193,6 +221,32 @@ public class FragmentsRepository {
 
         return liveData;
     }
+
+
+    public LiveData<ApiResponse<ResponseBody>> removeCoupon(String auth, String nonce) {
+        final MutableLiveData<ApiResponse<ResponseBody>> liveData = new MutableLiveData<>();
+
+        apiRequest.removeCoupon(auth, nonce).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    liveData.setValue(new ApiResponse<>(response.body(), true, "Coupon removed successfully"));
+                } else {
+                    handleErrorResponseDelCoupon(response, liveData);
+
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ResponseBody> call, @NonNull Throwable t) {
+                Log.e("CouponRepository", "API call failed: " + t.getMessage());
+                liveData.setValue(new ApiResponse<>(null, false, "Failed to connect. Please check your network."));
+            }
+        });
+
+        return liveData;
+    }
+
 
     public LiveData<ApiResponse<OrderDetailsResponse>> orderDetails(String auth, int orderId) {
         final MutableLiveData<ApiResponse<OrderDetailsResponse>> liveData = new MutableLiveData<>();
@@ -577,6 +631,20 @@ public class FragmentsRepository {
      * Extracts an error message and updates LiveData accordingly.
      */
     private void handleErrorResponse(Response<?> response, MutableLiveData<ApiResponse<CartResponse>> liveData) {
+        try {
+            if (response.errorBody() != null) {
+                String errorBody = response.errorBody().string();
+                String errorMessage = extractDynamicErrorMessage(errorBody);
+                liveData.setValue(new ApiResponse<>(null, false, errorMessage));
+            } else {
+                liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error parsing error response: " + e.getMessage());
+            liveData.setValue(new ApiResponse<>(null, false, "An unknown error occurred."));
+        }
+    }
+    private void handleErrorResponseDelCoupon(Response<?> response, MutableLiveData<ApiResponse<ResponseBody>> liveData) {
         try {
             if (response.errorBody() != null) {
                 String errorBody = response.errorBody().string();

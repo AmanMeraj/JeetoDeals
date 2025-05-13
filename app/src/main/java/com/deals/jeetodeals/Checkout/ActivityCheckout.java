@@ -5,6 +5,7 @@ import static android.widget.Toast.makeText;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -29,6 +30,7 @@ import com.deals.jeetodeals.Fragments.FragmentsRepository;
 import com.deals.jeetodeals.Fragments.FragmentsViewModel;
 import com.deals.jeetodeals.Model.CartResponse;
 import com.deals.jeetodeals.Model.Checkout;
+import com.deals.jeetodeals.Model.CouponResponse;
 import com.deals.jeetodeals.Model.GetCheckout;
 import com.deals.jeetodeals.MyOrders.FragmentMyOrders;
 import com.deals.jeetodeals.R;
@@ -44,6 +46,7 @@ import com.razorpay.PaymentResultWithDataListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +63,7 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
     private Map<String, String> stateNameMap;
     String selectedBillingStateCode,selectedShippingStateCode,orderId;
     CheckoutResponse responsee;
+    CartResponse cartResponse;
     private Checkout checkoutData;
     private static final String PAYMENT_METHOD_WALLET = "wallet";
     private static final String PAYMENT_METHOD_RAZORPAY = "razorpay";
@@ -72,7 +76,7 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
         binding = ActivityCheckoutBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         viewModel = new ViewModelProvider(this).get(FragmentsViewModel.class);
-
+         cartResponse = (CartResponse) getIntent().getSerializableExtra("cart_response");
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -83,6 +87,13 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
         setupUI();
         handleIntentData();
         setupListeners();
+
+        String  type=cartResponse.getItems().get(0).getType();
+        if("lottery".equals(type)){
+            binding.couponBox.setVisibility(View.VISIBLE);
+        }else{
+            binding.couponBox.setVisibility(View.GONE);
+        }
 
         if (isInternetConnected(this)) {
             Checkout();
@@ -205,7 +216,7 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
 
     // Replace the existing handleIntentData() method with this one
     private void handleIntentData() {
-        CartResponse cartResponse = (CartResponse) getIntent().getSerializableExtra("cart_response");
+
         String paymentMethod = getIntent().getStringExtra("payment_method");
 
         if (cartResponse != null) {
@@ -223,7 +234,7 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
                     // Uncheck the shipping checkbox to prevent any shipping fields from being processed
                     binding.shippingCheckBox.setChecked(false);
 
-                    binding.subtotal.setText(cartResponse.totals.getCurrency_code() + " " + cartResponse.totals.getTotal_price());
+                    binding.subtotal.setText(cartResponse.totals.getCurrency_code() + " " + cartResponse.totals.getTotal_items());
                     binding.total.setText(cartResponse.totals.getCurrency_code() + " " + cartResponse.totals.getTotal_price());
                 } else {
                     // For non-lottery items, show shipping options
@@ -235,7 +246,7 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
             }
 
             binding.shipping.setText(cartResponse.totals.getTotal_shipping());
-            binding.discount.setText(cartResponse.totals.getTotal_discount());
+            binding.discount.setText("(-) "+cartResponse.totals.getCurrency_code() + " " +cartResponse.totals.getTotal_discount());
         } else {
             Log.e("ActivityCheckout", "CartResponse is null");
             Toast.makeText(this, "Failed to load cart data", Toast.LENGTH_SHORT).show();
@@ -246,6 +257,20 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
     private void setupListeners() {
         // Back button
         binding.backBtn.setOnClickListener(view -> finish());
+
+        binding.removeCouponBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeCoupon();
+            }
+        });
+
+        binding.applyBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                applyCoupon();
+            }
+        });
 
         // Country selection
         binding.edtCountry.setOnItemClickListener((parent, view, position, id) -> {
@@ -339,6 +364,38 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
         setupEmailValidation();
     }
 
+    private void removeCoupon() {
+        binding.loader.rlLoader.setVisibility(View.VISIBLE);
+
+        String auth = "Bearer " + pref.getPrefString(this, pref.user_token);
+        String nonce = pref.getPrefString(this, pref.nonce);
+
+        viewModel.removeCoupon(auth, nonce).observe(this, response -> {
+            binding.loader.rlLoader.setVisibility(View.GONE);
+
+            if (response != null && response.isSuccess && response.data != null) {
+                // Clear discount UI
+                binding.discount.setText("(-) INR 0");
+                binding.discount.setTextColor(binding.subtotal.getCurrentTextColor());
+
+                // Restore original cart total
+                String originalTotal = pref.getPrefString(this, "cart_total");
+                String currencyPrefix = "INR "; // Or fetch from preferences or API
+                binding.total.setText(currencyPrefix + cartResponse.totals.getTotal_items());
+
+                // Remove stored discounted values
+                pref.setPrefString(this, "discounted_total", originalTotal);
+                pref.setPrefString(this, "coupon_response", "");
+
+                Toast.makeText(this, response.message != null ? response.message : "Coupon removed successfully", Toast.LENGTH_SHORT).show();
+            } else {
+                Log.e("RemoveCoupon", "Coupon removal failed: " + (response != null ? response.message : "Unknown error"));
+                Toast.makeText(this, response != null ? response.message : "Failed to remove coupon", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
     private void setupEmailValidation() {
         TextWatcher emailValidator = new TextWatcher() {
             @Override
@@ -381,6 +438,72 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
             binding.loader.rlLoader.setVisibility(View.GONE);
         });
     }
+    private void applyCoupon() {
+        binding.loader.rlLoader.setVisibility(View.VISIBLE);
+
+        String auth = "Bearer " + pref.getPrefString(this, pref.user_token);
+        String nonce = pref.getPrefString(this, pref.nonce);
+        String couponCode = binding.edtCoupon.getText().toString().trim();
+
+        viewModel.applyCoupon(auth, nonce, couponCode).observe(this, response -> {
+            binding.loader.rlLoader.setVisibility(View.GONE);
+
+            if (response != null && response.isSuccess && response.data != null) {
+                // Since response.data is a List<CouponResponse>, get the first item
+                CouponResponse couponResponse = response.data;
+
+                if (couponResponse != null && couponResponse.getTotals() != null) {
+                    CouponResponse.Totals totals = couponResponse.getTotals();
+
+                    String currencyPrefix = "(-) INR";
+                    String totalDiscount = totals.getTotalDiscount();
+
+                    // Format and display the discount
+                    if (totalDiscount != null && !totalDiscount.equals("0")) {
+                        binding.discount.setText("(-) INR " + totalDiscount);
+                        binding.discount.setTextColor(Color.BLACK);
+                    } else {
+                        binding.discount.setText(currencyPrefix + "0.00");
+                        binding.discount.setTextColor(binding.subtotal.getCurrentTextColor());
+                    }
+
+                    // Calculate new total (Assuming you already have subtotal and shipping elsewhere)
+                    try {
+                        String subtotalStr = cartResponse.getTotals().getTotal_items();
+                        if (TextUtils.isEmpty(subtotalStr)) subtotalStr = "0";
+                        double subTotal = Double.parseDouble(subtotalStr);
+
+                        Log.d("ApplyCoupon", "Raw totalDiscount: " + totalDiscount);
+
+                        String sanitizedDiscount = totalDiscount.replaceAll("[^\\d.]+", "").trim();
+                        double discountValue = Double.parseDouble(sanitizedDiscount);
+
+                        double finalTotal = subTotal - discountValue;
+
+                        binding.total.setText( "INR "+String.format("%.2f", finalTotal));
+                        pref.setPrefString(this, "discounted_total", String.valueOf(finalTotal));
+
+                        // Save coupon response for future use
+                        String couponResponseJson = new Gson().toJson(couponResponse);
+                        pref.setPrefString(this, "coupon_response", couponResponseJson);
+
+                        Toast.makeText(this, "Coupon applied successfully", Toast.LENGTH_SHORT).show();
+
+                    } catch (NumberFormatException e) {
+                        Log.e("ApplyCoupon", "Error parsing values: " + e.getMessage());
+                        Toast.makeText(this, "Error calculating discount", Toast.LENGTH_SHORT).show();
+                    }
+
+                } else {
+                    Toast.makeText(this, "Invalid coupon response", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Log.e("ApplyCoupon", "Coupon failed: " + (response != null ? response.message : "Unknown error"));
+                Toast.makeText(this, response != null ? response.message : "Coupon application failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     private void fillFeilds(FragmentsRepository.ApiResponse<GetCheckout> getCheckoutResponse) {
         // Retrieve stored values from SharedPreferences
@@ -569,6 +692,19 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
         String paymentMethod = getIntent().getStringExtra("payment_method");
         binding.loader.rlLoader.setVisibility(View.VISIBLE);
 
+        // Check if a coupon has been applied and retrieve the discounted total
+        String discountedTotal = pref.getPrefString(this, "discounted_total");
+        if (!TextUtils.isEmpty(discountedTotal)) {
+            // If we have a discounted total, use it for the payment amount
+            Log.d("Checkout", "Using discounted total for payment: " + discountedTotal);
+            // You might want to add this to the checkout object if needed
+            // For example, if your backend needs this information:
+            // checkout.setDiscountedTotal(discountedTotal);
+        } else {
+            // No discount applied, use the regular total
+            Log.d("Checkout", "Using regular total for payment");
+        }
+
         if ("razorpay".equals(paymentMethod)) {
             processWalletPayment(checkout);
         } else if ("wallet".equals(paymentMethod)) {
@@ -579,11 +715,11 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
     }
     private void startRazorpayPayment() {
         com.razorpay.Checkout razorpayCheckout = new com.razorpay.Checkout();
-        razorpayCheckout.setKeyID(pref.getPrefString(this,pref.payment_key));
+        razorpayCheckout.setKeyID(pref.getPrefString(this, pref.payment_key));
 
         // Log the initialization
         Log.d("RAZORPAY_DEBUG", "Initializing Razorpay payment");
-        Log.d("RAZORPAY_DEBUG", "Key ID: rzp_test_eB9tKqgSGeVVtQ");
+        Log.d("RAZORPAY_DEBUG", "Key ID: " + pref.getPrefString(this, pref.payment_key));
         Log.d("RAZORPAY_DEBUG", "Order ID: " + orderId);
 
         try {
@@ -592,14 +728,26 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
             Log.d("RAZORPAY_DEBUG", "Email: " + checkoutData.billing_address.email);
             Log.d("RAZORPAY_DEBUG", "Phone: " + checkoutData.billing_address.phone);
 
-            // Log amount calculation
-            String amountStr = binding.total.getText().toString();
-            Log.d("RAZORPAY_DEBUG", "Original amount string: " + amountStr);
+            // Check if we have a discounted total to use
+            String discountedTotal = pref.getPrefString(this, "discounted_total");
+            double amount;
 
-            amountStr = amountStr.replaceAll("[^0-9.]", "");
-            Log.d("RAZORPAY_DEBUG", "Cleaned amount string: " + amountStr);
+            if (!TextUtils.isEmpty(discountedTotal)) {
+                // Use the discounted total (already calculated in applyCoupon)
+                amount = Double.parseDouble(discountedTotal) * 100;
+                Log.d("RAZORPAY_DEBUG", "Using discounted amount: " + discountedTotal);
+            } else {
+                // Fall back to the original total shown in the UI
+                String amountStr = binding.total.getText().toString();
+                Log.d("RAZORPAY_DEBUG", "Original amount string: " + amountStr);
 
-            double amount = Double.parseDouble(amountStr) * 100;
+                amountStr = amountStr.replaceAll("[^0-9.]", "");
+                Log.d("RAZORPAY_DEBUG", "Cleaned amount string: " + amountStr);
+
+                amount = Double.parseDouble(amountStr) * 100;
+                Log.d("RAZORPAY_DEBUG", "Using regular amount from UI");
+            }
+
             Log.d("RAZORPAY_DEBUG", "Final amount in paise: " + (int)amount);
 
             JSONObject options = new JSONObject();
@@ -666,18 +814,6 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
 
     @Override
     public void onPaymentSuccess(String razorpayPaymentId, PaymentData paymentData) {
-//        Toast.makeText(this, "Payment Successful", Toast.LENGTH_SHORT).show();
-//
-//        // Create intent to return to ContainerActivity
-//        Intent intent = new Intent(ActivityCheckout.this, ContainerActivity.class);
-//
-//        // Add extra to indicate we should show the TicketFragment
-//        intent.putExtra("navigate_to", "ticket_fragment");
-//
-//        // Start activity and finish current one
-//        startActivity(intent);
-//        finish();
-
         String auth = "Bearer " + pref.getPrefString(this, pref.user_token);
         String cartId = pref.getPrefString(this,pref.nonce); // Make sure you pass the correct cart ID
 
@@ -712,57 +848,59 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
         String auth = "Bearer " + pref.getPrefString(this, pref.user_token);
         String nonce = pref.getPrefString(this, pref.nonce);
 
-        int retryCount = 0;
-        int maxRetries = 3;
+        binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        attemptCheckout(auth, nonce, checkout, 0, 3);
+    }
 
-        while (retryCount < maxRetries) {
-            try {
-                viewModel.postCheckout(auth, nonce, checkout).observe(this, response -> {
-                    if (response != null && response.isSuccess && response.data != null) {
-                        binding.loader.rlLoader.setVisibility(View.GONE);
-                        responsee = response.data;
-                        orderId=responsee.getRazorpay_order().getId();
-                        Log.d("RAZORPAY", "processWalletPayment: "+orderId);
-                        if(responsee.payment_method.matches("razorpay")){
-                            startRazorpayPayment();
-                        }else{
-                            Fragment fragment = new FragmentMyOrders();
-                            FragmentTransaction transaction =
-                                    getSupportFragmentManager()
-                                    .beginTransaction();
-                            transaction.replace(R.id.frame_layout, fragment); // Replace with your actual container ID
-                            transaction.commit(); // Do NOT add to back stack
+    private void attemptCheckout(String auth, String nonce, Checkout checkout, int currentRetry, int maxRetries) {
+        viewModel.postCheckout(auth, nonce, checkout).observe(this, response -> {
+            if (response != null && response.isSuccess && response.data != null) {
+                // Success case
+                binding.loader.rlLoader.setVisibility(View.GONE);
+                responsee = response.data;
+                orderId = responsee.getRazorpay_order().getId();
+                Log.d("RAZORPAY", "processWalletPayment: " + orderId);
 
-                            // Update bottom navigation selection
-                            BottomNavigationView navView = findViewById(R.id.bottom_navigation);
-                            navView.setSelectedItemId(R.id.order);
-
-                        }
-                    } else {
-                        binding.loader.rlLoader.setVisibility(View.GONE);
-                        Log.e("Checkout Error", "Response is null or unsuccessful: " +
-                                (response != null ? response.message : "Unknown error"));
-                        Toast.makeText(this, response != null ? response.message :
-                                "Unknown error", Toast.LENGTH_SHORT).show();
-                    }
-                    binding.loader.rlLoader.setVisibility(View.GONE);
-                });
-                break;
-            } catch (Exception e) {
-                retryCount++;
-                if (retryCount >= maxRetries) {
-                    Log.e("Checkout Error", "API timed out after " + maxRetries +
-                            " retries: " + e.getMessage());
-                    Toast.makeText(this, "Payment timed out. Please check your order status.",
-                            Toast.LENGTH_SHORT).show();
+                if (responsee.payment_method.matches("razorpay")) {
+                    startRazorpayPayment();
                 } else {
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
+                    navigateToOrdersScreen();
+                }
+            } else {
+                // Handle failure - check if we should retry
+                if (currentRetry < maxRetries - 1) {
+                    // Retry after delay
+                    binding.loader.rlLoader.setVisibility(View.VISIBLE);
+                    Log.d("Checkout Retry", "Attempt " + (currentRetry + 1) + " failed. Retrying in 2 seconds.");
+
+                    new Handler().postDelayed(() -> {
+                        // Get fresh nonce if needed
+                        String freshNonce = pref.getPrefString(this, pref.nonce);
+                        attemptCheckout(auth, freshNonce, checkout, currentRetry + 1, maxRetries);
+                    }, 2000);
+                } else {
+                    // All retries failed
+                    binding.loader.rlLoader.setVisibility(View.GONE);
+                    String errorMessage = (response != null && response.message != null) ?
+                            response.message : "Payment request failed after multiple attempts";
+                    Log.e("Checkout Error", errorMessage);
+                    Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
                 }
             }
-        }
+        });
     }
+
+    private void navigateToOrdersScreen() {
+        Log.d("Checkout", "Navigating to My Orders Fragment via ContainerActivity");
+
+        Intent intent = new Intent(this, ContainerActivity.class);
+        intent.putExtra("navigate_to", "Order");
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finish(); // Optional: Close current activity
+    }
+
+
+
+
 }

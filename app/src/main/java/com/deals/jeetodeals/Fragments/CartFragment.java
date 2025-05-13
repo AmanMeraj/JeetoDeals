@@ -18,14 +18,17 @@ import com.bumptech.glide.Glide;
 import com.deals.jeetodeals.Adapters.AdapterCart;
 import com.deals.jeetodeals.Checkout.ActivityCheckout;
 import com.deals.jeetodeals.ContainerActivity.ContainerActivity;
+import com.deals.jeetodeals.Fragments.HomeFragment.HomeRepository;
 import com.deals.jeetodeals.Model.AddItems;
 import com.deals.jeetodeals.Model.CartResponse;
 import com.deals.jeetodeals.Model.Items;
 import com.deals.jeetodeals.Model.Total;
 import com.deals.jeetodeals.R;
+import com.deals.jeetodeals.SignInScreen.SignInActivity;
 import com.deals.jeetodeals.Utils.SharedPref;
 import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.databinding.FragmentCartBinding;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +43,7 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
     FragmentsViewModel fragmentsViewModel;
     CartResponse responsee;
     private AdapterCart adapter;
+    private static AtomicBoolean isSessionDialogShowing = new AtomicBoolean(false);
     private AtomicBoolean isLoadingBalance = new AtomicBoolean(false);
     private List<Items> itemList = new ArrayList<>(); // Store cart items
 
@@ -157,12 +161,47 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
                 }
 
                 populateRC(responsee.totals);
+            } else if ("Expired token".equals(response.message)) {
+                handleSessionExpiry();
             } else {
                 showLoader(false);
                 binding.ivEmptyCart.setVisibility(View.VISIBLE); // Show empty cart icon
                 Toast.makeText(requireContext(), response != null ? response.message : "Unknown error", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+    private void handleSessionExpiry() {
+        // Only show dialog if not already showing
+        if (!isSessionDialogShowing.getAndSet(true)) {
+            showSessionExpiredDialog();
+        }
+    }
+
+    private void showSessionExpiredDialog() {
+        if (!isAdded()) return;
+
+        // Reset session handling flag in HomeRepository first
+        HomeRepository.resetSessionExpiryFlag();
+
+        new MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.MaterialAlertDialog_Material3)
+                .setTitle("Session Expired")
+                .setMessage("Your login has expired. Please log in again.")
+                .setCancelable(false)
+                .setPositiveButton("OK", (dialog, which) -> {
+                    pref.setPrefBoolean(requireActivity(), pref.login_status, false);
+
+                    Intent intent = new Intent(requireActivity(), SignInActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    requireActivity().finish();
+
+                    // Reset the flag when dialog is dismissed
+                    isSessionDialogShowing.set(false);
+                })
+                .setOnDismissListener(dialog -> isSessionDialogShowing.set(false))
+                .show();
     }
 
 
@@ -203,6 +242,7 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
             binding.walletBalance.setVisibility(View.GONE);
             binding.total.setText(responsee.totals.currency_code + " " + responsee.totals.getTotal_price());
             binding.subTotal.setText(responsee.totals.currency_code + " " + responsee.totals.getTotal_items());
+            binding.discount.setText(("(-) ") +responsee.totals.currency_code + " " + responsee.totals.getTotal_discount());
         } else {
 
             binding.walletBalance.setVisibility(View.VISIBLE);
@@ -210,6 +250,7 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
 
             binding.total.setText(responsee.totals.currency_symbol + " " + responsee.totals.getTotal_price());
             binding.subTotal.setText(responsee.totals.currency_symbol + " " + responsee.totals.getTotal_price());
+            binding.discount.setText(("(-) ") +responsee.totals.currency_code + " " + responsee.totals.getTotal_discount());
 
             // Wallet Balance Selection Logic
             binding.walletBalance.setOnClickListener(v -> toggleWalletSelection(totals));
