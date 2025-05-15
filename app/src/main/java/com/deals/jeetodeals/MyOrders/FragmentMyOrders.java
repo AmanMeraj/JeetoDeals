@@ -1,5 +1,7 @@
 package com.deals.jeetodeals.MyOrders;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,7 +19,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.deals.jeetodeals.Adapters.AdapterOrders;
+import com.deals.jeetodeals.ContainerActivity.ContainerActivity;
+import com.deals.jeetodeals.Fragments.FragmentsRepository;
+import com.deals.jeetodeals.Fragments.FragmentsViewModel;
 import com.deals.jeetodeals.Fragments.HomeFragment.HomeRepository;
+import com.deals.jeetodeals.Model.CartResponse;
 import com.deals.jeetodeals.SignInScreen.SignInActivity;
 import com.deals.jeetodeals.Utils.SharedPref;
 import com.deals.jeetodeals.Utils.Utility;
@@ -31,6 +37,9 @@ public class FragmentMyOrders extends Fragment {
 
     private FargmentMyOrdersBinding binding;
     private MyOrderViewModel viewModel;
+    private FragmentsViewModel fragmentViewModel;
+    private AtomicBoolean isLoadingCart = new AtomicBoolean(false);
+    CartResponse cartResponse;
 
     SharedPref pref = new SharedPref();
     private static AtomicBoolean isSessionDialogShowing = new AtomicBoolean(false);
@@ -50,6 +59,7 @@ public class FragmentMyOrders extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = new ViewModelProvider(this).get(MyOrderViewModel.class);
+        fragmentViewModel =new ViewModelProvider(this).get(FragmentsViewModel.class);
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -60,6 +70,7 @@ public class FragmentMyOrders extends Fragment {
 
         if (utility.isInternetConnected(requireContext())) {
             getOrders();
+            getCart();
         } else {
             Toast.makeText(requireContext(), "No Internet Connection!", Toast.LENGTH_SHORT).show();
         }
@@ -131,5 +142,64 @@ public class FragmentMyOrders extends Fragment {
                 })
                 .setOnDismissListener(dialog -> isSessionDialogShowing.set(false))
                 .show();
+    }
+
+    public void getCart() {
+        // Show loader when API call starts
+        if (binding != null) {
+            binding.loader.rlLoader.setVisibility(View.VISIBLE);
+        }
+
+        if (isLoadingCart.get() || !isAdded()) return;
+
+        isLoadingCart.set(true);
+        String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
+
+        fragmentViewModel.getCart(auth).observe(getViewLifecycleOwner(), response -> {
+            isLoadingCart.set(false);
+
+            if (!isAdded() || binding == null) return;
+
+            // Hide loader regardless of response
+            binding.loader.rlLoader.setVisibility(View.GONE);
+
+            if (response != null) {
+                if (response.isSuccess && response.data != null) {
+                    cartResponse = response.data;
+                    String nonce = FragmentsRepository.getNonce();
+                    pref.setPrefString(requireActivity(), pref.nonce, nonce);
+                    Log.d("GET CART NONCE", "getCart: " + nonce);
+
+                    // Update cart badge count
+                    if (cartResponse.getItems() != null) {
+                        int cartCount = cartResponse.getItems_count();
+                        pref.setPrefInteger(requireActivity(), pref.cart_count, cartCount);
+
+                        // Update badge in ContainerActivity
+                        if (getActivity() instanceof ContainerActivity) {
+                            ((ContainerActivity) getActivity()).updateCartBadge(cartCount);
+                        }
+                    }
+                } else if ("Unauthorized".equals(response.message)) {
+                    handleSessionExpiry();
+                } else {
+                    Log.w(TAG, "Cart retrieval failed: " + response.message);
+                }
+            } else {
+                showToast("Something went wrong!");
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getCart();
+    }
+
+    private void showToast(String message) {
+        if (isAdded() && getContext() != null) {
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
     }
 }

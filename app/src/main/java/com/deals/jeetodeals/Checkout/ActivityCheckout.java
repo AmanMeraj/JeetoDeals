@@ -861,9 +861,11 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
                 orderId = responsee.getRazorpay_order().getId();
                 Log.d("RAZORPAY", "processWalletPayment: " + orderId);
 
+
                 if (responsee.payment_method.matches("razorpay")) {
                     startRazorpayPayment();
                 } else {
+                   Toast.makeText(this, "Order Placed Successfully!", Toast.LENGTH_SHORT).show();
                     navigateToOrdersScreen();
                 }
             } else {
