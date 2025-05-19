@@ -94,7 +94,7 @@ public class ActivityCategory extends AppCompatActivity implements HierarchicalC
                     if (!categoryName.equalsIgnoreCase("Ongoing Promotion") &&
                             !categoryName.equalsIgnoreCase("Promotion") &&
                             !categoryName.equalsIgnoreCase("Uncategorized") &&
-                            !categoryName.equalsIgnoreCase("Future Campaign")) {
+                            !categoryName.equalsIgnoreCase("Future Campaigns")) {
                         filteredCategories.add(category);
                     }
                 }

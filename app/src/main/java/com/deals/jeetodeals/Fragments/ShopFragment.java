@@ -6,6 +6,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -13,6 +14,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -76,7 +79,7 @@ import java.util.jar.Attributes;
 
 public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickListener,CategoryAdapter.OnCategoryClickListener{
     private static final String TAG = "ShopFragment";
-    private static final int REQUEST_CATEGORY_SELECTION = 1001;
+    private static final int REQUEST_CATEGORY_SELECTION = 101;
     private FragmentShopBinding binding;
     private SortOptionsAdapter sortAdapter;
     private String currentOrder = null;
@@ -106,6 +109,17 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     private AdapterCard2 adapter;
     private WishlistCreationResponse responsee;
     private AtomicBoolean isLoadingCart = new AtomicBoolean(false);
+
+    private ActivityResultLauncher<Intent> categorySelectionLauncher = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+    result -> {
+        if (result.getResultCode() == Activity.RESULT_OK) {
+            Intent data = result.getData();
+            Log.d("JWD", ": m here new");
+            // handle the result here
+        }
+    }
+    );
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -578,7 +592,7 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     @Override
     public void onCategoryClick(Category category, ImageView imageView, int categoryId) {
         // Log the selection
-        Log.d(TAG, "onCategoryClick: Category=" + (category != null ? category.getName() : "null") +
+        Log.d("JWD", "onCategoryClick: Category=" + (category != null ? category.getName() : "null") +
                 ", ID=" + categoryId);
 
         // Handle UI animations
@@ -871,7 +885,12 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        //super.onActivityResult(requestCode, resultCode, data);
+
+        Log.d("JWD", "I AM HERE: ");
+        if (1==1) {
+            return;
+        }
 
         Log.d(TAG, "onActivityResult: requestCode=" + requestCode + ", resultCode=" + resultCode);
 
@@ -917,6 +936,7 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
 
     // Enhanced fetchProductsByCategory method with better error handling
     private void fetchProductsByCategory(int id, boolean isInitialLoad) {
+
         if (id <= 0) {
             Log.e(TAG, "Invalid category ID: " + id);
             if (binding != null && binding.loader != null && binding.loader.rlLoader != null) {
@@ -1044,8 +1064,11 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
         // Set up click listener for the category layout
         if (binding != null && binding.categoryLayout != null) {
             binding.categoryLayout.setOnClickListener(v -> {
+
+
                 Intent intent = new Intent(requireActivity(), ActivityCategory.class);
-                startActivityForResult(intent, REQUEST_CATEGORY_SELECTION);
+                categorySelectionLauncher.launch(intent);
+               // startActivityForResult(intent, REQUEST_CATEGORY_SELECTION);
             });
         }
     }
