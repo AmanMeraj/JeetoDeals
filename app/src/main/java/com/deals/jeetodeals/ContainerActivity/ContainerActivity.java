@@ -331,7 +331,7 @@ public class ContainerActivity extends Utility {
 
         // Create and store the listener
         navigationItemSelectedListener = item -> {
-
+            binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
             isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
             Fragment fragment = null;
 
@@ -380,7 +380,6 @@ public class ContainerActivity extends Utility {
                     startActivity(intent);
                     return false; // Don't select this item if redirecting
                 } else {
-                    binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
                     fragment = new CartFragment();
                 }
             }
