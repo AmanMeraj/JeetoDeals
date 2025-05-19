@@ -67,7 +67,7 @@ public class ContainerActivity extends Utility {
         super.onCreate(savedInstanceState);
         binding = ActivityContainerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        Log.d("ContainerActivity", "onCreate called");
+        Log.d("JWD", "onCreate called");
         Log.d("ContainerActivity", "onCreate");
 
         // Initial load (first time)
@@ -94,6 +94,14 @@ public class ContainerActivity extends Utility {
             binding.tvUserNsame.setText("");
         }
 
+        binding.bottomNavigation.setSelectedItemId(R.id.home);
+            updateSelectedIcon(R.id.home);
+
+            if (currentFragment == null) {
+                currentFragment = new HomeFragment();
+                loadFragment(currentFragment);
+            }
+
 
         // Handle back press to navigate to HomeFragment or close the app
         handleBackPress();
@@ -103,7 +111,7 @@ public class ContainerActivity extends Utility {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Log.d("ContainerActivity", "onNewIntent triggered");
+        Log.d("JWD", "onNewIntent triggered");
 
         setIntent(intent); // Important: Update the internal intent reference
         handleIntentNavigation(intent);
@@ -323,6 +331,8 @@ public class ContainerActivity extends Utility {
 
         // Create and store the listener
         navigationItemSelectedListener = item -> {
+
+            isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
             Fragment fragment = null;
 
             // Change icon for selected item
@@ -330,24 +340,20 @@ public class ContainerActivity extends Utility {
 
             if (item.getItemId() == R.id.home) {
                 fragment = new HomeFragment();
-                binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
             } else if (item.getItemId() == R.id.profile) {
-                binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
+
                 if (isLoggedIn) {
-                    // If logged in, open the profile activity
-                    binding.bottomNavigation.setOnItemSelectedListener(null); // Temporarily remove listener
-                    binding.bottomNavigation.setSelectedItemId(R.id.profile);  // Select ticket in bottom nav
-                    updateSelectedIcon(R.id.profile);
-                    binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
-                    binding.bottomNavigation.setOnItemSelectedListener(navigationItemSelectedListener);
-                    loadFragment(new FragmentProfile());
+                    fragment = new FragmentProfile();
                 } else {
                     // If not logged in, redirect to login activity
                     Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
-                    startActivity(intent);} // Keep selection state
-            } else if (item.getItemId() == R.id.ticket) {
-                isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
-                binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
+                    startActivity(intent);
+                    return false;
+                }
+
+            }
+
+            else if (item.getItemId() == R.id.ticket) {
 
                 if (!isLoggedIn) {
                     // User is not logged in, redirect to login screen
@@ -358,8 +364,6 @@ public class ContainerActivity extends Utility {
                     fragment = new TicketFragment();
                 }
             } else if (item.getItemId() == R.id.order) {
-                isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
-                binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
                 if (!isLoggedIn) {
                     // User is not logged in, redirect to login screen
                     Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
@@ -369,14 +373,14 @@ public class ContainerActivity extends Utility {
                     fragment = new FragmentMyOrders();
                 }
             } else if (item.getItemId() == R.id.cart) {
-                isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
-                binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
+
                 if (!isLoggedIn) {
                     // User is not logged in, redirect to login screen
                     Intent intent = new Intent(ContainerActivity.this, SignInActivity.class);
                     startActivity(intent);
                     return false; // Don't select this item if redirecting
                 } else {
+                    binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
                     fragment = new CartFragment();
                 }
             }
@@ -413,13 +417,13 @@ public class ContainerActivity extends Utility {
         // Set selected icon
         if (selectedItemId == R.id.home) {
             menu.findItem(R.id.home).setIcon(R.drawable.white_home);
-        } else if (selectedItemId == R.id.ticket) {
+        } else if (selectedItemId == R.id.ticket&&isLoggedIn) {
             menu.findItem(R.id.ticket).setIcon(R.drawable.white_ticket);
-        } else if (selectedItemId == R.id.order) {
+        } else if (selectedItemId == R.id.order&&isLoggedIn) {
             menu.findItem(R.id.order).setIcon(R.drawable.clipboard);
-        } else if (selectedItemId == R.id.cart) {
+        } else if (selectedItemId == R.id.cart&&isLoggedIn) {
             menu.findItem(R.id.cart).setIcon(R.drawable.white_cart);
-        } else if (selectedItemId == R.id.profile) {
+        } else if (selectedItemId == R.id.profile&&isLoggedIn) {
             Drawable icon = ContextCompat.getDrawable(this, R.drawable.user);
             if (icon != null) {
                 icon = icon.mutate(); // Ensure it doesn't affect other uses of this drawable
@@ -550,71 +554,71 @@ public class ContainerActivity extends Utility {
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (getIntent().hasExtra("navigate_to")) {
-            String navigateTo = getIntent().getStringExtra("navigate_to");
-            Log.d("ContainerActivity2", "navigate_to = " + navigateTo);
-
-            if ("ticket_fragment".equals(navigateTo)) {
-                currentFragment = new TicketFragment();
-                binding.bottomNavigation.setSelectedItemId(R.id.ticket);
-                updateSelectedIcon(R.id.ticket);
-
-            } else if ("profile".equals(navigateTo)) {
-                currentFragment = new FragmentProfile();
-                binding.bottomNavigation.setSelectedItemId(R.id.profile);
-                updateSelectedIcon(R.id.profile);
-
-            } else if ("Order".equals(navigateTo)) {
-                Log.d("ContainerActivity2", "Navigating to FragmentMyOrders");
-                currentFragment = new FragmentMyOrders();
-                binding.bottomNavigation.setSelectedItemId(R.id.order);
-                updateSelectedIcon(R.id.order);
-            }
-
-            loadFragment(currentFragment);
-
-        } else {
-            Log.d("ContainerActivity2", "No navigate_to extra. Loading default HomeFragment.");
-            binding.bottomNavigation.setSelectedItemId(R.id.home);
-            updateSelectedIcon(R.id.home);
-
-            if (currentFragment == null) {
-                currentFragment = new HomeFragment();
-                loadFragment(currentFragment);
-            }
-        }
-
-        // Get the fragment that's currently displayed on screen
-        Fragment displayedFragment = getSupportFragmentManager().findFragmentById(R.id.frame_layout);
-
-        // Update the bottom navigation to match what's actually displayed
-        if (displayedFragment instanceof FragmentProfile) {
-            // If Profile fragment is shown, select Profile tab
-            binding.bottomNavigation.setOnItemSelectedListener(null); // Temporarily remove listener
-            binding.bottomNavigation.setSelectedItemId(R.id.profile);
-            updateSelectedIcon(R.id.profile);
-            binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
-            binding.bottomNavigation.setOnItemSelectedListener(navigationItemSelectedListener);
-            currentFragment = displayedFragment;
-        } else if (displayedFragment instanceof HomeFragment) {
-            binding.bottomNavigation.setSelectedItemId(R.id.home);
-            updateSelectedIcon(R.id.home);
-            currentFragment = displayedFragment;
-        } else if (displayedFragment instanceof TicketFragment) {
-            binding.bottomNavigation.setSelectedItemId(R.id.ticket);
-            updateSelectedIcon(R.id.ticket);
-            currentFragment = displayedFragment;
-        } else if (displayedFragment instanceof FragmentMyOrders) {
-            binding.bottomNavigation.setSelectedItemId(R.id.order);
-            updateSelectedIcon(R.id.order);
-            currentFragment = displayedFragment;
-        } else if (displayedFragment instanceof CartFragment) {
-            binding.bottomNavigation.setSelectedItemId(R.id.cart);
-            updateSelectedIcon(R.id.cart);
-            currentFragment = displayedFragment;
-        }
-
+//        Log.d("JWD", "navigate_to = " );
+//        if (getIntent().hasExtra("navigate_to")) {
+//            String navigateTo = getIntent().getStringExtra("navigate_to");
+//
+//
+//            if ("ticket_fragment".equals(navigateTo)) {
+//                currentFragment = new TicketFragment();
+//                binding.bottomNavigation.setSelectedItemId(R.id.ticket);
+//                updateSelectedIcon(R.id.ticket);
+//
+//            } else if ("profile".equals(navigateTo)) {
+//                currentFragment = new FragmentProfile();
+//                binding.bottomNavigation.setSelectedItemId(R.id.profile);
+//                updateSelectedIcon(R.id.profile);
+//
+//            } else if ("Order".equals(navigateTo)) {
+//                Log.d("ContainerActivity2", "Navigating to FragmentMyOrders");
+//                currentFragment = new FragmentMyOrders();
+//                binding.bottomNavigation.setSelectedItemId(R.id.order);
+//                updateSelectedIcon(R.id.order);
+//            }
+//
+//            loadFragment(currentFragment);
+//
+//        } else {
+//            Log.d("ContainerActivity2", "No navigate_to extra. Loading default HomeFragment.");
+//            binding.bottomNavigation.setSelectedItemId(R.id.home);
+//            updateSelectedIcon(R.id.home);
+//
+//            if (currentFragment == null) {
+//                currentFragment = new HomeFragment();
+//                loadFragment(currentFragment);
+//            }
+//        }
+//
+//        // Get the fragment that's currently displayed on screen
+//        Fragment displayedFragment = getSupportFragmentManager().findFragmentById(R.id.frame_layout);
+//
+//        // Update the bottom navigation to match what's actually displayed
+//        if (displayedFragment instanceof FragmentProfile) {
+//            // If Profile fragment is shown, select Profile tab
+//            binding.bottomNavigation.setOnItemSelectedListener(null); // Temporarily remove listener
+//            binding.bottomNavigation.setSelectedItemId(R.id.profile);
+//            updateSelectedIcon(R.id.profile);
+//            binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
+//            binding.bottomNavigation.setOnItemSelectedListener(navigationItemSelectedListener);
+//            currentFragment = displayedFragment;
+//        } else if (displayedFragment instanceof HomeFragment) {
+//            binding.bottomNavigation.setSelectedItemId(R.id.home);
+//            updateSelectedIcon(R.id.home);
+//            currentFragment = displayedFragment;
+//        } else if (displayedFragment instanceof TicketFragment) {
+//            binding.bottomNavigation.setSelectedItemId(R.id.ticket);
+//            updateSelectedIcon(R.id.ticket);
+//            currentFragment = displayedFragment;
+//        } else if (displayedFragment instanceof FragmentMyOrders) {
+//            binding.bottomNavigation.setSelectedItemId(R.id.order);
+//            updateSelectedIcon(R.id.order);
+//            currentFragment = displayedFragment;
+//        } else if (displayedFragment instanceof CartFragment) {
+//            binding.bottomNavigation.setSelectedItemId(R.id.cart);
+//            updateSelectedIcon(R.id.cart);
+//            currentFragment = displayedFragment;
+//        }
+//
         // Other onResume code stays the same
         isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
         setupNavigationView();

@@ -113,9 +113,10 @@ public class ShopFragment extends Fragment implements AdapterCard2.OnItemClickLi
     private ActivityResultLauncher<Intent> categorySelectionLauncher = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(),
     result -> {
+        Log.d("JWD", ": m here new");
         if (result.getResultCode() == Activity.RESULT_OK) {
             Intent data = result.getData();
-            Log.d("JWD", ": m here new");
+
             // handle the result here
         }
     }
