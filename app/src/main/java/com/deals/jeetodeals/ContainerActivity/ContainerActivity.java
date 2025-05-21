@@ -109,6 +109,25 @@ public class ContainerActivity extends Utility {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Set the selected bottom nav item and icon
+        binding.bottomNavigation.setSelectedItemId(R.id.home);
+        updateSelectedIcon(R.id.home);
+
+        // Get the flag from Intent
+        boolean loadHome = getIntent().getBooleanExtra("load_home", false);
+
+        // Check if currentFragment is null OR flag is true
+        if (currentFragment == null || loadHome) {
+            currentFragment = new HomeFragment();
+            loadFragment(currentFragment);
+        }
+    }
+
+
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Log.d("JWD", "onNewIntent triggered");
@@ -553,72 +572,6 @@ public class ContainerActivity extends Utility {
     @Override
     protected void onResume() {
         super.onResume();
-//        Log.d("JWD", "navigate_to = " );
-//        if (getIntent().hasExtra("navigate_to")) {
-//            String navigateTo = getIntent().getStringExtra("navigate_to");
-//
-//
-//            if ("ticket_fragment".equals(navigateTo)) {
-//                currentFragment = new TicketFragment();
-//                binding.bottomNavigation.setSelectedItemId(R.id.ticket);
-//                updateSelectedIcon(R.id.ticket);
-//
-//            } else if ("profile".equals(navigateTo)) {
-//                currentFragment = new FragmentProfile();
-//                binding.bottomNavigation.setSelectedItemId(R.id.profile);
-//                updateSelectedIcon(R.id.profile);
-//
-//            } else if ("Order".equals(navigateTo)) {
-//                Log.d("ContainerActivity2", "Navigating to FragmentMyOrders");
-//                currentFragment = new FragmentMyOrders();
-//                binding.bottomNavigation.setSelectedItemId(R.id.order);
-//                updateSelectedIcon(R.id.order);
-//            }
-//
-//            loadFragment(currentFragment);
-//
-//        } else {
-//            Log.d("ContainerActivity2", "No navigate_to extra. Loading default HomeFragment.");
-//            binding.bottomNavigation.setSelectedItemId(R.id.home);
-//            updateSelectedIcon(R.id.home);
-//
-//            if (currentFragment == null) {
-//                currentFragment = new HomeFragment();
-//                loadFragment(currentFragment);
-//            }
-//        }
-//
-//        // Get the fragment that's currently displayed on screen
-//        Fragment displayedFragment = getSupportFragmentManager().findFragmentById(R.id.frame_layout);
-//
-//        // Update the bottom navigation to match what's actually displayed
-//        if (displayedFragment instanceof FragmentProfile) {
-//            // If Profile fragment is shown, select Profile tab
-//            binding.bottomNavigation.setOnItemSelectedListener(null); // Temporarily remove listener
-//            binding.bottomNavigation.setSelectedItemId(R.id.profile);
-//            updateSelectedIcon(R.id.profile);
-//            binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
-//            binding.bottomNavigation.setOnItemSelectedListener(navigationItemSelectedListener);
-//            currentFragment = displayedFragment;
-//        } else if (displayedFragment instanceof HomeFragment) {
-//            binding.bottomNavigation.setSelectedItemId(R.id.home);
-//            updateSelectedIcon(R.id.home);
-//            currentFragment = displayedFragment;
-//        } else if (displayedFragment instanceof TicketFragment) {
-//            binding.bottomNavigation.setSelectedItemId(R.id.ticket);
-//            updateSelectedIcon(R.id.ticket);
-//            currentFragment = displayedFragment;
-//        } else if (displayedFragment instanceof FragmentMyOrders) {
-//            binding.bottomNavigation.setSelectedItemId(R.id.order);
-//            updateSelectedIcon(R.id.order);
-//            currentFragment = displayedFragment;
-//        } else if (displayedFragment instanceof CartFragment) {
-//            binding.bottomNavigation.setSelectedItemId(R.id.cart);
-//            updateSelectedIcon(R.id.cart);
-//            currentFragment = displayedFragment;
-//        }
-//
-        // Other onResume code stays the same
         isLoggedIn = pref.getPrefBoolean(this, pref.login_status);
         setupNavigationView();
         setupCartBadge();

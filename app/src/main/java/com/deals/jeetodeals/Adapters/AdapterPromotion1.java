@@ -67,7 +67,7 @@ public class AdapterPromotion1 extends RecyclerView.Adapter<AdapterPromotion1.My
         int percentage = (int) ((totalSales / (float) maxTickets) * 100);
         item.getExtensions().getCustom_lottery_data().setProgress(percentage);
 
-        holder.totalCardsTv.setText(maxTickets+" Tickets");
+        holder.totalCardsTv.setText(maxTickets+" Entries");
         holder.progressIndicator.setProgress(item.getExtensions().getCustom_lottery_data().getProgress());
 
         // Correctly load the thumbnail for the current item

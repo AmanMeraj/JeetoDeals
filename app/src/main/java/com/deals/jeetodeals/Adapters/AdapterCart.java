@@ -71,9 +71,9 @@ public class AdapterCart extends RecyclerView.Adapter<AdapterCart.QuantityViewHo
 
             if(voucherRate != 0 && item.getType().matches("lottery")){
                 int calculatedPrice = (int) (Integer.parseInt(itemPrice) / (float) voucherRate);
-                holder.timeTv.setText(item.getPrices().getCurrency_prefix() + " " + calculatedPrice);
+                holder.timeTv.setText( calculatedPrice+ " " +item.getPrices().getCurrency_prefix() );
             }else if(item.getType().matches("simple")||item.getType().matches("variable")){
-                holder.timeTv.setText(item.getPrices().getCurrency_prefix() + " " + itemPrice);
+                holder.timeTv.setText( itemPrice+ " " +item.getPrices().getCurrency_prefix());
             }
 
 //            if (voucherRate != 0 && itemPrice != null && !itemPrice.isEmpty()) {

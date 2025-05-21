@@ -4,9 +4,12 @@ import static android.widget.Toast.makeText;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -93,6 +96,7 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
             binding.couponBox.setVisibility(View.VISIBLE);
         }else{
             binding.couponBox.setVisibility(View.GONE);
+            binding.removeCouponBtn.setVisibility(View.GONE);
         }
 
         if (isInternetConnected(this)) {
@@ -103,6 +107,8 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
 
         TextInputLayout billingInputLayout = findViewById(R.id.billing_address_Input_text);
         RelativeLayout billingContentLayout = findViewById(R.id.billing_address_rel);
+
+        binding.applyBtn.setEnabled(!binding.edtCoupon.getText().toString().isEmpty());
 
 // Create a custom click listener for the entire field
         View.OnClickListener billingToggleListener = v -> {
@@ -142,6 +148,25 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
 
 // Most importantly, set a click listener on the end icon itself
         billingInputLayout.setEndIconOnClickListener(billingToggleListener);
+
+        binding.edtCoupon.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Not needed
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Enable or disable the button based on trimmed text
+                String input = s.toString().trim();
+                binding.applyBtn.setEnabled(!input.isEmpty());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Not needed
+            }
+        });
     }
     private void initializeStateMappings() {
         stateCodeMap = new HashMap<>();
@@ -231,22 +256,31 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
                     binding.shippingAddressInputText.setVisibility(View.GONE);
                     binding.shippingRel.setVisibility(View.GONE);
 
+                    if(cartResponse.totals.getTotal_discount().equals("0")){
+                        binding.removeCouponBtn.setVisibility(View.GONE);
+                    }else {
+                        binding.removeCouponBtn.setVisibility(View.VISIBLE);
+                    }
+
                     // Uncheck the shipping checkbox to prevent any shipping fields from being processed
                     binding.shippingCheckBox.setChecked(false);
 
                     binding.subtotal.setText(cartResponse.totals.getCurrency_code() + " " + cartResponse.totals.getTotal_items());
                     binding.total.setText(cartResponse.totals.getCurrency_code() + " " + cartResponse.totals.getTotal_price());
+                    binding.shipping.setText(cartResponse.totals.getTotal_shipping());
+                    binding.discount.setText("(-) "+cartResponse.totals.getCurrency_code() + " " +cartResponse.totals.getTotal_discount());
                 } else {
                     // For non-lottery items, show shipping options
                     binding.subtotal.setText(cartResponse.totals.getCurrency_prefix() + " " + cartResponse.totals.getTotal_price());
                     binding.total.setText(cartResponse.totals.getCurrency_prefix() + " " + cartResponse.totals.getTotal_price());
+                    binding.discount.setText("(-) "+cartResponse.totals.getCurrency_prefix() + " " +cartResponse.totals.getTotal_discount());
+
                 }
             } else {
                 Log.e("ActivityCheckout", "Cart items list is null or empty");
             }
 
             binding.shipping.setText(cartResponse.totals.getTotal_shipping());
-            binding.discount.setText("(-) "+cartResponse.totals.getCurrency_code() + " " +cartResponse.totals.getTotal_discount());
         } else {
             Log.e("ActivityCheckout", "CartResponse is null");
             Toast.makeText(this, "Failed to load cart data", Toast.LENGTH_SHORT).show();
@@ -257,6 +291,9 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
     private void setupListeners() {
         // Back button
         binding.backBtn.setOnClickListener(view -> finish());
+
+
+
 
         binding.removeCouponBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -374,9 +411,11 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
             binding.loader.rlLoader.setVisibility(View.GONE);
 
             if (response != null && response.isSuccess && response.data != null) {
+                binding.edtCoupon.setText("");
                 // Clear discount UI
                 binding.discount.setText("(-) INR 0");
                 binding.discount.setTextColor(binding.subtotal.getCurrentTextColor());
+                binding.removeCouponBtn.setVisibility(View.GONE);
 
                 // Restore original cart total
                 String originalTotal = pref.getPrefString(this, "cart_total");
@@ -389,6 +428,7 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
 
                 Toast.makeText(this, response.message != null ? response.message : "Coupon removed successfully", Toast.LENGTH_SHORT).show();
             } else {
+                binding.edtCoupon.setText("");
                 Log.e("RemoveCoupon", "Coupon removal failed: " + (response != null ? response.message : "Unknown error"));
                 Toast.makeText(this, response != null ? response.message : "Failed to remove coupon", Toast.LENGTH_SHORT).show();
             }
@@ -450,7 +490,9 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
 
             if (response != null && response.isSuccess && response.data != null) {
                 // Since response.data is a List<CouponResponse>, get the first item
+                binding.edtCoupon.setText("");
                 CouponResponse couponResponse = response.data;
+                binding.removeCouponBtn.setVisibility(View.VISIBLE);
 
                 if (couponResponse != null && couponResponse.getTotals() != null) {
                     CouponResponse.Totals totals = couponResponse.getTotals();
@@ -495,11 +537,14 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
                     }
 
                 } else {
+                    binding.edtCoupon.setText("");
                     Toast.makeText(this, "Invalid coupon response", Toast.LENGTH_SHORT).show();
                 }
             } else {
+                binding.edtCoupon.setText("");
                 Log.e("ApplyCoupon", "Coupon failed: " + (response != null ? response.message : "Unknown error"));
-                Toast.makeText(this, response != null ? response.message : "Coupon application failed", Toast.LENGTH_SHORT).show();
+                assert response != null;
+                Toast.makeText(this, response.message, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -840,9 +885,30 @@ public class ActivityCheckout extends Utility implements PaymentResultWithDataLi
 
     @Override
     public void onPaymentError(int code, String description, PaymentData paymentData) {
-        Log.e("Razorpay Error", "Payment failed: " + description);
-        Toast.makeText(this, "Payment failed: " + description, Toast.LENGTH_SHORT).show();
+        Log.e("Razorpay Error", "Payment failed: Code: " + code + ", Description: " + description);
+
+        // Extract plain text from HTML if present
+        if (description != null && description.contains("<")) {
+            // For Android N and above
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Spanned spannedText = Html.fromHtml(description, Html.FROM_HTML_MODE_LEGACY);
+                String plainText = spannedText.toString();
+                Toast.makeText(this, "Payment failed: " + plainText, Toast.LENGTH_LONG).show();
+            } else {
+                // For older Android versions
+                Spanned spannedText = Html.fromHtml(description);
+                String plainText = spannedText.toString();
+                Toast.makeText(this, "Payment failed: " + plainText, Toast.LENGTH_LONG).show();
+            }
+        } else {
+            // No HTML content, display as is
+            Toast.makeText(this, "Payment failed ", Toast.LENGTH_LONG).show();
+            Log.d("TAG", "onPaymentError: "+description);
+        }
+
+
     }
+
 
     private void processWalletPayment(Checkout checkout) {
         String auth = "Bearer " + pref.getPrefString(this, pref.user_token);

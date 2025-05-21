@@ -73,15 +73,17 @@
                             android:paddingVertical="6dp">
 
                             <ImageView
+                                android:gravity="center"
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
                                 android:src="@drawable/filter"
                                 app:tint="#000000" />
 
                             <TextView
+                                android:gravity="center"
                                 android:id="@+id/category"
                                 android:layout_marginStart="6dp"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Category"
                                 android:textColor="#000000"
@@ -109,17 +111,19 @@
                             <ImageView
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
+                                android:gravity="center"
                                 android:src="@drawable/sorting"
                                 app:tint="#000000" />
 
                             <TextView
                                 android:id="@+id/sort"
                                 android:layout_marginStart="6dp"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Sort By"
                                 android:textColor="#000000"
                                 android:textSize="12sp"
+                                android:gravity="center"
                                 android:textStyle="bold" />
                         </LinearLayout>
 

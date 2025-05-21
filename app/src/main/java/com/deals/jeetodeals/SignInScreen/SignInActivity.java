@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
+import androidx.core.text.HtmlCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -60,6 +61,16 @@ public class SignInActivity extends Utility {
         });
 
         binding.loginBtn.setOnClickListener(v -> validateInputs());
+
+        binding.homeIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(SignInActivity.this, ContainerActivity.class);
+                intent.putExtra("load_home", "home");
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
     private void validateInputs() {
@@ -114,7 +125,10 @@ public class SignInActivity extends Utility {
                 if (apiResponse.isSuccess) {
                     // Successful login
                     responsee = apiResponse.data;
-                    Toast.makeText(this, ""+responsee.getMessage(), Toast.LENGTH_SHORT).show();
+                    String cleanMessage = HtmlCompat.fromHtml(apiResponse.message, HtmlCompat.FROM_HTML_MODE_LEGACY).toString().trim();
+
+                    Log.d("TAG", "login: " + cleanMessage);
+                    Toast.makeText(this, cleanMessage, Toast.LENGTH_SHORT).show();
 
                     // Save token and navigate to the next activity
                     saveToken(responsee.getToken(), responsee.user_display_name, responsee.user_nicename, responsee.user_email,responsee.getFirst_name(),responsee.getLast_name(),responsee.getMobile());
@@ -123,9 +137,10 @@ public class SignInActivity extends Utility {
                     startActivity(intent);
                     finish();
                 } else {
-                    Log.d("TAG", "login: "+apiResponse.message);
-                    // Display the error message from the API response
-                    Toast.makeText(this, apiResponse.message, Toast.LENGTH_SHORT).show();
+                    String cleanMessage = HtmlCompat.fromHtml(apiResponse.message, HtmlCompat.FROM_HTML_MODE_LEGACY).toString().trim();
+
+                    Log.d("TAG", "login: " + cleanMessage);
+                    Toast.makeText(this, cleanMessage, Toast.LENGTH_SHORT).show();
                 }
             } else {
 

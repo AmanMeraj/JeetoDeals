@@ -53,6 +53,7 @@
             android:exported="false" />
         <activity
             android:name=".Checkout.ActivityCheckout"
+            android:windowSoftInputMode="adjustPan"
             android:exported="true" />
         <activity
             android:name=".Wishlist.ActivityWishlist"
@@ -65,16 +66,10 @@
             android:exported="false"
             android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity
-            android:name=".MyOrders.ActivityMyOrders"
-            android:exported="false" />
-        <activity
             android:name=".ChangeAddress.ActivityChangeAddress"
             android:exported="false" />
         <activity
             android:name=".ChangePassword.ActivityChangePassword"
-            android:exported="false" />
-        <activity
-            android:name=".Profile.ActivityProfile"
             android:exported="false" />
         <activity
             android:name=".ContainerActivity.ContainerActivity"

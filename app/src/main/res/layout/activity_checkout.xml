@@ -101,24 +101,14 @@
                             android:layout_alignParentEnd="true"
                             android:layout_width="wrap_content"
                             android:id="@+id/apply_btn"
-                            android:text="Apply Now"
+                            android:textAllCaps="false"
+                            android:text="Apply Coupon"
                             android:paddingHorizontal="20dp"
                             android:background="@drawable/orange_btn"
                             android:layout_height="wrap_content"/>
 
                     </RelativeLayout>
-                    <TextView
-                        android:id="@+id/remove_coupon_btn"
-                        android:layout_marginEnd="20dp"
-                        android:layout_marginBottom="10dp"
-                        android:layout_below="@+id/rel_box"
-                        android:layout_width="wrap_content"
-                        android:text="Remove Coupon"
-                        android:textColor="@color/orange"
-                        android:fontFamily="@font/inter_extrabold"
-                        android:textSize="13dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_height="wrap_content"/>
+
 
                 </RelativeLayout>
 
@@ -646,7 +636,7 @@
                             android:layout_width="wrap_content"
                             android:text="Subtotal"
                             android:textColor="@color/black"
-                            android:textSize="15sp"
+                            android:textSize="14sp"
                             android:layout_height="wrap_content"/>
                         <TextView
                             android:layout_alignParentEnd="true"
@@ -656,7 +646,7 @@
                             android:layout_marginHorizontal="10dp"
                             android:layout_width="wrap_content"
                             android:textColor="@color/black"
-                            android:textSize="15sp"
+                            android:textSize="14sp"
                             android:layout_height="wrap_content"/>
                         <View
                             android:layout_marginHorizontal="10dp"
@@ -679,7 +669,7 @@
                             android:layout_width="wrap_content"
                             android:text="Shipping"
                             android:textColor="@color/black"
-                            android:textSize="15sp"
+                            android:textSize="14sp"
                             android:layout_height="wrap_content"/>
                         <TextView
                             android:layout_alignParentEnd="true"
@@ -689,7 +679,7 @@
                             android:layout_marginHorizontal="10dp"
                             android:layout_width="wrap_content"
                             android:textColor="@color/black"
-                            android:textSize="15sp"
+                            android:textSize="14sp"
                             android:layout_height="wrap_content"/>
                         <View
                             android:layout_marginHorizontal="10dp"
@@ -712,17 +702,46 @@
                             android:layout_width="wrap_content"
                             android:text="Discount"
                             android:textColor="@color/black"
-                            android:textSize="15sp"
+                            android:textSize="14sp"
                             android:layout_height="wrap_content"/>
+
+                        <RelativeLayout
+                            android:gravity="center"
+                            android:layout_marginVertical="5dp"
+                            android:id="@+id/remove_coupon_btn"
+                            android:layout_toStartOf="@+id/discount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:id="@+id/bin_img"                            android:layout_marginVertical="3dp"
+                                android:padding="3dp"
+                                android:layout_width="20dp"
+                                android:src="@drawable/bin"
+                                android:layout_height="20dp"
+                                app:tint="@color/blue" />
+                            <TextView
+                                android:gravity="center"
+                                android:layout_toEndOf="@+id/bin_img"
+                                android:layout_marginEnd="5dp"
+                                android:layout_alignTop="@+id/bin_img"
+                                android:layout_alignBottom="@+id/bin_img"
+                                android:layout_width="wrap_content"
+                                android:text="Remove "
+                                android:textColor="@color/blue"
+                                android:fontFamily="@font/inter"
+                                android:textSize="12dp"
+                                android:layout_height="wrap_content"/>
+                        </RelativeLayout>
                         <TextView
                             android:layout_alignParentEnd="true"
                             android:id="@+id/discount"
                             android:fontFamily="@font/inter_bold"
                             android:layout_marginVertical="5dp"
-                            android:layout_marginHorizontal="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginStart="5dp"
                             android:layout_width="wrap_content"
                             android:textColor="@color/black"
-                            android:textSize="15sp"
+                            android:textSize="14sp"
                             android:layout_height="wrap_content"/>
                         <View
                             android:layout_marginHorizontal="10dp"

@@ -180,8 +180,31 @@ public class FragmentsRepository {
             public void onResponse(@NonNull Call<CouponResponse> call, @NonNull Response<CouponResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     liveData.setValue(new ApiResponse<>(response.body(), true, null));
+                } else if (response.code() == 400) {
+                    String errorMsg = "Failed to apply coupon.";
+                    try {
+                        if (response.errorBody() != null) {
+                            String errorJson = response.errorBody().string();
+                            JSONObject jsonObject = new JSONObject(errorJson);
+                            String message = jsonObject.optString("message");
+                            String code = jsonObject.optString("code");
+
+                            if ("woocommerce_rest_cart_coupon_error".equals(code)) {
+                                errorMsg = message;  // e.g., "Coupon code \"watch100\" has already been applied."
+                            } else if ("rest_invalid_param".equals(code)) {
+                                errorMsg = "Your coupon code is invalid.";
+                            } else {
+                                errorMsg = message;
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    Log.e(TAG, errorMsg);
+                    liveData.setValue(new ApiResponse<>(null, false, errorMsg));
                 } else {
-                    String errorMsg = "Coupon failed: " + response.code() + " " + response.message();
+                    String errorMsg = "There is an issue applying the coupon, please try again later.";
                     Log.e(TAG, errorMsg);
                     liveData.setValue(new ApiResponse<>(null, false, errorMsg));
                 }

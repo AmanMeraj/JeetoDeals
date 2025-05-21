@@ -243,14 +243,16 @@ public class CartFragment extends Fragment implements AdapterCart.OnCartItemActi
             binding.total.setText(responsee.totals.currency_code + " " + responsee.totals.getTotal_price());
             binding.subTotal.setText(responsee.totals.currency_code + " " + responsee.totals.getTotal_items());
             binding.discount.setText(("(-) ") +responsee.totals.currency_code + " " + responsee.totals.getTotal_discount());
+            binding.shipping.setText(responsee.totals.getTotal_shipping());
         } else {
 
             binding.walletBalance.setVisibility(View.VISIBLE);
             binding.walletBalance.setText("Wallet Balance: Vouchers " + pref.getPrefString(requireActivity(), pref.main_balance));
 
-            binding.total.setText(responsee.totals.currency_symbol + " " + responsee.totals.getTotal_price());
-            binding.subTotal.setText(responsee.totals.currency_symbol + " " + responsee.totals.getTotal_price());
-            binding.discount.setText(("(-) ") +responsee.totals.currency_code + " " + responsee.totals.getTotal_discount());
+            binding.total.setText(responsee.totals.getTotal_price()+ " " +responsee.totals.currency_symbol);
+            binding.subTotal.setText( responsee.totals.getTotal_price()+ " " + responsee.totals.currency_symbol);
+            binding.discount.setText(responsee.totals.getTotal_discount()+ " " +responsee.totals.currency_symbol);
+            binding.shipping.setText(responsee.totals.getTotal_shipping());
 
             // Wallet Balance Selection Logic
             binding.walletBalance.setOnClickListener(v -> toggleWalletSelection(totals));

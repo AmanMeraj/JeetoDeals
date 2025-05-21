@@ -10,6 +10,7 @@
     <color name="bottom_nav_default_text_color">#000000</color>
     <color name="selected_thumb_background">#FFAB40</color>
     <color name="unselected_thumb_background">#33FFFFFF</color>
+    <color name="blue">#0000AE</color>
 
 </resources>
 
