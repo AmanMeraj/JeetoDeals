@@ -73,7 +73,8 @@ public class ContainerActivity extends Utility {
         // Initial load (first time)
         handleIntentNavigation(getIntent());
 
-
+        binding.bottomNavigation.setSelectedItemId(R.id.home);
+        updateSelectedIcon(R.id.home);
 
         // Set up Toolbar with drawer toggle
         setupToolbar();
@@ -94,8 +95,7 @@ public class ContainerActivity extends Utility {
             binding.tvUserNsame.setText("");
         }
 
-        binding.bottomNavigation.setSelectedItemId(R.id.home);
-            updateSelectedIcon(R.id.home);
+
 
             if (currentFragment == null) {
                 currentFragment = new HomeFragment();
@@ -108,23 +108,6 @@ public class ContainerActivity extends Utility {
         setupCartBadge();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        // Set the selected bottom nav item and icon
-        binding.bottomNavigation.setSelectedItemId(R.id.home);
-        updateSelectedIcon(R.id.home);
-
-        // Get the flag from Intent
-        boolean loadHome = getIntent().getBooleanExtra("load_home", false);
-
-        // Check if currentFragment is null OR flag is true
-        if (currentFragment == null || loadHome) {
-            currentFragment = new HomeFragment();
-            loadFragment(currentFragment);
-        }
-    }
 
 
     @Override
@@ -415,41 +398,6 @@ public class ContainerActivity extends Utility {
         binding.bottomNavigation.setOnItemSelectedListener(navigationItemSelectedListener);
     }
 
-    // Method to update the selected icon
-    private void updateSelectedIcon(int selectedItemId) {
-        Menu menu = binding.bottomNavigation.getMenu();
-
-        // Reset all icons to default
-        menu.findItem(R.id.home).setIcon(R.drawable.home_jd);
-        menu.findItem(R.id.profile).setIcon(R.drawable.user);
-        menu.findItem(R.id.ticket).setIcon(R.drawable.tickect_jd);
-        menu.findItem(R.id.order).setIcon(R.drawable.clipboard_black);
-        menu.findItem(R.id.cart).setIcon(R.drawable.shop_jd);
-
-        // Restore color state list for text (add this)
-        restoreBottomNavTextColors();
-
-        // Restore icon tint list (add this)
-        binding.bottomNavigation.setItemIconTintList(null);
-
-        // Set selected icon
-        if (selectedItemId == R.id.home) {
-            menu.findItem(R.id.home).setIcon(R.drawable.white_home);
-        } else if (selectedItemId == R.id.ticket&&isLoggedIn) {
-            menu.findItem(R.id.ticket).setIcon(R.drawable.white_ticket);
-        } else if (selectedItemId == R.id.order&&isLoggedIn) {
-            menu.findItem(R.id.order).setIcon(R.drawable.clipboard);
-        } else if (selectedItemId == R.id.cart&&isLoggedIn) {
-            menu.findItem(R.id.cart).setIcon(R.drawable.white_cart);
-        } else if (selectedItemId == R.id.profile&&isLoggedIn) {
-            Drawable icon = ContextCompat.getDrawable(this, R.drawable.user);
-            if (icon != null) {
-                icon = icon.mutate(); // Ensure it doesn't affect other uses of this drawable
-                icon.setTint(ContextCompat.getColor(this, android.R.color.white));
-                menu.findItem(R.id.profile).setIcon(icon);
-            }
-        }
-    }
 
     public void sendEmailSingleRecipient(String recipient, String subject, String body) {
         // Log the input parameters
@@ -580,6 +528,71 @@ public class ContainerActivity extends Utility {
             binding.tvUserNsame.setText("Hi ! " + pref.getPrefString(this, pref.first_name) + " " + pref.getPrefString(this, pref.last_name));
         } else {
             binding.tvUserNsame.setText("");
+        }
+
+        // Fix: Ensure proper bottom navigation state is maintained
+        if (currentFragment instanceof HomeFragment) {
+            // Ensure home is properly selected with correct styling
+            binding.bottomNavigation.setSelectedItemId(R.id.home);
+            updateSelectedIcon(R.id.home);
+            binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
+            restoreBottomNavTextColors();
+        } else if (currentFragment instanceof TicketFragment && isLoggedIn) {
+            binding.bottomNavigation.setSelectedItemId(R.id.ticket);
+            updateSelectedIcon(R.id.ticket);
+            binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
+            restoreBottomNavTextColors();
+        } else if (currentFragment instanceof FragmentMyOrders && isLoggedIn) {
+            binding.bottomNavigation.setSelectedItemId(R.id.order);
+            updateSelectedIcon(R.id.order);
+            binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
+            restoreBottomNavTextColors();
+        } else if (currentFragment instanceof CartFragment && isLoggedIn) {
+            binding.bottomNavigation.setSelectedItemId(R.id.cart);
+            updateSelectedIcon(R.id.cart);
+            binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
+            restoreBottomNavTextColors();
+        } else if (currentFragment instanceof FragmentProfile && isLoggedIn) {
+            binding.bottomNavigation.setSelectedItemId(R.id.profile);
+            updateSelectedIcon(R.id.profile);
+            binding.bottomNavigation.setItemBackgroundResource(R.drawable.bottom_nav_icon_background);
+            restoreBottomNavTextColors();
+        }
+    }
+
+    // Also update your updateSelectedIcon method to fix the home icon issue
+    private void updateSelectedIcon(int selectedItemId) {
+        Menu menu = binding.bottomNavigation.getMenu();
+
+        // Reset all icons to default
+        menu.findItem(R.id.home).setIcon(R.drawable.home_jd);
+        menu.findItem(R.id.profile).setIcon(R.drawable.user);
+        menu.findItem(R.id.ticket).setIcon(R.drawable.tickect_jd);
+        menu.findItem(R.id.order).setIcon(R.drawable.clipboard_black);
+        menu.findItem(R.id.cart).setIcon(R.drawable.shop_jd);
+
+        // Restore color state list for text
+        restoreBottomNavTextColors();
+
+        // Restore icon tint list
+        binding.bottomNavigation.setItemIconTintList(null);
+
+        // Set selected icon - FIX: Remove isLoggedIn condition for home
+        if (selectedItemId == R.id.home) {
+            menu.findItem(R.id.home).setIcon(R.drawable.white_home);
+        } else if (selectedItemId == R.id.ticket && isLoggedIn) {
+            menu.findItem(R.id.ticket).setIcon(R.drawable.white_ticket);
+        } else if (selectedItemId == R.id.order && isLoggedIn) {
+            menu.findItem(R.id.order).setIcon(R.drawable.clipboard);
+        } else if (selectedItemId == R.id.cart && isLoggedIn) {
+            menu.findItem(R.id.cart).setIcon(R.drawable.white_cart);
+        } else if (selectedItemId == R.id.profile && isLoggedIn) {
+            Drawable icon = ContextCompat.getDrawable(this, R.drawable.user);
+            if (icon != null) {
+                icon = icon.mutate();
+                icon.setTint(ContextCompat.getColor(this, android.R.color.white));
+                menu.findItem(R.id.profile).setIcon(icon);
+            }
         }
     }
 

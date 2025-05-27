@@ -1,5 +1,6 @@
 package com.deals.jeetodeals.Adapters;
 
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -50,7 +51,7 @@ public class AdapterCard2 extends RecyclerView.Adapter<AdapterCard2.PromotionVie
 
         // Set data to views
         holder.binding.timeTv.setText(promotion.getPrices().getPrice() + " " + promotion.getPrices().getCurrency_prefix());
-        holder.binding.desc.setText(promotion.name);
+        holder.binding.desc.setText(Html.fromHtml(promotion.name));
         Log.d("TAG", "onBindViewHolder: " + promotion.getDescription());
 
         // Load image using Glide

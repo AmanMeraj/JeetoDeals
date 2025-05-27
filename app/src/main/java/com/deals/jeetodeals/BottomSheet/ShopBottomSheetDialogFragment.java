@@ -117,7 +117,7 @@ public class ShopBottomSheetDialogFragment extends BottomSheetDialogFragment {
 
     private void setupData() {
         if (shopItem != null) {
-            productNameTextView.setText(shopItem.getName());
+            productNameTextView.setText(Html.fromHtml(shopItem.getName()));
             cointxt.setText(shopItem.getPrices().getPrice()+" "+shopItem.getPrices().getCurrency_prefix());
             drawDateTextView.setText(Html.fromHtml(shopItem.getDescription(), Html.FROM_HTML_MODE_LEGACY).toString());
         }
