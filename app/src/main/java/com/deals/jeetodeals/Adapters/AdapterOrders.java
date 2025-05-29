@@ -1,6 +1,7 @@
 package com.deals.jeetodeals.Adapters;
 import android.content.Context;
 import android.content.Intent;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -84,7 +85,7 @@ public class AdapterOrders extends RecyclerView.Adapter<AdapterOrders.ViewHolder
         if (!order.getItems().isEmpty()) {
             Map.Entry<String, OrderItem> firstItem = order.getItems().entrySet().iterator().next();
             OrderItem item = firstItem.getValue();
-            holder.binding.tvTitle.setText(item.getProduct_name());
+            holder.binding.tvTitle.setText(Html.fromHtml(item.getProduct_name()));
 
             Glide.with(context).load(item.getProduct_image()).placeholder(R.drawable.no_image).into(holder.binding.imageCardLogo);
 

@@ -1,6 +1,7 @@
 package com.deals.jeetodeals.Adapters;
 
 import android.content.Context;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,7 +63,7 @@ public class AdapterCart extends RecyclerView.Adapter<AdapterCart.QuantityViewHo
         Items item = itemList.get(position);
         Log.d("ITEM LIST", "onBindViewHolder: " + itemList.size());
 
-        holder.textPhoneName.setText(item.getName());
+        holder.textPhoneName.setText(Html.fromHtml(item.getName()));
             int voucherRate = pref.getPrefInteger(context, pref.voucher_rate);
             String itemPrice = item.getPrices().getPrice();
 
@@ -76,20 +77,9 @@ public class AdapterCart extends RecyclerView.Adapter<AdapterCart.QuantityViewHo
                 holder.timeTv.setText( itemPrice+ " " +item.getPrices().getCurrency_prefix());
             }
 
-//            if (voucherRate != 0 && itemPrice != null && !itemPrice.isEmpty()) {
-//                try {
-//                    int calculatedPrice = (int) (Integer.parseInt(itemPrice) / (float) voucherRate);
-//                    holder.textTicketId.setText(item.getPrices().getCurrency_prefix() + " " + calculatedPrice);
-//                } catch (NumberFormatException e) {
-//                    Log.e("AdapterCart", "Error parsing item price: " + itemPrice, e);
-//                    holder.textTicketId.setText(item.getPrices().getCurrency_symbol() + " " + itemPrice);
-//                }
-//            } else {
-//                holder.textTicketId.setText(item.getPrices().getCurrency_symbol() + " " + itemPrice);
-//            }
 
 
-        holder.desc.setText(item.getName());
+        holder.desc.setText(Html.fromHtml(item.getName()));
         holder.textQuantity.setText(String.valueOf(item.getQuantity()));
         if (!item.getImages().isEmpty()) {
             Glide.with(context).load(item.getImages().get(0).getThumbnail()).into(holder.image);

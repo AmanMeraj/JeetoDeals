@@ -67,13 +67,6 @@
                 android:textSize="12sp"
                 android:layout_marginBottom="4dp" />
 
-<!--            <TextView-->
-<!--                android:id="@+id/text_ticket_id"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:fontFamily="@font/inter_bold"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="15sp" />-->
 
             <TextView
                 android:id="@+id/desc"

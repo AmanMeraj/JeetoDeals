@@ -1,6 +1,7 @@
 package com.deals.jeetodeals.Adapters;
 
 import android.content.Context;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -80,7 +81,7 @@ public class HierarchicalCategoryAdapter extends RecyclerView.Adapter<Hierarchic
         CategoryTree category = currentCategories.get(position);
 
         // Set category name
-        holder.tvName.setText(category.getName());
+        holder.tvName.setText(Html.fromHtml(category.getName()));
 
         // Set category image
         if (category.getImage() != null && category.getImage().getSrc() != null && !category.getImage().getSrc().isEmpty()) {
