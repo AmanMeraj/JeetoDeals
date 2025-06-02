@@ -38,9 +38,9 @@ public class RetrofitRequest {
         if (retrofit == null) {
             OkHttpClient okHttpClient = new OkHttpClient.Builder()
                     // Add timeout settings
-                    .connectTimeout(30, TimeUnit.SECONDS)  // Increased from default 10s
-                    .readTimeout(30, TimeUnit.SECONDS)     // Increased from default 10s
-                    .writeTimeout(30, TimeUnit.SECONDS)    // Increased from default 10s
+                    .connectTimeout(50, TimeUnit.SECONDS)  // Increased from default 10s
+                    .readTimeout(50, TimeUnit.SECONDS)     // Increased from default 10s
+                    .writeTimeout(50, TimeUnit.SECONDS)    // Increased from default 10s
                     // Add retry mechanism for certain errors
                     .addInterceptor(chain -> {
                         Request request = chain.request();

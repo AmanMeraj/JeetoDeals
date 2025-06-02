@@ -1,5 +1,6 @@
 package com.deals.jeetodeals.ContainerActivity;
 
+import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -7,6 +8,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -20,6 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -39,6 +43,7 @@ import com.deals.jeetodeals.Utils.Utility;
 import com.deals.jeetodeals.WebViewActivity;
 import com.deals.jeetodeals.Wishlist.ActivityWishlist;
 import com.deals.jeetodeals.databinding.ActivityContainerBinding;
+import com.google.android.datatransport.runtime.firebase.transport.LogEventDropped;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.badge.BadgeUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
@@ -62,13 +67,14 @@ public class ContainerActivity extends Utility {
     private static final String HOW_IT_WORKS_URL = "https://www.jeetodeals.com/how-it-works-mobile/";
     private  boolean isLoggedIn;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityContainerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         Log.d("JWD", "onCreate called");
-        Log.d("ContainerActivity", "onCreate");
 
         // Initial load (first time)
         handleIntentNavigation(getIntent());
@@ -99,7 +105,6 @@ public class ContainerActivity extends Utility {
 
             if (currentFragment == null) {
                 currentFragment = new HomeFragment();
-                loadFragment(currentFragment);
             }
 
 
@@ -118,6 +123,7 @@ public class ContainerActivity extends Utility {
         setIntent(intent); // Important: Update the internal intent reference
         handleIntentNavigation(intent);
     }
+
 
 
     private void setupToolbar() {
@@ -452,7 +458,7 @@ public class ContainerActivity extends Utility {
 
 
     private void loadFragment(Fragment fragment) {
-        Log.d("NAVIGATION", "Loading fragment: " + fragment.getClass().getSimpleName());
+        Log.d("JWD", "Loading fragment: " + fragment.getClass().getSimpleName());
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.frame_layout, fragment)

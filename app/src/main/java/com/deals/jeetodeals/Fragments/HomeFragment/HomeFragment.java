@@ -74,7 +74,6 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
     private Utility utility = new Utility();
     private SharedPref pref = new SharedPref();
     private boolean isPlaying = false;
-    private ActivityResultLauncher<String> requestPermissionLauncher;
     private Handler handler = new Handler();
     String token;
     FragmentsRepository.ApiResponse<FcmResponse> fcmResponse;
@@ -110,12 +109,9 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
             FirebaseApp.initializeApp(context);
         }
 
-        requestPermissionLauncher = registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(),
-                isGranted -> {
-                    Log.d("NotificationPermission", isGranted ? "Permission granted!" : "Permission denied!");
-                }
-        );
+        Log.d("JWD", "onCreateView: ");
+
+
         getParentFragmentManager().setFragmentResultListener("ADD_TO_CART_REQUEST", this,
                 (requestKey, result) -> {
                     if (result.containsKey("item")) {
@@ -126,7 +122,7 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
                     }
                 });
 
-        checkAndRequestNotificationPermission();
+
 
         // Safe FCM token retrieval
         if (isAdded()) {
@@ -184,7 +180,9 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
                     }
 
                     token = task.getResult();
-                    if (isAdded()) {
+
+                    isLoggedIn = pref.getPrefBoolean(requireContext(), pref.login_status);
+                    if (isAdded()&&isLoggedIn) {
                         postToken(token);
                     }
                     Log.d(TAG, "FCM Token: " + token);
@@ -316,6 +314,12 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
     }
 
     public void getBalance() {
+
+        isLoggedIn = pref.getPrefBoolean(requireContext(), pref.login_status);
+        if (!isLoggedIn){
+            return;
+        }
+
         if (isLoadingBalance.get() || !isAdded()) return;
 
         isLoadingBalance.set(true);
@@ -339,6 +343,8 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
     }
 
     private void fetchHomeData() {
+
+        Log.d("JWD", "fetchHomeData: ");
         // Show loader when API call starts
         if (binding != null) {
             binding.loader.rlLoader.setVisibility(View.VISIBLE);
@@ -353,6 +359,7 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         viewModel.getHome( type, 52).observe(getViewLifecycleOwner(), response -> {
             isLoadingHomeData.set(false);
 
+            Log.d("JWD", "fetchHomeData: RECEIVED ");
             if (!isAdded() || binding == null) return;
 
             // Hide loader regardless of response
@@ -608,20 +615,15 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         });
     }
 
-    private void checkAndRequestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (requireContext().checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-                Log.d("NotificationPermission", "Notification permission is already granted.");
-            } else {
-                Log.d("NotificationPermission", "Requesting notification permission.");
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-            }
-        } else {
-            Log.d("NotificationPermission", "Notification permission is not required for this Android version.");
-        }
-    }
+
 
     public void getCart() {
+
+        isLoggedIn = pref.getPrefBoolean(requireContext(), pref.login_status);
+        if (!isLoggedIn){
+            return;
+        }
+
         // Show loader when API call starts
         if (binding != null) {
             binding.loader.rlLoader.setVisibility(View.VISIBLE);

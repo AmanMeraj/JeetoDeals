@@ -1,13 +1,18 @@
 package com.deals.jeetodeals.SplashVideo;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -36,6 +41,7 @@ public class ActivityVideoScreen extends Utility {
 
         setupVideoPlayer();
         setupTouchListener();
+        checkAndRequestNotificationPermission();
     }
 
     private void setupVideoPlayer() {
@@ -91,6 +97,25 @@ public class ActivityVideoScreen extends Utility {
         });
     }
 
+    private ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            isGranted -> {
+                Log.d("NotificationPermission", isGranted ? "Permission granted!" : "Permission denied!");
+            }
+    );
+
+    private void checkAndRequestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                Log.d("NotificationPermission", "Notification permission is already granted.");
+            } else {
+                Log.d("NotificationPermission", "Requesting notification permission.");
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        } else {
+            Log.d("NotificationPermission", "Notification permission is not required for this Android version.");
+        }
+    }
     private void navigateToNextScreen() {
         startActivity(new Intent(ActivityVideoScreen.this, ContainerActivity.class));
         finish();
