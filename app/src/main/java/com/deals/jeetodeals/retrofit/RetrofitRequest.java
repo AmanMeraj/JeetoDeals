@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import com.deals.jeetodeals.Utils.MyCookieJar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -36,8 +37,13 @@ public class RetrofitRequest {
 
     public static Retrofit getRetrofitInstance() {
         if (retrofit == null) {
+
+            MyCookieJar cookieJar = new MyCookieJar();
+
+
             OkHttpClient okHttpClient = new OkHttpClient.Builder()
                     // Add timeout settings
+                    //.cookieJar(cookieJar)
                     .connectTimeout(50, TimeUnit.SECONDS)  // Increased from default 10s
                     .readTimeout(50, TimeUnit.SECONDS)     // Increased from default 10s
                     .writeTimeout(50, TimeUnit.SECONDS)    // Increased from default 10s

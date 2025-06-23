@@ -634,6 +634,8 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         isLoadingCart.set(true);
         String auth = "Bearer " + pref.getPrefString(requireActivity(), pref.user_token);
 
+        Log.d("JWD", "getCart: TOKEN"+pref.getPrefString(requireActivity(), pref.user_token));
+
         fragmentsViewModel.getCart(auth).observe(getViewLifecycleOwner(), response -> {
             isLoadingCart.set(false);
 
@@ -647,7 +649,7 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
                     cartResponse = response.data;
                     String nonce = FragmentsRepository.getNonce();
                     pref.setPrefString(requireActivity(), pref.nonce, nonce);
-                    Log.d("GET CART NONCE", "getCart: " + nonce);
+                    Log.d("JWD", "getCart:nonce " + nonce);
 
                     // Update cart badge count
                     if (cartResponse.getItems() != null) {
@@ -793,6 +795,10 @@ public class HomeFragment extends Fragment implements AdapterPromotion1.OnItemCl
         AddItems addItems = new AddItems();
         addItems.setId(item.getId());
         addItems.setQuantity(1);
+
+        Log.d("JWD", "addItemToCart:auth "+authToken);
+        Log.d("JWD", "addItemToCart:nonce "+nonce);
+        Log.d("JWD", "addItemToCart:id "+item.getId());
 
         fragmentsViewModel.AddToCart(authToken, nonce, addItems).observe(getViewLifecycleOwner(), response -> {
             if (!isAdded() || binding == null) return;

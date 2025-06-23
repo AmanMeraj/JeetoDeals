@@ -12,8 +12,8 @@ android {
         applicationId "com.deals.jeetodeals"
         minSdk 25
         targetSdk 34
-        versionCode 14
-        versionName "2.4"
+        versionCode 17
+        versionName "2.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -59,7 +59,7 @@ dependencies {
     implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
     implementation 'com.google.zxing:core:3.5.1'
     implementation 'com.google.android.exoplayer:exoplayer:2.19.1'
-
+    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
     implementation 'com.google.android.gms:play-services-auth:20.6.0'
     implementation 'com.google.android.gms:play-services-auth-api-phone:18.0.1'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
